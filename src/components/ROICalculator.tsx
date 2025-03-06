@@ -10,26 +10,26 @@ interface ROICalculatorProps {
 const ROICalculator = ({ className }: ROICalculatorProps) => {
   const [cvCount, setCvCount] = useState<number>(100);
   const [interviewCount, setInterviewCount] = useState<number>(10);
-  const [cvCostSavings, setCvCostSavings] = useState<number>(0);
-  const [interviewCostSavings, setInterviewCostSavings] = useState<number>(0);
+  const [cvCostPerUnit, setCvCostPerUnit] = useState<number>(0);
+  const [interviewCostPerUnit, setInterviewCostPerUnit] = useState<number>(0);
 
-  // Average time saved per CV (in minutes)
+  // Base monthly subscription cost (in €)
+  const baseSubscriptionCost = 79;
+  // Average time spent per CV (in minutes)
   const timePerCv = 15;
-  // Average time saved per interview (in minutes)
+  // Average time spent per interview (in minutes)
   const timePerInterview = 45;
   // Average recruiter hourly rate (in €)
   const hourlyRate = 35;
 
   useEffect(() => {
-    // Calculate cost savings for CVs
-    const cvHoursSaved = (cvCount * timePerCv) / 60;
-    const cvSavings = cvHoursSaved * hourlyRate;
-    setCvCostSavings(cvSavings);
+    // Calculate cost per CV
+    const cvCost = cvCount > 0 ? baseSubscriptionCost / cvCount : 0;
+    setCvCostPerUnit(cvCost);
 
-    // Calculate cost savings for interviews
-    const interviewHoursSaved = (interviewCount * timePerInterview) / 60;
-    const interviewSavings = interviewHoursSaved * hourlyRate;
-    setInterviewCostSavings(interviewSavings);
+    // Calculate cost per interview
+    const interviewCost = interviewCount > 0 ? baseSubscriptionCost / interviewCount : 0;
+    setInterviewCostPerUnit(interviewCost);
   }, [cvCount, interviewCount]);
 
   const handleCvInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,9 +46,13 @@ const ROICalculator = ({ className }: ROICalculatorProps) => {
     }
   };
 
+  // Calculate traditional cost without tool
+  const traditionalCvCost = (timePerCv / 60) * hourlyRate;
+  const traditionalInterviewCost = (timePerInterview / 60) * hourlyRate;
+
   return (
     <div className={`bg-white p-6 rounded-xl shadow-md ${className}`}>
-      <h3 className="text-xl font-semibold mb-4">Calculate Your ROI</h3>
+      <h3 className="text-xl font-semibold mb-4">Calculate Your Marginal Cost</h3>
       
       <div className="mb-8">
         <div className="flex justify-between items-center mb-2">
@@ -71,8 +75,11 @@ const ROICalculator = ({ className }: ROICalculatorProps) => {
           className="my-4"
         />
         <div className="bg-gray-50 p-4 rounded-lg mt-2">
-          <p className="text-sm text-gray-600">Time saved: <span className="font-semibold">{Math.round(cvCount * timePerCv / 60)} hours</span></p>
-          <p className="text-sm text-gray-600">Estimated savings: <span className="font-semibold">€{Math.round(cvCostSavings)}</span> per month</p>
+          <p className="text-sm text-gray-600">Cost with TechLex: <span className="font-semibold">€{cvCostPerUnit.toFixed(2)}</span> per CV</p>
+          <p className="text-sm text-gray-600">Traditional cost: <span className="font-semibold">€{traditionalCvCost.toFixed(2)}</span> per CV</p>
+          <p className="text-sm font-medium text-green-600 mt-1">
+            {cvCostPerUnit < traditionalCvCost ? `Save €${(traditionalCvCost - cvCostPerUnit).toFixed(2)} per CV` : ''}
+          </p>
         </div>
       </div>
 
@@ -97,14 +104,20 @@ const ROICalculator = ({ className }: ROICalculatorProps) => {
           className="my-4"
         />
         <div className="bg-gray-50 p-4 rounded-lg mt-2">
-          <p className="text-sm text-gray-600">Time saved: <span className="font-semibold">{Math.round(interviewCount * timePerInterview / 60)} hours</span></p>
-          <p className="text-sm text-gray-600">Estimated savings: <span className="font-semibold">€{Math.round(interviewCostSavings)}</span> per month</p>
+          <p className="text-sm text-gray-600">Cost with TechLex: <span className="font-semibold">€{interviewCostPerUnit.toFixed(2)}</span> per interview</p>
+          <p className="text-sm text-gray-600">Traditional cost: <span className="font-semibold">€{traditionalInterviewCost.toFixed(2)}</span> per interview</p>
+          <p className="text-sm font-medium text-green-600 mt-1">
+            {interviewCostPerUnit < traditionalInterviewCost ? `Save €${(traditionalInterviewCost - interviewCostPerUnit).toFixed(2)} per interview` : ''}
+          </p>
         </div>
       </div>
 
       <div className="mt-8 p-4 bg-techlex-blue bg-opacity-10 rounded-lg">
         <p className="font-medium text-techlex-blue">
-          Total estimated savings: <span className="font-bold">€{Math.round(cvCostSavings + interviewCostSavings)}</span> per month
+          Monthly subscription: <span className="font-bold">€{baseSubscriptionCost}</span>
+        </p>
+        <p className="font-medium text-techlex-blue mt-1">
+          Average savings: <span className="font-bold">{Math.round(((traditionalCvCost * cvCount) + (traditionalInterviewCost * interviewCount)) - baseSubscriptionCost)}€</span> per month
         </p>
       </div>
     </div>
