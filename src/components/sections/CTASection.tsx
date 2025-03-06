@@ -1,8 +1,22 @@
 
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from 'sonner';
 
 const CTASection = () => {
+  const [seatsRemaining, setSeatsRemaining] = useState(200);
+
+  useEffect(() => {
+    // This is where we would fetch the actual remaining seats count
+    // For now, we're using a static value
+  }, []);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast.success('Thank you for your interest! We\'ll be in touch soon about confirming your spot.');
+  };
+
   return (
     <section id="contact" className="py-20 bg-gradient-to-b from-gray-50 to-white overflow-hidden">
       <div className="container mx-auto px-4">
@@ -14,9 +28,17 @@ const CTASection = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center relative z-10">
             <div>
               <h2 className="text-3xl font-bold mb-4">Ready to Transform Your Technical Recruitment?</h2>
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-600 mb-4">
                 Join our early access program and be among the first to experience TechLex EU. Early adopters receive exclusive benefits and help shape the future of the product.
               </p>
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+                <p className="text-amber-700 text-sm mb-2">
+                  <strong>Early Access Campaign:</strong> We need 200 confirmed seats to start development.
+                </p>
+                <p className="text-amber-700 text-sm font-bold">
+                  Currently {seatsRemaining} seats remaining!
+                </p>
+              </div>
               <ul className="space-y-3 mb-6">
                 <li className="flex items-start">
                   <CheckCircleIcon className="w-5 h-5 text-techlex-blue mt-0.5 flex-shrink-0" />
@@ -35,7 +57,7 @@ const CTASection = () => {
             
             <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
               <h3 className="font-semibold text-xl mb-4">Request Early Access</h3>
-              <form className="space-y-4">
+              <form className="space-y-4" onSubmit={handleSubmit}>
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                     Full Name
