@@ -180,7 +180,7 @@ const HeroImageSection = ({ className }: HeroImageSectionProps) => {
                   key={i}
                   onClick={() => setActiveSlide(i)}
                   className={`w-2 h-2 rounded-full ${
-                    i === activeSlide ? 'bg-techlex-blue' : 'bg-gray-300'
+                    i === activeSlide ? 'bg-techlex-pink' : 'bg-gray-300'
                   }`}
                 />
               ))}
@@ -193,23 +193,23 @@ const HeroImageSection = ({ className }: HeroImageSectionProps) => {
             loaded ? "opacity-0 pointer-events-none" : "opacity-100"
           )}>
             <div className="flex flex-col items-center">
-              <div className="w-8 h-8 border-4 border-techlex-blue border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-8 h-8 border-4 border-techlex-pink border-t-transparent rounded-full animate-spin"></div>
               <span className="mt-2 text-sm text-gray-500">Loading content...</span>
             </div>
           </div>
         </div>
       </div>
       
-      {/* Floating tooltip example - with faster animation and precise positioning */}
-      <div className="absolute top-32 -right-2 md:right-5 w-72 bg-techlex-blue text-white p-4 rounded-lg shadow-lg transform transition-all duration-250 animate-[float_2s_ease-in-out_infinite]">
-        <div className="absolute -left-4 top-8 w-0 h-0 border-t-8 border-r-8 border-b-8 border-transparent border-r-techlex-blue"></div>
+      {/* Floating tooltip example - with slower animation and precise positioning */}
+      <div className="absolute top-32 -right-2 md:right-5 w-72 bg-techlex-pink text-white p-4 rounded-lg shadow-lg transform transition-all duration-250 animate-[float_4s_ease-in-out_infinite]">
+        <div className="absolute -left-4 top-8 w-0 h-0 border-t-8 border-r-8 border-b-8 border-transparent border-r-techlex-pink"></div>
         <h4 className="font-medium mb-1">Spring Boot</h4>
         <p className="text-sm opacity-90">An open-source Java-based framework used to create microservice applications. It provides pre-configured settings for a fast development environment.</p>
       </div>
       
       {/* Decorative elements */}
-      <div className="absolute -bottom-8 -left-10 w-20 h-20 bg-techlex-lightblue opacity-20 rounded-full blur-2xl"></div>
-      <div className="absolute -top-12 -right-4 w-24 h-24 bg-techlex-blue opacity-10 rounded-full blur-3xl"></div>
+      <div className="absolute -bottom-8 -left-10 w-20 h-20 bg-techlex-pink-light opacity-20 rounded-full blur-2xl"></div>
+      <div className="absolute -top-12 -right-4 w-24 h-24 bg-techlex-pink opacity-10 rounded-full blur-3xl"></div>
     </div>
   );
 };
