@@ -33,10 +33,10 @@ const HeroSection = () => {
               </span>
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-              Decode Technical Jargon with <span className="text-techlex-blue">TechLex EU</span>
+              Decode Tech Jargon with <span className="text-techlex-blue">TechLex EU</span>
             </h1>
             <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed">
-              Instantly understand tech and business terminology in CVs, PDFs, and web content. Perfect for recruitment agencies to streamline candidate evaluation.
+              Instantly understand tech terms in CVs, PDFs, and web content. Perfect for recruiters to speed up candidate evaluation.
             </p>
             <form onSubmit={handleEarlyAccessRequest} className="flex flex-col sm:flex-row gap-3 mb-6">
               <Input
