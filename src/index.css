@@ -1,10 +1,13 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 210 40% 98%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -13,7 +16,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 221 70% 40%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -30,24 +33,17 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 221 70% 40%;
 
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -97,5 +93,78 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
   }
 }
+
+@layer components {
+  .hero-glass {
+    @apply bg-white bg-opacity-70 backdrop-blur-md border border-white border-opacity-30 shadow-lg;
+  }
+  
+  .tech-term {
+    @apply bg-techlex-blue text-white px-1 py-0.5 rounded-md cursor-pointer transition-all duration-300 hover:bg-techlex-lightblue;
+  }
+  
+  .btn-primary {
+    @apply bg-techlex-blue text-white font-medium py-2.5 px-5 rounded-md transition-all duration-300
+    hover:bg-techlex-lightblue focus:outline-none focus:ring-2 focus:ring-techlex-blue focus:ring-opacity-50
+    active:scale-95 shadow-md hover:shadow-lg;
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-techlex-blue font-medium py-2.5 px-5 rounded-md transition-all duration-300
+    hover:bg-techlex-gray focus:outline-none focus:ring-2 focus:ring-techlex-blue focus:ring-opacity-50
+    active:scale-95 shadow-sm hover:shadow border border-techlex-blue;
+  }
+  
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  }
+  
+  .section-padding {
+    @apply py-16 md:py-24;
+  }
+  
+  .input-primary {
+    @apply w-full px-4 py-3 rounded-md bg-white border border-gray-300 focus:outline-none
+    focus:ring-2 focus:ring-techlex-blue focus:border-transparent;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.glossary-fade-in > * {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: staggerFadeIn 0.5s ease forwards;
+}
+
+@keyframes staggerFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.glossary-fade-in > *:nth-child(1) { animation-delay: 0.1s; }
+.glossary-fade-in > *:nth-child(2) { animation-delay: 0.2s; }
+.glossary-fade-in > *:nth-child(3) { animation-delay: 0.3s; }
+.glossary-fade-in > *:nth-child(4) { animation-delay: 0.4s; }
+.glossary-fade-in > *:nth-child(5) { animation-delay: 0.5s; }
+.glossary-fade-in > *:nth-child(6) { animation-delay: 0.6s; }
