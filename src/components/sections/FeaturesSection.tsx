@@ -1,0 +1,79 @@
+
+import { BookOpenText, BrainCircuit, FileText, Languages, Search, Zap, BookOpen, GraduationCap, MessageCircleQuestion } from "lucide-react";
+import FeatureCard from "@/components/FeatureCard";
+
+const FeaturesSection = () => {
+  return (
+    <section id="features" className="section-padding">
+      <div className="container mx-auto px-4">
+        <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            Simplify Technical Recruitment
+          </h2>
+          <p className="text-lg text-gray-600">
+            TechLex EU empowers recruitment professionals to understand and evaluate technical candidates with confidence.
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          <FeatureCard
+            title="Instant Term Recognition"
+            description="Automatically identifies and explains technical terms in CVs, cover letters, and online job applications."
+            icon={<Search className="w-6 h-6" />}
+            className="animate-fade-in"
+          />
+          <FeatureCard
+            title="Custom Glossaries"
+            description="Create industry or company-specific term repositories to onboard new team members and standardize knowledge."
+            icon={<BookOpenText className="w-6 h-6" />}
+            className="animate-fade-in-slow"
+          />
+          <FeatureCard
+            title="PDF & Document Support"
+            description="Works seamlessly with uploaded PDFs, online documents, and web content for complete coverage."
+            icon={<FileText className="w-6 h-6" />}
+            className="animate-fade-in-slower"
+          />
+          <FeatureCard
+            title="AI-Powered Explanations"
+            description="Advanced AI provides accurate, contextual explanations of complex technical concepts."
+            icon={<BrainCircuit className="w-6 h-6" />}
+            className="animate-fade-in"
+          />
+          <FeatureCard
+            title="Multilingual Support"
+            description="Understand technical terminology across multiple European languages for international recruitment."
+            icon={<Languages className="w-6 h-6" />}
+            className="animate-fade-in-slow"
+          />
+          <FeatureCard
+            title="One-Click Integration"
+            description="Easy browser extension installation with no complicated setup or configuration required."
+            icon={<Zap className="w-6 h-6" />}
+            className="animate-fade-in-slower"
+          />
+          <FeatureCard
+            title="Company Wiki"
+            description="Build and maintain a centralized knowledge base of company-specific terminology, processes, and best practices."
+            icon={<BookOpen className="w-6 h-6" />}
+            className="animate-fade-in"
+          />
+          <FeatureCard
+            title="On-the-Job Learning"
+            description="Facilitate continuous learning with contextual explanations of technical concepts as employees encounter them in their work."
+            icon={<GraduationCap className="w-6 h-6" />}
+            className="animate-fade-in-slow"
+          />
+          <FeatureCard
+            title="Great Questions Generator"
+            description="Generate intelligent, context-aware questions for technical interviews based on candidate CVs and job descriptions."
+            icon={<MessageCircleQuestion className="w-6 h-6" />}
+            className="animate-fade-in-slower"
+          />
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default FeaturesSection;
