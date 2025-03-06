@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
@@ -52,7 +51,7 @@ const ROICalculator = ({ className }: ROICalculatorProps) => {
 
   return (
     <div className={`bg-white p-6 rounded-xl shadow-md ${className}`}>
-      <h3 className="text-xl font-semibold mb-4">Calculate Your Marginal Investment</h3>
+      <h3 className="text-xl font-semibold mb-4">Check the cost</h3>
       
       <div className="mb-8">
         <div className="flex justify-between items-center mb-2">
@@ -107,9 +106,6 @@ const ROICalculator = ({ className }: ROICalculatorProps) => {
       <div className="mt-8 p-4 bg-techlex-blue bg-opacity-10 rounded-lg">
         <p className="font-medium text-techlex-blue">
           Monthly subscription: <span className="font-bold">€{baseSubscriptionCost}</span>
-        </p>
-        <p className="font-medium text-techlex-blue mt-1">
-          Average savings: <span className="font-bold">{Math.round(((traditionalCvCost * cvCount) + (traditionalInterviewCost * interviewCount)) - baseSubscriptionCost)}€</span> per month
         </p>
       </div>
     </div>

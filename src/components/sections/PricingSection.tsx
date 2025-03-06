@@ -1,4 +1,3 @@
-
 import PricingCard from "@/components/PricingCard";
 import ROICalculator from "@/components/ROICalculator";
 
@@ -68,7 +67,7 @@ const PricingSection = () => {
         </div>
 
         <div className="mt-20 max-w-3xl mx-auto">
-          <h3 className="text-2xl font-bold text-center mb-8">Calculate Your Marginal Investment</h3>
+          <h3 className="text-2xl font-bold text-center mb-8">Check the cost</h3>
           <ROICalculator className="animate-fade-in" />
           <p className="text-center mt-4 text-sm text-gray-500">
             See how TechLex EU can save your team time and money compared to your recruitment fees.
