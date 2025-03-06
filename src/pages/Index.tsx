@@ -29,6 +29,9 @@ import {
   UploadCloud,
   Users,
   Zap,
+  BookOpen,
+  GraduationCap,
+  MessageCircleQuestion,
 } from "lucide-react";
 
 const Index = () => {
@@ -85,31 +88,11 @@ const Index = () => {
                   Request Early Access
                 </Button>
               </form>
-              <p className="text-gray-500 text-sm">
-                Join 500+ recruitment professionals already on our waitlist
-              </p>
             </div>
             
             <div className="lg:pl-10 animate-fade-in-slow">
               <HeroImageSection />
             </div>
-          </div>
-        </div>
-      </section>
-      
-      {/* Trusted By Section */}
-      <section className="py-12 bg-white border-y border-gray-100">
-        <div className="container mx-auto px-4">
-          <p className="text-center text-gray-500 font-medium mb-8">
-            Trusted by leading recruitment agencies across Europe
-          </p>
-          <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-6">
-            {/* Replace with actual partner logos */}
-            {["Adecco", "Randstad", "Hays", "Michael Page", "Robert Half"].map((company, index) => (
-              <div key={index} className="text-gray-400 font-semibold text-lg">
-                {company}
-              </div>
-            ))}
           </div>
         </div>
       </section>
@@ -161,6 +144,24 @@ const Index = () => {
               title="One-Click Integration"
               description="Easy browser extension installation with no complicated setup or configuration required."
               icon={<Zap className="w-6 h-6" />}
+              className="animate-fade-in-slower"
+            />
+            <FeatureCard
+              title="Company Wiki"
+              description="Build and maintain a centralized knowledge base of company-specific terminology, processes, and best practices."
+              icon={<BookOpen className="w-6 h-6" />}
+              className="animate-fade-in"
+            />
+            <FeatureCard
+              title="On-the-Job Learning"
+              description="Facilitate continuous learning with contextual explanations of technical concepts as employees encounter them in their work."
+              icon={<GraduationCap className="w-6 h-6" />}
+              className="animate-fade-in-slow"
+            />
+            <FeatureCard
+              title="Great Questions Generator"
+              description="Generate intelligent, context-aware questions for technical interviews based on candidate CVs and job descriptions."
+              icon={<MessageCircleQuestion className="w-6 h-6" />}
               className="animate-fade-in-slower"
             />
           </div>
