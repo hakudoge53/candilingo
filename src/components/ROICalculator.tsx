@@ -46,13 +46,13 @@ const ROICalculator = ({ className }: ROICalculatorProps) => {
     }
   };
 
-  // Calculate traditional cost without tool
+  // Calculate traditional cost without tool (still needed for the summary calculation)
   const traditionalCvCost = (timePerCv / 60) * hourlyRate;
   const traditionalInterviewCost = (timePerInterview / 60) * hourlyRate;
 
   return (
     <div className={`bg-white p-6 rounded-xl shadow-md ${className}`}>
-      <h3 className="text-xl font-semibold mb-4">Calculate Your Marginal Cost</h3>
+      <h3 className="text-xl font-semibold mb-4">Calculate Your Marginal Investment</h3>
       
       <div className="mb-8">
         <div className="flex justify-between items-center mb-2">
@@ -75,11 +75,7 @@ const ROICalculator = ({ className }: ROICalculatorProps) => {
           className="my-4"
         />
         <div className="bg-gray-50 p-4 rounded-lg mt-2">
-          <p className="text-sm text-gray-600">Cost with TechLex: <span className="font-semibold">€{cvCostPerUnit.toFixed(2)}</span> per CV</p>
-          <p className="text-sm text-gray-600">Traditional cost: <span className="font-semibold">€{traditionalCvCost.toFixed(2)}</span> per CV</p>
-          <p className="text-sm font-medium text-green-600 mt-1">
-            {cvCostPerUnit < traditionalCvCost ? `Save €${(traditionalCvCost - cvCostPerUnit).toFixed(2)} per CV` : ''}
-          </p>
+          <p className="text-sm text-gray-600">Investment with TechLex: <span className="font-semibold">€{cvCostPerUnit.toFixed(2)}</span> per CV</p>
         </div>
       </div>
 
@@ -104,11 +100,7 @@ const ROICalculator = ({ className }: ROICalculatorProps) => {
           className="my-4"
         />
         <div className="bg-gray-50 p-4 rounded-lg mt-2">
-          <p className="text-sm text-gray-600">Cost with TechLex: <span className="font-semibold">€{interviewCostPerUnit.toFixed(2)}</span> per interview</p>
-          <p className="text-sm text-gray-600">Traditional cost: <span className="font-semibold">€{traditionalInterviewCost.toFixed(2)}</span> per interview</p>
-          <p className="text-sm font-medium text-green-600 mt-1">
-            {interviewCostPerUnit < traditionalInterviewCost ? `Save €${(traditionalInterviewCost - interviewCostPerUnit).toFixed(2)} per interview` : ''}
-          </p>
+          <p className="text-sm text-gray-600">Investment with TechLex: <span className="font-semibold">€{interviewCostPerUnit.toFixed(2)}</span> per interview</p>
         </div>
       </div>
 
