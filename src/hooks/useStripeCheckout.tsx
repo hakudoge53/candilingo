@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 type CheckoutOptions = {
   priceId?: string;
+  productId?: string;
   productName?: string;
   customPrice?: number;
 }

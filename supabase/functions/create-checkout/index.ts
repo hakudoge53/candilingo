@@ -19,15 +19,30 @@ serve(async (req) => {
   }
   
   try {
-    const { priceId, productName, customPrice } = await req.json();
-    console.log(`Creating checkout session for product: ${productName}, priceId: ${priceId}`);
+    const { priceId, productId, productName, customPrice } = await req.json();
     
-    // Configure line items based on the request
     let lineItems;
     
     if (priceId) {
-      // Use Stripe product/price if provided
+      // Use Stripe price if provided
+      console.log(`Creating checkout session with price ID: ${priceId}`);
       lineItems = [{ price: priceId, quantity: 1 }];
+    } else if (productId) {
+      // Find the first active price for this product
+      console.log(`Finding prices for product ID: ${productId}`);
+      const prices = await stripe.prices.list({
+        product: productId,
+        active: true,
+        limit: 1,
+      });
+      
+      if (prices.data.length === 0) {
+        throw new Error(`No active prices found for product: ${productId}`);
+      }
+      
+      const firstPrice = prices.data[0];
+      console.log(`Using price ID: ${firstPrice.id} for product: ${productId}`);
+      lineItems = [{ price: firstPrice.id, quantity: 1 }];
     } else if (customPrice) {
       // Create a custom price on-the-fly for Enterprise plan
       lineItems = [{
@@ -41,7 +56,7 @@ serve(async (req) => {
         quantity: 1,
       }];
     } else {
-      throw new Error('Either priceId or customPrice must be provided');
+      throw new Error('Either priceId, productId or customPrice must be provided');
     }
 
     // Create Stripe checkout session

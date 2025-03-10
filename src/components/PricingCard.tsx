@@ -13,13 +13,14 @@ interface PricingFeature {
 interface PricingCardProps {
   name: string;
   price: string;
-  originalPrice?: string; // Added for showing the original price
+  originalPrice?: string;
   description: string;
   features: PricingFeature[];
   popular?: boolean;
   ctaText?: string;
   className?: string;
-  stripePriceId?: string; // Stripe price ID for the product
+  stripePriceId?: string;
+  stripeProductId?: string;
 }
 
 const PricingCard = ({
@@ -31,24 +32,32 @@ const PricingCard = ({
   popular = false,
   ctaText = "Get 50% Off",
   stripePriceId,
+  stripeProductId,
   className,
 }: PricingCardProps) => {
   const { redirectToCheckout, isLoading } = useStripeCheckout();
 
   const handleSubscribe = () => {
     if (name === "Enterprise") {
-      // For Enterprise plan, redirect to contact page or open contact form
-      // For demo purposes, we'll use a custom price
+      // For Enterprise plan, use a custom price
       redirectToCheckout({
         productName: "Enterprise Plan",
-        customPrice: 199 // Custom price for enterprise, could be determined elsewhere
+        customPrice: 199 // Custom price for enterprise
       });
-    } else {
-      // For other plans, use the Stripe price ID
+    } else if (stripePriceId) {
+      // If a specific price ID is provided, use it
       redirectToCheckout({
         priceId: stripePriceId,
         productName: name
       });
+    } else if (stripeProductId) {
+      // If a product ID is provided, let the backend find the price
+      redirectToCheckout({
+        productId: stripeProductId,
+        productName: name
+      });
+    } else {
+      toast.error("No price configuration found for this plan");
     }
   };
 
