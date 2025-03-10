@@ -1,3 +1,4 @@
+
 import PricingCard from "@/components/PricingCard";
 import ROICalculator from "@/components/ROICalculator";
 
@@ -18,7 +19,7 @@ const PricingSection = () => {
           <PricingCard
             name="Starter"
             originalPrice="€29"
-            price="€14.5"
+            price="€14.50"
             description="Perfect for individual recruiters"
             features={[
               { text: "Unlimited term definitions", included: true },
@@ -35,7 +36,7 @@ const PricingSection = () => {
           <PricingCard
             name="Pro"
             originalPrice="€79"
-            price="€39.5"
+            price="€39.50"
             description="Ideal for growing agencies"
             features={[
               { text: "Unlimited term definitions", included: true },
