@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import { cn } from "@/lib/utils";
 import BrowserWindow from './browser/BrowserWindow';
-import TooltipOverlay from './browser/TooltipOverlay';
 
 interface HeroImageSectionProps {
   className?: string;
@@ -27,12 +26,6 @@ const HeroImageSection = ({ className }: HeroImageSectionProps) => {
     )}>
       {/* Browser window mockup */}
       <BrowserWindow loaded={loaded} />
-      
-      {/* Floating tooltip */}
-      <TooltipOverlay 
-        title="Spring Boot" 
-        description="An open-source Java-based framework used to create microservice applications. It provides pre-configured settings for a fast development environment."
-      />
       
       {/* Decorative elements */}
       <div className="absolute -bottom-8 -left-10 w-20 h-20 bg-techlex-pink-light opacity-20 rounded-full blur-2xl"></div>

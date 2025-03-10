@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from 'sonner';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   const [email, setEmail] = useState('');
@@ -62,6 +63,7 @@ const Footer = () => {
             <h3 className="font-medium text-lg mb-4">Resources</h3>
             <ul className="space-y-3">
               <li><a href="#" className="text-gray-600 hover:text-techlex-blue transition-colors">Documentation</a></li>
+              <li><Link to="/glossary" className="text-gray-600 hover:text-techlex-blue transition-colors">Technical Glossary</Link></li>
               <li><a href="#" className="text-gray-600 hover:text-techlex-blue transition-colors">Developer API</a></li>
               <li><a href="#" className="text-gray-600 hover:text-techlex-blue transition-colors">Privacy Policy</a></li>
               <li><a href="#" className="text-gray-600 hover:text-techlex-blue transition-colors">Terms of Service</a></li>
