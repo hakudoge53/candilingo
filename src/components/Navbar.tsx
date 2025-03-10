@@ -8,10 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { isLoggedIn, activeUser } = useAuth();
   
-  const isAdmin = activeUser?.membership_tier === 'admin';
-
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
@@ -47,9 +44,6 @@ const Navbar = () => {
             <a href="#features" className="font-medium text-gray-700 hover:text-techlex-blue transition-colors">Features</a>
             <a href="#how-it-works" className="font-medium text-gray-700 hover:text-techlex-blue transition-colors">How It Works</a>
             <a href="#pricing" className="font-medium text-gray-700 hover:text-techlex-blue transition-colors">Pricing</a>
-            {isLoggedIn && isAdmin && (
-              <Link to="/marketing" className="font-medium text-gray-700 hover:text-techlex-blue transition-colors">Marketing</Link>
-            )}
             <a href="#contact" className="font-medium text-gray-700 hover:text-techlex-blue transition-colors">Contact</a>
             <Button className="btn-primary">
               Request Early Access
@@ -114,15 +108,6 @@ const Navbar = () => {
               >
                 Pricing
               </a>
-              {isLoggedIn && isAdmin && (
-                <Link 
-                  to="/marketing" 
-                  className="font-medium text-gray-700 hover:text-techlex-blue transition-colors px-2 py-1.5"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Marketing
-                </Link>
-              )}
               <a 
                 href="#contact" 
                 className="font-medium text-gray-700 hover:text-techlex-blue transition-colors px-2 py-1.5"
