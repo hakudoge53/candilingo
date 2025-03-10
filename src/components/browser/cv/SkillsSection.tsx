@@ -6,7 +6,7 @@ const SkillsSection = () => {
   return (
     <div>
       <h4 className="font-medium">Skills</h4>
-      <div className="flex flex-wrap gap-2 mt-2">
+      <div className="flex flex-wrap gap-3 mt-3">
         <TermBadge definition="JavaScript is a programming language used to create interactive effects within web browsers">JavaScript</TermBadge>
         <TermBadge definition="TypeScript is a strict syntactical superset of JavaScript that adds static typing">TypeScript</TermBadge>
         <TermBadge definition="Java Enterprise Edition - A platform for server-side application development">Java EE</TermBadge>

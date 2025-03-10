@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
@@ -24,7 +24,7 @@ interface GlossaryTerm {
 const Glossary = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [copiedTerm, setCopiedTerm] = useState<string | null>(null);
+  const [highlightedTerms, setHighlightedTerms] = useState<Record<string, boolean>>({});
   
   // Sample glossary data - in a real app this would come from an API
   const glossaryTerms: GlossaryTerm[] = [
@@ -165,13 +165,65 @@ const Glossary = () => {
       : groupedTerms[category];
   };
 
-  // Jump to a term when clicked in the related terms
+  // Function to highlight keywords in definition
+  const highlightKeywordsInDefinition = (definition: string) => {
+    let processedDefinition = definition;
+    
+    // Sort terms by length (descending) to avoid partial matches
+    const sortedTerms = glossaryTerms
+      .map(term => term.term)
+      .sort((a, b) => b.length - a.length);
+    
+    // Create a temporary element to work with HTML safely
+    const tempDiv = document.createElement('div');
+    tempDiv.textContent = processedDefinition;
+    processedDefinition = tempDiv.innerHTML;
+    
+    // Create a map of all term matches in the definition
+    const matches: {term: string, index: number}[] = [];
+    
+    sortedTerms.forEach(term => {
+      const termRegex = new RegExp(`\\b${term}\\b`, 'gi');
+      let match;
+      
+      while ((match = termRegex.exec(processedDefinition)) !== null) {
+        matches.push({
+          term,
+          index: match.index
+        });
+      }
+    });
+    
+    // Sort matches by their position in descending order to avoid index shifting
+    matches.sort((a, b) => b.index - a.index);
+    
+    // Replace each match with a span
+    matches.forEach(match => {
+      const termObject = glossaryTerms.find(t => 
+        t.term.toLowerCase() === match.term.toLowerCase()
+      );
+      
+      if (termObject) {
+        const before = processedDefinition.substring(0, match.index);
+        const after = processedDefinition.substring(match.index + match.term.length);
+        
+        processedDefinition = `${before}<span class="cursor-pointer font-medium text-techlex-blue hover:underline" data-term="${match.term}">${match.term}</span>${after}`;
+      }
+    });
+    
+    return { __html: processedDefinition };
+  };
+
+  // Jump to a term when clicked in the related terms or in highlighted definition
   const jumpToTerm = (term: string) => {
     // Find the term in the glossary
-    const foundTerm = glossaryTerms.find(t => t.term === term);
+    const foundTerm = glossaryTerms.find(t => t.term.toLowerCase() === term.toLowerCase());
     if (foundTerm) {
       setActiveCategory(foundTerm.category);
       setSearchTerm(term);
+      
+      // Highlight the term temporarily
+      setHighlightedTerms(prev => ({ ...prev, [term]: true }));
       
       // Scroll to the term
       setTimeout(() => {
@@ -181,19 +233,30 @@ const Glossary = () => {
           element.classList.add('bg-amber-50');
           setTimeout(() => {
             element.classList.remove('bg-amber-50');
+            setHighlightedTerms(prev => ({ ...prev, [term]: false }));
           }, 2000);
         }
       }, 100);
     }
   };
 
-  // Copy term API reference
-  const copyTermApiRef = (term: string) => {
-    navigator.clipboard.writeText(`https://api.techlex.eu/glossary/term/${term.toLowerCase().replace(/\s+/g, '-')}`);
-    setCopiedTerm(term);
-    toast.success(`API reference for "${term}" copied to clipboard`);
-    setTimeout(() => setCopiedTerm(null), 2000);
-  };
+  // Set up event delegation for term clicks in definitions
+  useEffect(() => {
+    const handleTermClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.hasAttribute('data-term')) {
+        const term = target.getAttribute('data-term');
+        if (term) {
+          jumpToTerm(term);
+        }
+      }
+    };
+    
+    document.addEventListener('click', handleTermClick);
+    return () => {
+      document.removeEventListener('click', handleTermClick);
+    };
+  }, [glossaryTerms]); // Re-add event listener if glossary terms change
 
   // Reset filters
   const resetFilters = () => {
@@ -256,13 +319,20 @@ const Glossary = () => {
                 <h2 className="text-xl font-semibold mb-4 text-techlex-blue">{category}</h2>
                 <div className="space-y-4">
                   {getFilteredTerms(category).map((term) => (
-                    <div key={term.term} id={`term-${term.term.replace(/\s+/g, '-')}`} className="group transition-all duration-300">
+                    <div 
+                      key={term.term} 
+                      id={`term-${term.term.replace(/\s+/g, '-')}`} 
+                      className={`group transition-all duration-300 ${highlightedTerms[term.term] ? 'bg-amber-50' : ''}`}
+                    >
                       <div className="flex items-start">
                         <Badge variant="default" className="mt-1 bg-techlex-pink text-white">
                           {term.term}
                         </Badge>
                         <div className="ml-3">
-                          <p className="text-gray-700">{term.definition}</p>
+                          <div 
+                            className="text-gray-700"
+                            dangerouslySetInnerHTML={highlightKeywordsInDefinition(term.definition)}
+                          />
                           
                           {/* Related Terms */}
                           {term.relatedTerms && term.relatedTerms.length > 0 && (
@@ -283,25 +353,6 @@ const Glossary = () => {
                             </div>
                           )}
                         </div>
-                        
-                        {/* API Reference */}
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity"
-                                onClick={() => copyTermApiRef(term.term)}
-                              >
-                                {copiedTerm === term.term ? "Copied!" : "API"}
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Copy API reference</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
                       </div>
                       <Separator className="mt-4 opacity-50" />
                     </div>
@@ -309,21 +360,6 @@ const Glossary = () => {
                 </div>
               </div>
             ))}
-          </div>
-
-          <div className="bg-techlex-pink-lighter rounded-lg p-6 mb-12">
-            <h2 className="text-xl font-semibold mb-2 text-techlex-blue">API Access</h2>
-            <p className="text-gray-700 mb-4">
-              This glossary is available via API for developer use. Integrate our technical term definitions 
-              directly into your applications. Perfect for browser extensions.
-            </p>
-            <div className="bg-gray-800 text-gray-200 p-3 rounded-md font-mono text-sm overflow-x-auto">
-              <code>GET https://api.techlex.eu/glossary</code>
-            </div>
-            <div className="mt-4 text-sm text-gray-600">
-              <p>Individual term: <code className="bg-gray-100 px-1 py-0.5 rounded">GET https://api.techlex.eu/glossary/term/{"{term-slug}"}</code></p>
-              <p>Terms by category: <code className="bg-gray-100 px-1 py-0.5 rounded">GET https://api.techlex.eu/glossary/category/{"{category-slug}"}</code></p>
-            </div>
           </div>
         </div>
       </div>
