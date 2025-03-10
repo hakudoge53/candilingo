@@ -2,19 +2,84 @@
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from 'sonner';
+import { Calendar, Phone, CheckCircle, MessageSquare } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+
+// Define form schema with validation
+const formSchema = z.object({
+  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
+  email: z.string().email({ message: "Please enter a valid email address." }),
+  company: z.string().min(1, { message: "Company name is required." }),
+  country: z.string().min(1, { message: "Country is required." }),
+  phone: z.string().min(5, { message: "Please enter a valid phone number." }),
+  message: z.string().min(10, { message: "Message must be at least 10 characters." }),
+  size: z.string().min(1, { message: "Please select your team size." }),
+  captcha: z.string().min(1, { message: "Please complete the captcha." }),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 const CTASection = () => {
+  const [captchaValue, setCaptchaValue] = useState("");
+  const [captchaAnswer, setCaptchaAnswer] = useState("");
   const [seatsRemaining, setSeatsRemaining] = useState(200);
 
+  // Setup form with validation
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      company: "",
+      country: "",
+      phone: "",
+      message: "",
+      size: "",
+      captcha: "",
+    },
+  });
+
+  // Generate a simple math captcha
   useEffect(() => {
-    // This is where we would fetch the actual remaining seats count
-    // For now, we're using a static value
+    const num1 = Math.floor(Math.random() * 10);
+    const num2 = Math.floor(Math.random() * 10);
+    setCaptchaValue(`${num1} + ${num2} = ?`);
+    setCaptchaAnswer((num1 + num2).toString());
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast.success('Thank you for your interest! We\'ll be in touch soon about confirming your spot.');
+  const onSubmit = (data: FormValues) => {
+    // Verify captcha
+    if (data.captcha !== captchaAnswer) {
+      toast.error("Incorrect captcha answer. Please try again.");
+      return;
+    }
+
+    // Here we would send the form data to the backend
+    console.log("Form submitted:", data);
+    
+    // Show success message
+    toast.success('Thank you for your request! Our team will contact you shortly to schedule a discovery call.');
+    
+    // Reset form
+    form.reset();
+    
+    // Generate new captcha
+    const num1 = Math.floor(Math.random() * 10);
+    const num2 = Math.floor(Math.random() * 10);
+    setCaptchaValue(`${num1} + ${num2} = ?`);
+    setCaptchaAnswer((num1 + num2).toString());
   };
 
   return (
@@ -29,7 +94,7 @@ const CTASection = () => {
             <div>
               <h2 className="text-3xl font-bold mb-4">Ready to Transform Your Technical Recruitment?</h2>
               <p className="text-gray-600 mb-4">
-                Join our early access program and be among the first to experience TechLex EU. Early adopters receive exclusive benefits and help shape the future of the product.
+                Schedule a discovery call with our team to learn how TechLex EU can help your recruitment process. We'll demonstrate our 4-in-1 solution and answer any questions you may have.
               </p>
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
                 <p className="text-amber-700 text-sm mb-2">
@@ -41,82 +106,181 @@ const CTASection = () => {
               </div>
               <ul className="space-y-3 mb-6">
                 <li className="flex items-start">
-                  <CheckCircleIcon className="w-5 h-5 text-techlex-blue mt-0.5 flex-shrink-0" />
-                  <span className="ml-2">Extended free trial period</span>
+                  <CheckCircle className="w-5 h-5 text-techlex-blue mt-0.5 flex-shrink-0" />
+                  <span className="ml-2">Personalized product demonstration</span>
                 </li>
                 <li className="flex items-start">
-                  <CheckCircleIcon className="w-5 h-5 text-techlex-blue mt-0.5 flex-shrink-0" />
-                  <span className="ml-2">Priority customer support</span>
+                  <CheckCircle className="w-5 h-5 text-techlex-blue mt-0.5 flex-shrink-0" />
+                  <span className="ml-2">Custom solution tailored to your needs</span>
                 </li>
                 <li className="flex items-start">
-                  <CheckCircleIcon className="w-5 h-5 text-techlex-blue mt-0.5 flex-shrink-0" />
-                  <span className="ml-2">Influence future features</span>
+                  <CheckCircle className="w-5 h-5 text-techlex-blue mt-0.5 flex-shrink-0" />
+                  <span className="ml-2">No obligation, friendly conversation</span>
                 </li>
               </ul>
             </div>
             
             <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
-              <h3 className="font-semibold text-xl mb-4">Request Early Access</h3>
-              <form className="space-y-4" onSubmit={handleSubmit}>
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                    Full Name
-                  </label>
-                  <Input id="name" placeholder="John Smith" className="input-primary" />
-                </div>
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                    Work Email
-                  </label>
-                  <Input id="email" type="email" placeholder="john@company.com" className="input-primary" />
-                </div>
-                <div>
-                  <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">
-                    Company Name
-                  </label>
-                  <Input id="company" placeholder="Your Company" className="input-primary" />
-                </div>
-                <div>
-                  <label htmlFor="size" className="block text-sm font-medium text-gray-700 mb-1">
-                    Team Size
-                  </label>
-                  <select id="size" className="input-primary">
-                    <option value="">Select team size</option>
-                    <option value="1-5">1-5 employees</option>
-                    <option value="6-20">6-20 employees</option>
-                    <option value="21-50">21-50 employees</option>
-                    <option value="51+">51+ employees</option>
-                  </select>
-                </div>
-                <Button className="btn-primary w-full">
-                  Submit Request
-                </Button>
-                <p className="text-xs text-gray-500 text-center mt-4">
-                  By submitting, you agree to our Terms of Service and Privacy Policy.
-                </p>
-              </form>
+              <h3 className="font-semibold text-xl mb-4 flex items-center">
+                <Calendar className="w-5 h-5 mr-2 text-techlex-blue" />
+                Request a Discovery Call
+              </h3>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Full Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="John Smith" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Work Email</FormLabel>
+                        <FormControl>
+                          <Input type="email" placeholder="john@company.com" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="company"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Company Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Your Company" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="country"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Country</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Germany" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone Number</FormLabel>
+                        <FormControl>
+                          <div className="flex items-center">
+                            <Phone className="w-4 h-4 mr-2 text-gray-400" />
+                            <Input placeholder="+49 123 456 7890" {...field} />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="size"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Team Size</FormLabel>
+                        <FormControl>
+                          <select 
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                            {...field}
+                          >
+                            <option value="">Select team size</option>
+                            <option value="1-5">1-5 employees</option>
+                            <option value="6-20">6-20 employees</option>
+                            <option value="21-50">21-50 employees</option>
+                            <option value="51+">51+ employees</option>
+                          </select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="message"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Your Message</FormLabel>
+                        <FormControl>
+                          <div className="flex items-start">
+                            <MessageSquare className="w-4 h-4 mr-2 mt-2 text-gray-400" />
+                            <Textarea 
+                              placeholder="Tell us about your recruitment challenges and what you hope to achieve with TechLex EU..." 
+                              className="min-h-[100px]"
+                              {...field} 
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="captcha"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Security Check</FormLabel>
+                        <div className="flex flex-col space-y-2">
+                          <div className="bg-gray-100 p-2 rounded-md font-medium text-center">
+                            {captchaValue}
+                          </div>
+                          <FormControl>
+                            <Input placeholder="Enter the answer" {...field} />
+                          </FormControl>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-techlex-blue hover:bg-techlex-blue/90"
+                    disabled={form.formState.isSubmitting}
+                  >
+                    {form.formState.isSubmitting ? 'Submitting...' : 'Schedule Discovery Call'}
+                  </Button>
+                  
+                  <p className="text-xs text-gray-500 text-center mt-4">
+                    By submitting, you agree to our Terms of Service and Privacy Policy.
+                  </p>
+                </form>
+              </Form>
             </div>
           </div>
         </div>
       </div>
     </section>
-  );
-};
-
-const CheckCircleIcon = (props: React.SVGProps<SVGSVGElement>) => {
-  return (
-    <svg
-      {...props}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-      <polyline points="22 4 12 14.01 9 11.01" />
-    </svg>
   );
 };
 
