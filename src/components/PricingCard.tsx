@@ -2,7 +2,8 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { CheckIcon } from "lucide-react";
+import { CheckIcon, Loader2 } from "lucide-react";
+import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 
 interface PricingFeature {
   text: string;
@@ -18,6 +19,7 @@ interface PricingCardProps {
   popular?: boolean;
   ctaText?: string;
   className?: string;
+  stripePriceId?: string; // Stripe price ID for the product
 }
 
 const PricingCard = ({
@@ -28,8 +30,28 @@ const PricingCard = ({
   features,
   popular = false,
   ctaText = "Get 50% Off",
+  stripePriceId,
   className,
 }: PricingCardProps) => {
+  const { redirectToCheckout, isLoading } = useStripeCheckout();
+
+  const handleSubscribe = () => {
+    if (name === "Enterprise") {
+      // For Enterprise plan, redirect to contact page or open contact form
+      // For demo purposes, we'll use a custom price
+      redirectToCheckout({
+        productName: "Enterprise Plan",
+        customPrice: 199 // Custom price for enterprise, could be determined elsewhere
+      });
+    } else {
+      // For other plans, use the Stripe price ID
+      redirectToCheckout({
+        priceId: stripePriceId,
+        productName: name
+      });
+    }
+  };
+
   return (
     <div
       className={cn(
@@ -82,8 +104,17 @@ const PricingCard = ({
         
         <Button
           className={popular ? "btn-primary w-full" : "btn-secondary w-full"}
+          onClick={handleSubscribe}
+          disabled={isLoading}
         >
-          {ctaText}
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Processing...
+            </>
+          ) : (
+            ctaText
+          )}
         </Button>
       </div>
     </div>

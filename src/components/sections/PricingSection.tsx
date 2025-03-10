@@ -32,6 +32,7 @@ const PricingSection = () => {
             ]}
             ctaText="Get 50% Off Early Access"
             className="animate-fade-in"
+            stripePriceId="price_1Oew4VxxxStarter"
           />
           <PricingCard
             name="Pro"
@@ -50,6 +51,7 @@ const PricingSection = () => {
             popular={true}
             ctaText="Get 50% Off Early Access"
             className="animate-fade-in-slow"
+            stripePriceId="price_1Oew5VxxxPro"
           />
           <PricingCard
             name="Enterprise"
