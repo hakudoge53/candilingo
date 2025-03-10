@@ -71,6 +71,7 @@ serve(async (req) => {
     // Add coupon if provided
     if (couponId) {
       console.log(`Applying coupon ID: ${couponId}`);
+      // @ts-ignore - Add type assertion to handle the discounts property
       sessionOptions.discounts = [{ coupon: couponId }];
     }
 
