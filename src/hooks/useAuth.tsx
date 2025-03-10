@@ -4,10 +4,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export type User = {
+  id?: string;
   name: string;
   email: string;
   membership_tier?: string;
   status?: string;
+  preferred_language?: string;
+  extension_settings?: Record<string, any>;
 };
 
 export const useAuth = () => {
@@ -32,14 +35,18 @@ export const useAuth = () => {
         
         if (profileData) {
           setActiveUser({
+            id: data.session.user.id,
             name: profileData.name || data.session.user.email?.split('@')[0] || 'User',
             email: profileData.email || data.session.user.email || '',
             membership_tier: profileData.membership_tier,
-            status: profileData.status
+            status: profileData.status,
+            preferred_language: profileData.preferred_language,
+            extension_settings: profileData.extension_settings
           });
         } else {
           // Fallback if profile not found
           setActiveUser({
+            id: data.session.user.id,
             name: data.session.user.email?.split('@')[0] || 'User',
             email: data.session.user.email || '',
           });
@@ -63,13 +70,17 @@ export const useAuth = () => {
         
         if (profileData) {
           setActiveUser({
+            id: session.user.id,
             name: profileData.name || session.user.email?.split('@')[0] || 'User',
             email: profileData.email || session.user.email || '',
             membership_tier: profileData.membership_tier,
-            status: profileData.status
+            status: profileData.status,
+            preferred_language: profileData.preferred_language,
+            extension_settings: profileData.extension_settings
           });
         } else {
           setActiveUser({
+            id: session.user.id,
             name: session.user.email?.split('@')[0] || 'User',
             email: session.user.email || '',
           });

@@ -3,6 +3,8 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { User } from '@/hooks/useAuth';
+import { Link } from 'react-router-dom';
+import { LayoutDashboard } from 'lucide-react';
 
 interface UserProfileProps {
   user: User;
@@ -36,6 +38,12 @@ const UserProfile = ({ user, onLogout, isLoading }: UserProfileProps) => {
             <li>Interview Preparation Materials</li>
           </ul>
         </div>
+        
+        <Link to="/dashboard" className="block w-full">
+          <Button className="w-full bg-techlex-blue flex items-center justify-center">
+            <LayoutDashboard className="mr-2 h-4 w-4" /> Go to Dashboard
+          </Button>
+        </Link>
       </CardContent>
       <CardFooter>
         <Button onClick={onLogout} variant="outline" className="w-full" disabled={isLoading}>
