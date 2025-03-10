@@ -1,5 +1,6 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,10 +10,37 @@ import CRMIntegration from "@/components/marketing/CRMIntegration";
 import SocialMediaIntegration from "@/components/marketing/SocialMediaIntegration";
 import ZapierIntegration from "@/components/marketing/ZapierIntegration";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 const MarketingIntegrations = () => {
   const [activeTab, setActiveTab] = useState("analytics");
-  const { toast } = useToast();
+  const { toast: uiToast } = useToast();
+  const { isLoggedIn, activeUser, isLoading } = useAuth();
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    // Check if user is logged in and an admin
+    if (!isLoading) {
+      if (!isLoggedIn) {
+        toast.error("You need to be logged in to access this page");
+        navigate("/");
+        return;
+      }
+      
+      // Assuming 'admin' is the role/membership tier for admin access
+      if (activeUser?.membership_tier !== 'admin') {
+        toast.error("You don't have permission to access this page");
+        navigate("/");
+        return;
+      }
+    }
+  }, [isLoggedIn, activeUser, isLoading, navigate]);
+
+  // Show nothing while checking authentication
+  if (isLoading || !isLoggedIn || activeUser?.membership_tier !== 'admin') {
+    return null;
+  }
   
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">

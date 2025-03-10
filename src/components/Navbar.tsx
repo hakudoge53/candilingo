@@ -3,10 +3,14 @@ import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Link } from 'react-router-dom';
+import { useAuth } from "@/hooks/useAuth";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { isLoggedIn, activeUser } = useAuth();
+  
+  const isAdmin = activeUser?.membership_tier === 'admin';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -43,7 +47,9 @@ const Navbar = () => {
             <a href="#features" className="font-medium text-gray-700 hover:text-techlex-blue transition-colors">Features</a>
             <a href="#how-it-works" className="font-medium text-gray-700 hover:text-techlex-blue transition-colors">How It Works</a>
             <a href="#pricing" className="font-medium text-gray-700 hover:text-techlex-blue transition-colors">Pricing</a>
-            <Link to="/marketing" className="font-medium text-gray-700 hover:text-techlex-blue transition-colors">Marketing</Link>
+            {isLoggedIn && isAdmin && (
+              <Link to="/marketing" className="font-medium text-gray-700 hover:text-techlex-blue transition-colors">Marketing</Link>
+            )}
             <a href="#contact" className="font-medium text-gray-700 hover:text-techlex-blue transition-colors">Contact</a>
             <Button className="btn-primary">
               Request Early Access
@@ -108,13 +114,15 @@ const Navbar = () => {
               >
                 Pricing
               </a>
-              <Link 
-                to="/marketing" 
-                className="font-medium text-gray-700 hover:text-techlex-blue transition-colors px-2 py-1.5"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Marketing
-              </Link>
+              {isLoggedIn && isAdmin && (
+                <Link 
+                  to="/marketing" 
+                  className="font-medium text-gray-700 hover:text-techlex-blue transition-colors px-2 py-1.5"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Marketing
+                </Link>
+              )}
               <a 
                 href="#contact" 
                 className="font-medium text-gray-700 hover:text-techlex-blue transition-colors px-2 py-1.5"
