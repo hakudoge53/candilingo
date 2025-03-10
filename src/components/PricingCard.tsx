@@ -25,7 +25,7 @@ const PricingCard = ({
   description,
   features,
   popular = false,
-  ctaText = "Get Started",
+  ctaText = "Get 50% Off",
   className,
 }: PricingCardProps) => {
   return (

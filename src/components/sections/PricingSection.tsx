@@ -1,3 +1,4 @@
+
 import PricingCard from "@/components/PricingCard";
 import ROICalculator from "@/components/ROICalculator";
 
@@ -28,7 +29,7 @@ const PricingSection = () => {
               { text: "Team sharing features", included: false },
               { text: "API access", included: false },
             ]}
-            ctaText="Start Free Trial"
+            ctaText="Get 50% Off Early Access"
             className="animate-fade-in"
           />
           <PricingCard
@@ -45,7 +46,7 @@ const PricingSection = () => {
               { text: "API access", included: false },
             ]}
             popular={true}
-            ctaText="Start Free Trial"
+            ctaText="Get 50% Off Early Access"
             className="animate-fade-in-slow"
           />
           <PricingCard
