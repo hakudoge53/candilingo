@@ -1,10 +1,11 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import OrganizationPanel from './OrganizationPanel';
 import GlossaryPanel from './GlossaryPanel';
 import MembersPanel from './MembersPanel';
+import DashboardTour from './DashboardTour';
 import { useOrganizations } from '@/hooks/useOrganizations';
 import { useGlossaries } from '@/hooks/useGlossaries';
 import DashboardHeader from './DashboardHeader';
@@ -12,6 +13,7 @@ import { Loader2 } from 'lucide-react';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('organizations');
+  const [showTour, setShowTour] = useState(false);
   const { 
     organizations, 
     activeOrganization, 
@@ -39,6 +41,15 @@ const Dashboard = () => {
   } = useGlossaries(activeOrganization?.id);
 
   const isLoading = isOrgLoading || isGlossaryLoading;
+
+  // Check if this is a new user (first visit to the dashboard)
+  useEffect(() => {
+    const hasSeenTour = localStorage.getItem('hasSeenDashboardTour');
+    if (!hasSeenTour && !isLoading) {
+      setShowTour(true);
+      localStorage.setItem('hasSeenDashboardTour', 'true');
+    }
+  }, [isLoading]);
 
   return (
     <div className="w-full">
@@ -121,6 +132,9 @@ const Dashboard = () => {
           </TabsContent>
         </Tabs>
       )}
+      
+      {/* Dashboard Tour for new users */}
+      {showTour && <DashboardTour />}
     </div>
   );
 };
