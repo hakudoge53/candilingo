@@ -75,12 +75,13 @@ const PricingSection = () => {
               { text: "Company insights", included: true },
               { text: "Unlimited custom glossaries", included: true },
               { text: "Team sharing & admin features", included: true },
+              { text: "On-the-job learning & Onboarding", included: true },
               { text: "API access & integrations", included: true },
             ]}
             ctaText="Contact Sales"
             className="animate-fade-in-slower"
             couponId="50_PERCENT_OFF"
-            trialPeriod={true}
+            trialPeriod={false}
           />
         </div>
 

@@ -9,6 +9,7 @@ type CheckoutOptions = {
   productName?: string;
   customPrice?: number;
   couponId?: string;
+  trialPeriod?: boolean;
 }
 
 export const useStripeCheckout = () => {

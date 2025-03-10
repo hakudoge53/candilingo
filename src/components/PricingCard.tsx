@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -48,21 +47,24 @@ const PricingCard = ({
       redirectToCheckout({
         productName: "Enterprise Plan",
         customPrice: 199, // Custom price for enterprise
-        couponId
+        couponId,
+        trialPeriod
       });
     } else if (stripePriceId) {
       // If a specific price ID is provided, use it
       redirectToCheckout({
         priceId: stripePriceId,
         productName: name,
-        couponId
+        couponId,
+        trialPeriod
       });
     } else if (stripeProductId) {
       // If a product ID is provided, let the backend find the price
       redirectToCheckout({
         productId: stripeProductId,
         productName: name,
-        couponId
+        couponId,
+        trialPeriod
       });
     } else {
       toast.error("No price configuration found for this plan");

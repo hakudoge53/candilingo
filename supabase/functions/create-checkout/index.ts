@@ -19,7 +19,7 @@ serve(async (req) => {
   }
   
   try {
-    const { priceId, productId, productName, customPrice, couponId } = await req.json();
+    const { priceId, productId, productName, customPrice, couponId, trialPeriod = true } = await req.json();
     
     let lineItems;
     
@@ -66,10 +66,14 @@ serve(async (req) => {
       mode: 'subscription',
       success_url: `${baseUrl}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/#pricing`,
-      subscription_data: {
-        trial_period_days: 30, // Add a 30-day trial period
-      },
     };
+    
+    // Add trial period only if explicitly requested (not for Enterprise plan)
+    if (trialPeriod) {
+      sessionParams.subscription_data = {
+        trial_period_days: 30, // Add a 30-day trial period
+      };
+    }
     
     // Add coupon to session if provided and exists in Stripe
     if (couponId) {

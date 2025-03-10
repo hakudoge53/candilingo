@@ -10,9 +10,43 @@ const FeaturesSection = () => {
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             Simplify Technical Recruitment
           </h2>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-gray-600 mb-8">
             TechLex EU empowers recruitment professionals to understand and evaluate technical candidates with confidence.
           </p>
+          
+          <div className="bg-techlex-blue bg-opacity-5 rounded-xl p-6 mb-10">
+            <h3 className="text-xl font-bold mb-4 text-techlex-blue">4-in-1 Complete Recruitment Solution</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-white p-4 rounded-lg shadow-sm border border-techlex-blue border-opacity-20">
+                <div className="flex items-center mb-2">
+                  <FileText className="w-5 h-5 text-techlex-blue mr-2" />
+                  <h4 className="font-semibold">CV Reader</h4>
+                </div>
+                <p className="text-sm text-gray-600">Analyze and understand technical CVs with smart term recognition</p>
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow-sm border border-techlex-blue border-opacity-20">
+                <div className="flex items-center mb-2">
+                  <Search className="w-5 h-5 text-techlex-blue mr-2" />
+                  <h4 className="font-semibold">Web Extension</h4>
+                </div>
+                <p className="text-sm text-gray-600">Get instant explanations on any technical content online</p>
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow-sm border border-techlex-blue border-opacity-20">
+                <div className="flex items-center mb-2">
+                  <BookOpen className="w-5 h-5 text-techlex-blue mr-2" />
+                  <h4 className="font-semibold">Public & Company Wikis</h4>
+                </div>
+                <p className="text-sm text-gray-600">Access and build knowledge bases with shareable glossaries</p>
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow-sm border border-techlex-blue border-opacity-20">
+                <div className="flex items-center mb-2">
+                  <BrainCircuit className="w-5 h-5 text-techlex-blue mr-2" />
+                  <h4 className="font-semibold">Recruitment Assistant</h4>
+                </div>
+                <p className="text-sm text-gray-600">AI-powered features to boost your recruitment process</p>
+              </div>
+            </div>
+          </div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
@@ -43,7 +77,7 @@ const FeaturesSection = () => {
           <FeatureCard
             title="Multilingual Support"
             description="Understand technical terminology across multiple European languages for international recruitment."
-            icon={<Languages className="w-6 h-6" />}
+            icon={<Languages className="w-5 h-5" />}
             className="animate-fade-in-slow"
           />
           <FeatureCard
