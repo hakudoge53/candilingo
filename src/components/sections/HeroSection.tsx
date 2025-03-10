@@ -4,24 +4,27 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from 'sonner';
 import HeroImageSection from "@/components/HeroImageSection";
+import { MailIcon } from "lucide-react";
 
 const HeroSection = () => {
   const [email, setEmail] = useState('');
-  const [seatsRemaining, setSeatsRemaining] = useState(200);
+  const [confirmedLicenses, setConfirmedLicenses] = useState(45); // Starting with 45 confirmed licenses
+  const [seatsRemaining, setSeatsRemaining] = useState(200 - 45); // Calculate remaining seats
 
   useEffect(() => {
-    // This is where we would fetch the actual remaining seats count
+    // This is where we would fetch the actual confirmed licenses count
     // For now, we're using a static value
-  }, []);
+    setSeatsRemaining(200 - confirmedLicenses);
+  }, [confirmedLicenses]);
 
-  const handleEarlyAccessRequest = (e: React.FormEvent) => {
+  const handleNewsletterSignup = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
       toast.error('Please enter your email address');
       return;
     }
     
-    toast.success('Thank you for your interest! We\'ll be in touch soon about confirming your spot.');
+    toast.success('Thank you for subscribing to our newsletter! We\'ll keep you updated on our progress.');
     setEmail('');
   };
 
@@ -44,7 +47,7 @@ const HeroSection = () => {
             <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed">
               Instantly understand tech terms in CVs, PDFs, and web content. Perfect for recruiters to speed up candidate evaluation.
             </p>
-            <form onSubmit={handleEarlyAccessRequest} className="flex flex-col sm:flex-row gap-3 mb-4">
+            <form onSubmit={handleNewsletterSignup} className="flex flex-col sm:flex-row gap-3 mb-4">
               <Input
                 type="email"
                 placeholder="Enter your email address"
@@ -53,13 +56,14 @@ const HeroSection = () => {
                 className="input-primary"
               />
               <Button type="submit" className="btn-primary whitespace-nowrap">
-                Request Early Access
+                <MailIcon className="w-4 h-4 mr-2" />
+                Newsletter
               </Button>
             </form>
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
               <p className="text-amber-700 text-sm">
-                <strong>Early Access Campaign:</strong> We need 200 confirmed seats to start development. 
-                Currently {seatsRemaining} seats remaining to reach our goal!
+                <strong>Early Access Campaign:</strong> First 200 seats will get 50% discount on their first year! 
+                Currently {confirmedLicenses} licenses confirmed, only {seatsRemaining} seats remaining with discount!
               </p>
             </div>
           </div>
