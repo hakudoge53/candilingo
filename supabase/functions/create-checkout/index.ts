@@ -59,8 +59,8 @@ serve(async (req) => {
       throw new Error('Either priceId, productId or customPrice must be provided');
     }
 
-    // Create checkout session options
-    const sessionOptions = {
+    // Create checkout session options with proper TypeScript interface
+    const sessionOptions: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'subscription',
@@ -68,10 +68,9 @@ serve(async (req) => {
       cancel_url: `${baseUrl}/#pricing`,
     };
 
-    // Add coupon if provided
+    // Add coupon if provided - using the proper Stripe API format
     if (couponId) {
       console.log(`Applying coupon ID: ${couponId}`);
-      // @ts-ignore - Add type assertion to handle the discounts property
       sessionOptions.discounts = [{ coupon: couponId }];
     }
 
