@@ -68,10 +68,22 @@ serve(async (req) => {
       cancel_url: `${baseUrl}/#pricing`,
     };
     
-    // Add coupon to session if provided
+    // Add coupon to session if provided and exists in Stripe
     if (couponId) {
-      console.log(`Adding coupon: ${couponId} to checkout session`);
-      sessionParams.discounts = [{ coupon: couponId }];
+      try {
+        // First check if the coupon exists
+        console.log(`Checking if coupon: ${couponId} exists`);
+        await stripe.coupons.retrieve(couponId);
+        
+        // If we get here, the coupon exists, so add it to the session
+        console.log(`Adding coupon: ${couponId} to checkout session`);
+        sessionParams.discounts = [{ coupon: couponId }];
+      } catch (error) {
+        // If coupon doesn't exist, log the error but continue without applying discount
+        console.error(`Coupon error: ${error.message}`);
+        console.log(`Continuing checkout without coupon: ${couponId}`);
+        // We don't rethrow here to allow checkout to continue without the coupon
+      }
     }
 
     // Create Stripe checkout session
