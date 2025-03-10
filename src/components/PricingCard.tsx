@@ -12,6 +12,7 @@ interface PricingFeature {
 interface PricingCardProps {
   name: string;
   price: string;
+  originalPrice?: string; // Added for showing the original price
   description: string;
   features: PricingFeature[];
   popular?: boolean;
@@ -22,6 +23,7 @@ interface PricingCardProps {
 const PricingCard = ({
   name,
   price,
+  originalPrice,
   description,
   features,
   popular = false,
@@ -52,8 +54,18 @@ const PricingCard = ({
         <p className="text-gray-600 mb-5">{description}</p>
         
         <div className="mb-6">
-          <span className="text-3xl font-bold">{price}</span>
-          {price !== "Custom" && <span className="text-gray-500 ml-1">/month</span>}
+          {originalPrice && price !== "Custom" ? (
+            <div className="flex items-center">
+              <span className="text-xl text-gray-500 line-through mr-2">{originalPrice}</span>
+              <span className="text-3xl font-bold text-techlex-blue">{price}</span>
+              {price !== "Custom" && <span className="text-gray-500 ml-1">/month</span>}
+            </div>
+          ) : (
+            <>
+              <span className="text-3xl font-bold">{price}</span>
+              {price !== "Custom" && <span className="text-gray-500 ml-1">/month</span>}
+            </>
+          )}
         </div>
         
         <ul className="space-y-3 mb-8">
