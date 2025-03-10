@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { CheckIcon, Loader2 } from "lucide-react";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
+import { toast } from "sonner";
 
 interface PricingFeature {
   text: string;
