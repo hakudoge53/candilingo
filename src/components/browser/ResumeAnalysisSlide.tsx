@@ -16,7 +16,7 @@ const ResumeAnalysisSlide = () => {
         title="Spring Boot" 
         description="An open-source Java-based framework used to create microservice applications. It provides pre-configured settings for a fast development environment."
         position="right"
-        className="top-[72px] -right-1 md:right-10 w-72 z-10"
+        className="top-[110px] -right-1 md:right-10 w-72 z-10"
       />
     </div>
   );
