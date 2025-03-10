@@ -3,6 +3,9 @@ import { User } from '@/hooks/useAuth';
 
 export type UserRole = 'admin' | 'manager' | 'team_lead' | 'employee' | 'consultant';
 
+// Define literal types for member statuses
+export type MemberStatus = 'active' | 'pending' | 'declined';
+
 export interface Organization {
   id: string;
   name: string;
@@ -16,14 +19,19 @@ export interface OrganizationMember {
   organization_id: string;
   user_id: string;
   role: UserRole;
-  invited_email?: string;
-  invited_name?: string;
-  invitation_token?: string;
-  status: 'pending' | 'active' | 'declined';
+  status: MemberStatus;
   created_at: string;
   updated_at: string;
+  invitation_token?: string | null;
+  invited_email?: string | null;
+  invited_name?: string | null;
   // Joined data
-  user?: User;
+  user?: {
+    name?: string;
+    email?: string;
+    membership_tier?: string;
+    status?: string;
+  };
 }
 
 export interface Glossary {
