@@ -45,9 +45,11 @@ const Navbar = () => {
             <a href="#how-it-works" className="font-medium text-gray-700 hover:text-techlex-blue transition-colors">How It Works</a>
             <a href="#pricing" className="font-medium text-gray-700 hover:text-techlex-blue transition-colors">Pricing</a>
             <a href="#contact" className="font-medium text-gray-700 hover:text-techlex-blue transition-colors">Contact</a>
-            <Button className="btn-primary">
-              Request Early Access
-            </Button>
+            <Link to="/customer-portal">
+              <Button className="btn-primary">
+                Customer Login
+              </Button>
+            </Link>
           </div>
           
           {/* Mobile menu button */}
@@ -115,9 +117,11 @@ const Navbar = () => {
               >
                 Contact
               </a>
-              <Button className="btn-primary" onClick={() => setIsMobileMenuOpen(false)}>
-                Request Early Access
-              </Button>
+              <Link to="/customer-portal" onClick={() => setIsMobileMenuOpen(false)}>
+                <Button className="btn-primary w-full">
+                  Customer Login
+                </Button>
+              </Link>
             </div>
           </div>
         )}
