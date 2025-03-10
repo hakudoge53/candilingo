@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Organization, OrganizationMember, UserRole } from '@/types/organization';
+import { Organization, OrganizationMember, UserRole, MemberStatus } from '@/types/organization';
 import { useAuth } from './useAuth';
 
 export const useOrganizations = () => {
@@ -66,8 +66,8 @@ export const useOrganizations = () => {
         .insert([{
           organization_id: data.id,
           user_id: activeUser?.id,
-          role: 'admin',
-          status: 'active'
+          role: 'admin' as UserRole,
+          status: 'active' as MemberStatus
         }]);
       
       if (memberError) throw memberError;
@@ -143,7 +143,7 @@ export const useOrganizations = () => {
           invited_name: name,
           role,
           invitation_token: token,
-          status: 'pending' as const
+          status: 'pending' as MemberStatus
         })
         .select()
         .single();
