@@ -23,6 +23,7 @@ interface PricingCardProps {
   stripePriceId?: string;
   stripeProductId?: string;
   couponId?: string;
+  trialPeriod?: boolean;
 }
 
 const PricingCard = ({
@@ -36,6 +37,7 @@ const PricingCard = ({
   stripePriceId,
   stripeProductId,
   couponId,
+  trialPeriod = false,
   className,
 }: PricingCardProps) => {
   const { redirectToCheckout, isLoading } = useStripeCheckout();
@@ -102,6 +104,12 @@ const PricingCard = ({
               <span className="text-3xl font-bold">{price}</span>
               {price !== "Custom" && <span className="text-gray-500 ml-1">/month</span>}
             </>
+          )}
+          
+          {trialPeriod && (
+            <div className="mt-2 text-sm text-techlex-blue font-medium">
+              1-month free trial, billed after trial ends
+            </div>
           )}
         </div>
         

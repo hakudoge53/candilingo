@@ -10,7 +10,7 @@ const Footer = () => {
           <div className="md:col-span-1">
             <h3 className="text-lg font-semibold mb-3">TechLex</h3>
             <p className="text-sm text-gray-600">
-              Bridging the gap between legal professionals and technology expertise.
+              Decoding technical jargon to help recruiters make better technical hiring decisions.
             </p>
           </div>
           

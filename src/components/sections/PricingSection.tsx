@@ -10,8 +10,11 @@ const PricingSection = () => {
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             Simple, Clear Pricing
           </h2>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-gray-600 mb-2">
             Choose the plan that fits your team's needs. Pricing is per account.
+          </p>
+          <p className="text-md text-techlex-blue font-medium">
+            Start with a 1-month free trial. No billing until your trial ends.
           </p>
         </div>
         
@@ -30,10 +33,11 @@ const PricingSection = () => {
               { text: "Team sharing features", included: false },
               { text: "API access", included: false },
             ]}
-            ctaText="Get 50% Off Early Access"
+            ctaText="Start Free Trial"
             className="animate-fade-in"
             stripePriceId="price_1R15uyLRETKD7zlDuGxrO9ol"
             couponId="50_PERCENT_OFF"
+            trialPeriod={true}
           />
           <PricingCard
             name="Pro"
@@ -52,10 +56,11 @@ const PricingSection = () => {
               { text: "API access", included: false },
             ]}
             popular={true}
-            ctaText="Get 50% Off Early Access"
+            ctaText="Start Free Trial"
             className="animate-fade-in-slow"
             stripePriceId="price_1R15yGLRETKD7zlDSrCkpFFt"
             couponId="50_PERCENT_OFF"
+            trialPeriod={true}
           />
           <PricingCard
             name="Enterprise"
@@ -75,6 +80,7 @@ const PricingSection = () => {
             ctaText="Contact Sales"
             className="animate-fade-in-slower"
             couponId="50_PERCENT_OFF"
+            trialPeriod={true}
           />
         </div>
 

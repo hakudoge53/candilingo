@@ -33,10 +33,10 @@ const CTASection = () => {
               </p>
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
                 <p className="text-amber-700 text-sm mb-2">
-                  <strong>Early Access Campaign:</strong> We need 200 confirmed seats to start development.
+                  <strong>Early Access Campaign:</strong> Get 50% off for the first year as an early bird.
                 </p>
                 <p className="text-amber-700 text-sm font-bold">
-                  Currently {seatsRemaining} seats remaining!
+                  All plans include a 1-month free trial!
                 </p>
               </div>
               <ul className="space-y-3 mb-6">

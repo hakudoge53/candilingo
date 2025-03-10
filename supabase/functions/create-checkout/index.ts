@@ -66,6 +66,9 @@ serve(async (req) => {
       mode: 'subscription',
       success_url: `${baseUrl}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/#pricing`,
+      subscription_data: {
+        trial_period_days: 30, // Add a 30-day trial period
+      },
     };
     
     // Add coupon to session if provided and exists in Stripe
