@@ -2,6 +2,9 @@
 import PricingCard from "@/components/PricingCard";
 import ROICalculator from "@/components/ROICalculator";
 
+// 50% discount coupon ID - You'll need to create this in your Stripe dashboard
+const EARLY_ACCESS_COUPON_ID = "early-access-50";
+
 const PricingSection = () => {
   return (
     <section id="pricing" className="section-padding">
@@ -33,6 +36,7 @@ const PricingSection = () => {
             ctaText="Get 50% Off Early Access"
             className="animate-fade-in"
             stripeProductId="prod_RuvmC3BnYFNoaS"
+            couponId={EARLY_ACCESS_COUPON_ID}
           />
           <PricingCard
             name="Pro"
@@ -52,6 +56,7 @@ const PricingSection = () => {
             ctaText="Get 50% Off Early Access"
             className="animate-fade-in-slow"
             stripeProductId="prod_RuvpP40QdgkExF"
+            couponId={EARLY_ACCESS_COUPON_ID}
           />
           <PricingCard
             name="Enterprise"
