@@ -41,7 +41,7 @@ export const useAuth = () => {
             membership_tier: profileData.membership_tier,
             status: profileData.status,
             preferred_language: profileData.preferred_language,
-            extension_settings: profileData.extension_settings
+            extension_settings: profileData.extension_settings as Record<string, any> || {}
           });
         } else {
           // Fallback if profile not found
@@ -76,7 +76,7 @@ export const useAuth = () => {
             membership_tier: profileData.membership_tier,
             status: profileData.status,
             preferred_language: profileData.preferred_language,
-            extension_settings: profileData.extension_settings
+            extension_settings: profileData.extension_settings as Record<string, any> || {}
           });
         } else {
           setActiveUser({

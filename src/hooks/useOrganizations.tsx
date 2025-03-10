@@ -113,7 +113,7 @@ export const useOrganizations = () => {
           membership_tier: member.user.membership_tier,
           status: member.user.status
         } : undefined
-      }));
+      })) as OrganizationMember[];
       
       setMembers(formattedMembers);
     } catch (error: any) {
@@ -136,22 +136,24 @@ export const useOrganizations = () => {
       
       const { data, error } = await supabase
         .from('organization_members')
-        .insert([{
+        .insert({
           organization_id: organizationId,
+          user_id: '00000000-0000-0000-0000-000000000000', // Placeholder until user accepts invitation
           invited_email: email,
           invited_name: name,
           role,
-          invitation_token: token
-        }])
+          invitation_token: token,
+          status: 'pending' as const
+        })
         .select()
         .single();
       
       if (error) throw error;
       
-      setMembers(prev => [data, ...prev]);
+      setMembers(prev => [data as OrganizationMember, ...prev]);
       
       toast.success("Invitation sent successfully");
-      return data;
+      return data as OrganizationMember;
     } catch (error: any) {
       console.error("Error inviting member:", error);
       toast.error("Failed to send invitation");
