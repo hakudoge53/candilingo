@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,8 +7,8 @@ import { MailIcon } from "lucide-react";
 
 const HeroSection = () => {
   const [email, setEmail] = useState('');
-  const [confirmedLicenses, setConfirmedLicenses] = useState(45); // Starting with 45 confirmed licenses
-  const [seatsRemaining, setSeatsRemaining] = useState(200 - 45); // Calculate remaining seats
+  const [confirmedLicenses, setConfirmedLicenses] = useState(1); // Starting with 1 confirmed license
+  const [seatsRemaining, setSeatsRemaining] = useState(200 - 1); // Calculate remaining seats
 
   useEffect(() => {
     // This is where we would fetch the actual confirmed licenses count
@@ -63,7 +62,7 @@ const HeroSection = () => {
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
               <p className="text-amber-700 text-sm">
                 <strong>Early Access Campaign:</strong> First 200 seats will get 50% discount on their first year! 
-                Currently {confirmedLicenses} licenses confirmed, only {seatsRemaining} seats remaining with discount!
+                Currently {confirmedLicenses} license confirmed, only {seatsRemaining} seats remaining with discount!
               </p>
             </div>
           </div>
