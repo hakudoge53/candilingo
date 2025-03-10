@@ -32,7 +32,8 @@ const PricingSection = () => {
             ]}
             ctaText="Get 50% Off Early Access"
             className="animate-fade-in"
-            stripeProductId="prod_RuvmC3BnYFNoaS"
+            stripePriceId="price_1R15uyLRETKD7zlDuGxrO9ol"
+            couponId="50_PERCENT_OFF"
           />
           <PricingCard
             name="Pro"
@@ -51,7 +52,8 @@ const PricingSection = () => {
             popular={true}
             ctaText="Get 50% Off Early Access"
             className="animate-fade-in-slow"
-            stripeProductId="prod_RuvpP40QdgkExF"
+            stripePriceId="price_1R15yGLRETKD7zlDSrCkpFFt"
+            couponId="50_PERCENT_OFF"
           />
           <PricingCard
             name="Enterprise"
@@ -68,6 +70,7 @@ const PricingSection = () => {
             ]}
             ctaText="Contact Sales"
             className="animate-fade-in-slower"
+            couponId="50_PERCENT_OFF"
           />
         </div>
 
