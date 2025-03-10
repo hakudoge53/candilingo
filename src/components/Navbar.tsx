@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -29,12 +30,12 @@ const Navbar = () => {
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <div className="flex items-center">
+            <Link to="/" className="flex items-center">
               <div className="h-10 w-10 rounded-md bg-techlex-blue text-white flex items-center justify-center mr-2 animate-pulse-subtle">
                 <span className="font-bold text-lg">T</span>
               </div>
               <span className="font-bold text-xl hidden sm:inline-block">TechLex EU</span>
-            </div>
+            </Link>
           </div>
           
           {/* Desktop menu */}
@@ -42,6 +43,7 @@ const Navbar = () => {
             <a href="#features" className="font-medium text-gray-700 hover:text-techlex-blue transition-colors">Features</a>
             <a href="#how-it-works" className="font-medium text-gray-700 hover:text-techlex-blue transition-colors">How It Works</a>
             <a href="#pricing" className="font-medium text-gray-700 hover:text-techlex-blue transition-colors">Pricing</a>
+            <Link to="/marketing" className="font-medium text-gray-700 hover:text-techlex-blue transition-colors">Marketing</Link>
             <a href="#contact" className="font-medium text-gray-700 hover:text-techlex-blue transition-colors">Contact</a>
             <Button className="btn-primary">
               Request Early Access
@@ -106,6 +108,13 @@ const Navbar = () => {
               >
                 Pricing
               </a>
+              <Link 
+                to="/marketing" 
+                className="font-medium text-gray-700 hover:text-techlex-blue transition-colors px-2 py-1.5"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Marketing
+              </Link>
               <a 
                 href="#contact" 
                 className="font-medium text-gray-700 hover:text-techlex-blue transition-colors px-2 py-1.5"
