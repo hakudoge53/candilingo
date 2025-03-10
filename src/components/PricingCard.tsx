@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { CheckIcon, Loader2 } from "lucide-react";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
-import { toast } from "sonner";
 
 interface PricingFeature {
   text: string;
@@ -22,7 +21,6 @@ interface PricingCardProps {
   className?: string;
   stripePriceId?: string;
   stripeProductId?: string;
-  couponId?: string;
 }
 
 const PricingCard = ({
@@ -35,7 +33,6 @@ const PricingCard = ({
   ctaText = "Get 50% Off",
   stripePriceId,
   stripeProductId,
-  couponId,
   className,
 }: PricingCardProps) => {
   const { redirectToCheckout, isLoading } = useStripeCheckout();
@@ -45,22 +42,19 @@ const PricingCard = ({
       // For Enterprise plan, use a custom price
       redirectToCheckout({
         productName: "Enterprise Plan",
-        customPrice: 199, // Custom price for enterprise
-        couponId
+        customPrice: 199 // Custom price for enterprise
       });
     } else if (stripePriceId) {
       // If a specific price ID is provided, use it
       redirectToCheckout({
         priceId: stripePriceId,
-        productName: name,
-        couponId
+        productName: name
       });
     } else if (stripeProductId) {
       // If a product ID is provided, let the backend find the price
       redirectToCheckout({
         productId: stripeProductId,
-        productName: name,
-        couponId
+        productName: name
       });
     } else {
       toast.error("No price configuration found for this plan");

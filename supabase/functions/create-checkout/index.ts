@@ -19,7 +19,7 @@ serve(async (req) => {
   }
   
   try {
-    const { priceId, productId, productName, customPrice, couponId } = await req.json();
+    const { priceId, productId, productName, customPrice } = await req.json();
     
     let lineItems;
     
@@ -59,23 +59,14 @@ serve(async (req) => {
       throw new Error('Either priceId, productId or customPrice must be provided');
     }
 
-    // Create checkout session options with proper TypeScript interface
-    const sessionOptions: Stripe.Checkout.SessionCreateParams = {
+    // Create Stripe checkout session
+    const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'subscription',
       success_url: `${baseUrl}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/#pricing`,
-    };
-
-    // Add coupon if provided - using the proper Stripe API format
-    if (couponId) {
-      console.log(`Applying coupon ID: ${couponId}`);
-      sessionOptions.discounts = [{ coupon: couponId }];
-    }
-
-    // Create Stripe checkout session
-    const session = await stripe.checkout.sessions.create(sessionOptions);
+    });
 
     return new Response(
       JSON.stringify({ 
