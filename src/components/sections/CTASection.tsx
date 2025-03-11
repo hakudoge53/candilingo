@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import CTAContent from './CTAContent';
 import { Button } from "@/components/ui/button";
+import ContactDialog from "@/components/ContactDialog";
 
 const CTASection = () => {
   const [seatsRemaining, setSeatsRemaining] = useState(200);
@@ -32,13 +33,7 @@ const CTASection = () => {
                 Start Your Free Trial
               </Button>
               
-              <Button 
-                variant="outline"
-                className="w-full sm:w-auto border-techlex-blue text-techlex-blue hover:bg-techlex-blue/10 text-lg py-6 px-8"
-                onClick={() => window.location.href = 'mailto:enterprise@highlighthire.com'}
-              >
-                Enterprise Contact
-              </Button>
+              <ContactDialog />
             </div>
           </div>
         </div>
