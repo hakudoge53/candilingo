@@ -1,7 +1,7 @@
-
 import PricingCard from "@/components/PricingCard";
 import ROICalculator from "@/components/ROICalculator";
 import { Button } from "@/components/ui/button";
+import { CheckCircle } from "lucide-react";
 
 const PricingSection = () => {
   return (
