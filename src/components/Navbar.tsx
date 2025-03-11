@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Link } from 'react-router-dom';
-import { useAuth } from "@/hooks/useAuth";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -33,9 +32,9 @@ const Navbar = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
               <div className="h-10 w-10 rounded-md bg-techlex-blue text-white flex items-center justify-center mr-2 animate-pulse-subtle">
-                <span className="font-bold text-lg">T</span>
+                <span className="font-bold text-lg">H</span>
               </div>
-              <span className="font-bold text-xl hidden sm:inline-block">TechLex EU</span>
+              <span className="font-bold text-xl hidden sm:inline-block">HighlightHire</span>
             </Link>
           </div>
           

@@ -18,6 +18,8 @@ const Index = () => {
 
   useEffect(() => {
     setIsLoaded(true);
+    // Update page title to reflect the new product name
+    document.title = "HighlightHire - AI-Powered Keyword Highlighter for Recruiters";
   }, []);
 
   return (

@@ -94,7 +94,7 @@ const CTASection = () => {
             <div>
               <h2 className="text-3xl font-bold mb-4">Ready to Transform Your Technical Recruitment?</h2>
               <p className="text-gray-600 mb-4">
-                Schedule a discovery call with our team to learn how TechLex EU can help your recruitment process. We'll demonstrate our 4-in-1 solution and answer any questions you may have.
+                Schedule a discovery call with our team to learn how HighlightHire can help your recruitment process. We'll demonstrate our 4-in-1 solution and answer any questions you may have.
               </p>
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
                 <p className="text-amber-700 text-sm mb-2">
@@ -233,7 +233,7 @@ const CTASection = () => {
                           <div className="flex items-start">
                             <MessageSquare className="w-4 h-4 mr-2 mt-2 text-gray-400" />
                             <Textarea 
-                              placeholder="Tell us about your recruitment challenges and what you hope to achieve with TechLex EU..." 
+                              placeholder="Tell us about your recruitment challenges and what you hope to achieve with HighlightHire..." 
                               className="min-h-[100px]"
                               {...field} 
                             />
