@@ -6,11 +6,10 @@ import { toast } from 'sonner';
 import HeroImageSection from "@/components/HeroImageSection";
 import { MailIcon, Play } from "lucide-react";
 
-const HeroSection = () => {
+const HeroSection = ({ onShowVideo }: { onShowVideo?: () => void }) => {
   const [email, setEmail] = useState('');
   const [confirmedLicenses, setConfirmedLicenses] = useState(1); // Starting with 1 confirmed license
   const [seatsRemaining, setSeatsRemaining] = useState(200 - 1); // Calculate remaining seats
-  const [showVideo, setShowVideo] = useState(false);
 
   useEffect(() => {
     // This is where we would fetch the actual confirmed licenses count
@@ -30,92 +29,56 @@ const HeroSection = () => {
   };
 
   return (
-    <>
-      <section className="pt-28 pb-16 md:pt-32 md:pb-24 bg-gradient-to-b from-white to-gray-50 overflow-hidden">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-            <div className="lg:pr-10 animate-fade-in">
-              <div className="flex flex-wrap items-center gap-2 mb-4">
-                <span className="px-3 py-1 bg-techlex-blue bg-opacity-10 text-techlex-blue rounded-full text-sm font-medium">
-                  Early Access
-                </span>
-                <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium">
-                  Browser Extension
-                </span>
-              </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-techlex-blue">
-                AI-Powered Keyword Highlighter for Recruiters
-              </h1>
-              <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed">
-                Instantly highlight key terms on LinkedIn, Teamtailor & PDFs to improve hiring speed and quality.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <Button className="btn-primary text-lg py-6 px-8 font-semibold">
-                  Try for Free
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="flex items-center gap-2 text-lg py-6 px-8 font-semibold"
-                  onClick={() => setShowVideo(true)}
-                >
-                  <Play className="h-5 w-5" />
-                  See It in Action
-                </Button>
-              </div>
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
-                <p className="text-amber-700 text-sm">
-                  <strong>Early Access Campaign:</strong> First 200 seats will get 50% discount on their first year! 
-                  Currently {confirmedLicenses} license confirmed, only {seatsRemaining} seats remaining with discount!
-                </p>
-              </div>
+    <section className="pt-28 pb-16 md:pt-32 md:pb-24 bg-gradient-to-b from-white to-gray-50 overflow-hidden">
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+          <div className="lg:pr-10 animate-fade-in">
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              <span className="px-3 py-1 bg-techlex-blue bg-opacity-10 text-techlex-blue rounded-full text-sm font-medium">
+                Early Access
+              </span>
+              <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium">
+                Browser Extension
+              </span>
             </div>
-            
-            <div className="lg:pl-10 animate-fade-in-slow">
-              {/* Show CV/Resume preview when video is not active */}
-              {!showVideo && (
-                <div className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden border border-gray-200 shadow-lg">
-                  <HeroImageSection />
-                  <p className="text-center text-sm text-gray-500 mt-2">
-                    See how HighlightHire transforms your recruitment process
-                  </p>
-                </div>
-              )}
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-techlex-blue">
+              AI-Powered Keyword Highlighter for Recruiters
+            </h1>
+            <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed">
+              Instantly highlight key terms on LinkedIn, Teamtailor & PDFs to improve hiring speed and quality.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 mb-8">
+              <Button className="btn-primary text-lg py-6 px-8 font-semibold">
+                Try for Free
+              </Button>
+              <Button 
+                variant="outline" 
+                className="flex items-center gap-2 text-lg py-6 px-8 font-semibold"
+                onClick={onShowVideo}
+              >
+                <Play className="h-5 w-5" />
+                See It in Action
+              </Button>
+            </div>
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+              <p className="text-amber-700 text-sm">
+                <strong>Early Access Campaign:</strong> First 200 seats will get 50% discount on their first year! 
+                Currently {confirmedLicenses} license confirmed, only {seatsRemaining} seats remaining with discount!
+              </p>
+            </div>
+          </div>
+          
+          <div className="lg:pl-10 animate-fade-in-slow">
+            <div className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden border border-gray-200 shadow-lg">
+              <HeroImageSection />
+              <p className="text-center text-sm text-gray-500 mt-2">
+                See how HighlightHire transforms your recruitment process
+              </p>
             </div>
           </div>
         </div>
-      </section>
-
-      {/* Video modal - only shows when activated and appears between hero and features section */}
-      {showVideo && (
-        <section className="py-12 bg-gray-50">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto">
-              <div className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden border border-gray-200 shadow-lg mb-4">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  {/* This is a placeholder for the actual video embed */}
-                  <div className="text-center p-8">
-                    <p className="text-gray-500 mb-2">Video placeholder</p>
-                    <p className="text-sm text-gray-400">Dimensions: 1280x720px</p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex justify-between items-center">
-                <p className="text-center text-sm text-gray-500">
-                  See how HighlightHire transforms your recruitment process
-                </p>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setShowVideo(false)}
-                >
-                  Close Video
-                </Button>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-    </>
+      </div>
+    </section>
   );
 };
 
