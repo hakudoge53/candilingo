@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -71,9 +70,6 @@ const HeroSection = ({ onShowVideo }: { onShowVideo?: () => void }) => {
           <div className="lg:pl-10 animate-fade-in-slow">
             <div className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden border border-gray-200 shadow-lg">
               <HeroImageSection />
-              <p className="text-center text-sm text-gray-500 mt-2">
-                See how HighlightHire transforms your recruitment process
-              </p>
             </div>
           </div>
         </div>
