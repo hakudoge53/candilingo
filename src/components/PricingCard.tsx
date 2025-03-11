@@ -74,16 +74,16 @@ const PricingCard = ({
   return (
     <div
       className={cn(
-        "relative bg-white rounded-xl border transition-all duration-200",
+        "relative bg-white rounded-xl border transition-all duration-200 animate-fade-in",
         popular
-          ? "shadow-xl border-techlex-blue scale-105 z-10"
+          ? "shadow-xl border-candilingo-blue scale-105 z-10"
           : "shadow-md border-gray-200 hover:shadow-lg",
         className
       )}
     >
       {popular && (
         <Badge
-          className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-techlex-blue text-white border-0 font-medium"
+          className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-candilingo-blue text-white border-0 font-medium"
           variant="outline"
         >
           Most Popular
@@ -91,25 +91,25 @@ const PricingCard = ({
       )}
 
       <div className="p-6 md:p-8">
-        <h3 className="font-bold text-xl mb-2">{name}</h3>
-        <p className="text-gray-600 mb-5">{description}</p>
+        <h3 className="font-bold text-xl mb-2 font-montserrat">{name}</h3>
+        <p className="text-candilingo-midgray mb-5">{description}</p>
         
         <div className="mb-6">
           {originalPrice && price !== "Custom" ? (
             <div className="flex items-center">
-              <span className="text-xl text-gray-500 line-through mr-2">{originalPrice}</span>
-              <span className="text-3xl font-bold text-techlex-blue">{price}</span>
-              {price !== "Custom" && <span className="text-gray-500 ml-1">/month</span>}
+              <span className="text-xl text-candilingo-midgray line-through mr-2">{originalPrice}</span>
+              <span className="text-3xl font-bold text-candilingo-blue">{price}</span>
+              {price !== "Custom" && <span className="text-candilingo-midgray ml-1">/month</span>}
             </div>
           ) : (
             <>
-              <span className="text-3xl font-bold">{price}</span>
-              {price !== "Custom" && <span className="text-gray-500 ml-1">/month</span>}
+              <span className="text-3xl font-bold text-candilingo-blue">{price}</span>
+              {price !== "Custom" && <span className="text-candilingo-midgray ml-1">/month</span>}
             </>
           )}
           
           {trialPeriod && (
-            <div className="mt-2 text-sm text-techlex-blue font-medium">
+            <div className="mt-2 text-sm text-candilingo-blue font-medium">
               1-month free trial, billed after trial ends
             </div>
           )}
@@ -119,10 +119,10 @@ const PricingCard = ({
           {features.map((feature, index) => (
             <li key={index} className="flex items-start">
               <span className={cn("flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5", 
-                feature.included ? "bg-techlex-blue text-white" : "bg-gray-200")}>
+                feature.included ? "bg-candilingo-blue text-white" : "bg-candilingo-gray")}>
                 {feature.included && <CheckIcon className="w-3 h-3" />}
               </span>
-              <span className={cn("ml-2", !feature.included && "text-gray-400")}>{feature.text}</span>
+              <span className={cn("ml-2", !feature.included && "text-candilingo-midgray")}>{feature.text}</span>
             </li>
           ))}
         </ul>
