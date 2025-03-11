@@ -28,7 +28,13 @@ const TermBadge = ({ children, definition, className }: TermBadgeProps) => {
           </span>
         </TooltipTrigger>
         {definition && (
-          <TooltipContent className="max-w-[200px] text-sm">
+          <TooltipContent 
+            side="top" 
+            align="end"
+            className="max-w-[200px] text-sm bg-white border border-gray-200 shadow-lg rounded-lg p-2"
+            sideOffset={5}
+            alignOffset={5}
+          >
             {definition}
           </TooltipContent>
         )}
