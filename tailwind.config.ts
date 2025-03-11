@@ -62,19 +62,19 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				techlex: {
-					blue: '#D946EF',
-					darkblue: '#BE30D9',
-					lightblue: '#E474F3',
-					navy: '#9225A8',
-					gray: '#f2f2f7',
-					darkgray: '#8e9196',
-					pink: {
-						DEFAULT: '#D946EF',
-						dark: '#BE30D9',
-						light: '#E474F3',
-						lighter: '#F7C8FB'
-					}
+				candilingo: {
+					blue: '#2E86C1',
+					darkblue: '#236A9B',
+					lightblue: '#3498DB',
+					green: '#4CAF50',
+					darkgreen: '#3E8E41',
+					lightgreen: '#72C176',
+					orange: '#FF9800',
+					darkorange: '#E68A00',
+					lightorange: '#FFB84D',
+					gray: '#F0F0F0',
+					darkgray: '#333333',
+					midgray: '#666666'
 				}
 			},
 			borderRadius: {

@@ -23,19 +23,19 @@ const CTAContent = ({ seatsRemaining }: CTAContentProps) => {
       </div>
       <ul className="space-y-3 mb-6 max-w-md mx-auto">
         <li className="flex items-start">
-          <CheckCircle className="w-5 h-5 text-techlex-blue mt-0.5 flex-shrink-0" />
+          <CheckCircle className="w-5 h-5 text-candilingo-blue mt-0.5 flex-shrink-0" />
           <span className="ml-2 text-left">Instant setup - no installation needed</span>
         </li>
         <li className="flex items-start">
-          <CheckCircle className="w-5 h-5 text-techlex-blue mt-0.5 flex-shrink-0" />
+          <CheckCircle className="w-5 h-5 text-candilingo-blue mt-0.5 flex-shrink-0" />
           <span className="ml-2 text-left">Works with LinkedIn, PDFs, and Teamtailor</span>
         </li>
         <li className="flex items-start">
-          <CheckCircle className="w-5 h-5 text-techlex-blue mt-0.5 flex-shrink-0" />
+          <CheckCircle className="w-5 h-5 text-candilingo-blue mt-0.5 flex-shrink-0" />
           <span className="ml-2 text-left">No credit card required for trial</span>
         </li>
         <li className="flex items-start">
-          <CheckCircle className="w-5 h-5 text-techlex-blue mt-0.5 flex-shrink-0" />
+          <CheckCircle className="w-5 h-5 text-candilingo-blue mt-0.5 flex-shrink-0" />
           <span className="ml-2 text-left">Enterprise customers: Contact us for custom solutions</span>
         </li>
       </ul>

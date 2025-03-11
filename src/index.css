@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -15,24 +15,24 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 300 84% 60%;
+    --primary: 204 70% 47%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 300 70% 95%;
-    --secondary-foreground: 300 60% 30%;
+    --secondary: 120 42% 49%;
+    --secondary-foreground: 210 40% 98%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 300 84% 90%;
-    --accent-foreground: 300 60% 30%;
+    --accent: 36 100% 50%;
+    --accent-foreground: 210 40% 98%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 300 84% 60%;
+    --ring: 204 70% 47%;
 
     --radius: 0.5rem;
 
@@ -56,16 +56,16 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 300 84% 60%;
+    --primary: 204 70% 47%;
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 300 30% 20%;
+    --secondary: 120 42% 49%;
     --secondary-foreground: 210 40% 98%;
 
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 300 30% 25%;
+    --accent: 36 100% 50%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
@@ -73,7 +73,7 @@
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 300 70% 70%;
+    --ring: 204 70% 47%;
 
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
@@ -93,7 +93,11 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat', sans-serif;
   }
 }
 
@@ -103,19 +107,25 @@
   }
   
   .tech-term {
-    @apply bg-techlex-blue text-white px-1 py-0.5 rounded-md cursor-pointer transition-all duration-300 hover:bg-techlex-lightblue;
+    @apply bg-candilingo-blue text-white px-1 py-0.5 rounded-md cursor-pointer transition-all duration-300 hover:bg-candilingo-lightblue;
   }
   
   .btn-primary {
-    @apply bg-techlex-blue text-white font-medium py-2.5 px-5 rounded-md transition-all duration-300
-    hover:bg-techlex-lightblue focus:outline-none focus:ring-2 focus:ring-techlex-blue focus:ring-opacity-50
+    @apply bg-candilingo-blue text-white font-medium py-2.5 px-5 rounded-md transition-all duration-300
+    hover:bg-candilingo-lightblue focus:outline-none focus:ring-2 focus:ring-candilingo-blue focus:ring-opacity-50
     active:scale-95 shadow-md hover:shadow-lg;
   }
   
   .btn-secondary {
-    @apply bg-white text-techlex-blue font-medium py-2.5 px-5 rounded-md transition-all duration-300
-    hover:bg-techlex-gray focus:outline-none focus:ring-2 focus:ring-techlex-blue focus:ring-opacity-50
-    active:scale-95 shadow-sm hover:shadow border border-techlex-blue;
+    @apply bg-white text-candilingo-blue font-medium py-2.5 px-5 rounded-md transition-all duration-300
+    hover:bg-candilingo-gray focus:outline-none focus:ring-2 focus:ring-candilingo-blue focus:ring-opacity-50
+    active:scale-95 shadow-sm hover:shadow border border-candilingo-blue;
+  }
+
+  .btn-accent {
+    @apply bg-candilingo-orange text-white font-medium py-2.5 px-5 rounded-md transition-all duration-300
+    hover:bg-candilingo-lightorange focus:outline-none focus:ring-2 focus:ring-candilingo-orange focus:ring-opacity-50
+    active:scale-95 shadow-md hover:shadow-lg;
   }
   
   .card-hover {
@@ -128,7 +138,7 @@
   
   .input-primary {
     @apply w-full px-4 py-3 rounded-md bg-white border border-gray-300 focus:outline-none
-    focus:ring-2 focus:ring-techlex-blue focus:border-transparent;
+    focus:ring-2 focus:ring-candilingo-blue focus:border-transparent;
   }
 }
 
