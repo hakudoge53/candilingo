@@ -20,7 +20,7 @@ const TermBadge = ({ children, definition, className }: TermBadgeProps) => {
         <TooltipTrigger asChild>
           <span
             className={cn(
-              "tech-term inline-flex items-center bg-techlex-pink text-white rounded-full px-3 py-1 text-sm font-medium cursor-help",
+              "tech-term inline-flex items-center bg-techlex-pink hover:bg-techlex-pink/90 text-white rounded-full px-3 py-1 text-sm font-medium cursor-pointer",
               className
             )}
           >
