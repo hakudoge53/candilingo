@@ -1,8 +1,7 @@
 
 import { useState, useEffect } from 'react';
-import { Calendar } from 'lucide-react';
-import ContactForm from '@/components/forms/ContactForm';
 import CTAContent from './CTAContent';
+import { Button } from "@/components/ui/button";
 
 const CTASection = () => {
   const [seatsRemaining, setSeatsRemaining] = useState(200);
@@ -22,9 +21,25 @@ const CTASection = () => {
           <div className="absolute -top-12 -right-12 w-24 h-24 bg-techlex-blue opacity-10 rounded-full blur-2xl"></div>
           <div className="absolute -bottom-16 -left-16 w-32 h-32 bg-techlex-lightblue opacity-10 rounded-full blur-3xl"></div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center relative z-10">
+          <div className="relative z-10">
             <CTAContent seatsRemaining={seatsRemaining} />
-            <ContactForm />
+            
+            <div className="mt-8 flex flex-col sm:flex-row items-center gap-4 justify-center">
+              <Button 
+                className="w-full sm:w-auto bg-techlex-blue hover:bg-techlex-blue/90 text-lg py-6 px-8"
+                onClick={() => window.location.href = '/dashboard'}
+              >
+                Start Your Free Trial
+              </Button>
+              
+              <Button 
+                variant="outline"
+                className="w-full sm:w-auto border-techlex-blue text-techlex-blue hover:bg-techlex-blue/10 text-lg py-6 px-8"
+                onClick={() => window.location.href = 'mailto:enterprise@highlighthire.com'}
+              >
+                Enterprise Contact
+              </Button>
+            </div>
           </div>
         </div>
       </div>

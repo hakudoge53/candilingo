@@ -1,6 +1,7 @@
 
 import PricingCard from "@/components/PricingCard";
 import ROICalculator from "@/components/ROICalculator";
+import { Button } from "@/components/ui/button";
 
 const PricingSection = () => {
   return (
@@ -62,34 +63,47 @@ const PricingSection = () => {
             couponId="50_PERCENT_OFF"
             trialPeriod={true}
           />
-          <PricingCard
-            name="Enterprise"
-            price="Custom"
-            description="For large agencies with advanced needs"
-            features={[
-              { text: "Unlimited term definitions", included: true },
-              { text: "PDF & web page support", included: true },
-              { text: "Advanced term highlighting", included: true },
-              { text: "Multi-language support", included: true },
-              { text: "AI-powered summaries", included: true },
-              { text: "Company insights", included: true },
-              { text: "Unlimited custom glossaries", included: true },
-              { text: "Team sharing & admin features", included: true },
-              { text: "On-the-job learning & Onboarding", included: true },
-              { text: "API access & integrations", included: true },
-            ]}
-            ctaText="Contact Sales"
-            className="animate-fade-in-slower"
-            couponId="50_PERCENT_OFF"
-            trialPeriod={false}
-          />
+          <div className="border rounded-xl p-6 bg-white shadow-md flex flex-col h-full animate-fade-in-slower">
+            <div className="flex-1">
+              <h3 className="text-2xl font-bold">Enterprise</h3>
+              <p className="text-3xl font-bold my-4">Custom</p>
+              <p className="text-gray-600 mb-6">For large agencies with advanced needs</p>
+              
+              <ul className="space-y-3 mb-8">
+                {[
+                  "Unlimited term definitions",
+                  "PDF & web page support",
+                  "Advanced term highlighting",
+                  "Multi-language support",
+                  "AI-powered summaries",
+                  "Company insights",
+                  "Unlimited custom glossaries",
+                  "Team sharing & admin features",
+                  "On-the-job learning & Onboarding",
+                  "API access & integrations",
+                ].map((feature, i) => (
+                  <li key={i} className="flex items-start">
+                    <CheckCircle className="w-5 h-5 text-techlex-blue mt-0.5 flex-shrink-0" />
+                    <span className="ml-2">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            
+            <Button 
+              onClick={() => window.location.href = 'mailto:enterprise@highlighthire.com'}
+              className="mt-auto w-full bg-techlex-blue hover:bg-techlex-blue/90"
+            >
+              Contact Enterprise Sales
+            </Button>
+          </div>
         </div>
 
         <div className="mt-20 max-w-3xl mx-auto">
           <h3 className="text-2xl font-bold text-center mb-8">Check the cost</h3>
           <ROICalculator className="animate-fade-in" />
           <p className="text-center mt-4 text-sm text-gray-500">
-            See how TechLex EU can save your team time and money compared to your recruitment fees.
+            See how HighlightHire can save your team time and money compared to your recruitment fees.
           </p>
         </div>
       </div>
