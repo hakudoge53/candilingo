@@ -22,33 +22,33 @@ const FeaturesSection = () => {
             HighlightHire empowers recruitment professionals to understand and evaluate technical candidates with confidence.
           </p>
           
-          <div className="bg-techlex-blue bg-opacity-5 rounded-xl p-6 mb-6">
-            <h3 className="text-xl font-bold mb-4 text-techlex-blue">4-in-1 Complete Recruitment Solution</h3>
+          <div className="bg-candilingo-blue bg-opacity-5 rounded-xl p-6 mb-6">
+            <h3 className="text-xl font-bold mb-4 text-candilingo-blue">4-in-1 Complete Recruitment Solution</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-white p-4 rounded-lg shadow-sm border border-techlex-blue border-opacity-20">
+              <div className="bg-white p-4 rounded-lg shadow-sm border border-candilingo-blue border-opacity-20 transition-all duration-300 hover:shadow-md hover:border-opacity-30">
                 <div className="flex items-center mb-2">
-                  <FileText className="w-5 h-5 text-techlex-blue mr-2" />
+                  <FileText className="w-5 h-5 text-candilingo-blue mr-2" />
                   <h4 className="font-semibold">CV Reader</h4>
                 </div>
                 <p className="text-sm text-gray-600">Analyze and understand technical CVs with smart term recognition</p>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow-sm border border-techlex-blue border-opacity-20">
+              <div className="bg-white p-4 rounded-lg shadow-sm border border-candilingo-blue border-opacity-20 transition-all duration-300 hover:shadow-md hover:border-opacity-30">
                 <div className="flex items-center mb-2">
-                  <Search className="w-5 h-5 text-techlex-blue mr-2" />
+                  <Search className="w-5 h-5 text-candilingo-orange mr-2" />
                   <h4 className="font-semibold">Web Extension</h4>
                 </div>
                 <p className="text-sm text-gray-600">Get instant explanations on any technical content online</p>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow-sm border border-techlex-blue border-opacity-20">
+              <div className="bg-white p-4 rounded-lg shadow-sm border border-candilingo-blue border-opacity-20 transition-all duration-300 hover:shadow-md hover:border-opacity-30">
                 <div className="flex items-center mb-2">
-                  <BookOpen className="w-5 h-5 text-techlex-blue mr-2" />
+                  <BookOpen className="w-5 h-5 text-candilingo-green mr-2" />
                   <h4 className="font-semibold">Public & Company Wikis</h4>
                 </div>
                 <p className="text-sm text-gray-600">Access and build knowledge bases with shareable glossaries</p>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow-sm border border-techlex-blue border-opacity-20">
+              <div className="bg-white p-4 rounded-lg shadow-sm border border-candilingo-blue border-opacity-20 transition-all duration-300 hover:shadow-md hover:border-opacity-30">
                 <div className="flex items-center mb-2">
-                  <BrainCircuit className="w-5 h-5 text-techlex-blue mr-2" />
+                  <BrainCircuit className="w-5 h-5 text-candilingo-lightblue mr-2" />
                   <h4 className="font-semibold">Recruitment Assistant</h4>
                 </div>
                 <p className="text-sm text-gray-600">AI-powered features to boost your recruitment process</p>
