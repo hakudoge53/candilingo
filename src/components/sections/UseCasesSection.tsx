@@ -1,4 +1,3 @@
-
 import { TabsContent, TabsList, TabsTrigger, Tabs } from "@/components/ui/tabs";
 import TermBadge from "@/components/TermBadge";
 import { BookOpenText, Users } from "lucide-react";
@@ -12,7 +11,7 @@ const UseCasesSection = () => {
             Perfect for Recruitment Professionals
           </h2>
           <p className="text-lg text-gray-600">
-            TechLex EU is designed to meet the specific needs of recruitment agencies.
+            HighlightHire is designed to meet the specific needs of recruitment agencies.
           </p>
         </div>
         
@@ -148,7 +147,6 @@ const UseCasesSection = () => {
   );
 };
 
-// Helper components for the UseCasesSection
 const CheckCircleIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
     <svg

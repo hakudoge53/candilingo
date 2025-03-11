@@ -6,9 +6,9 @@ import ExperienceSection from './cv/ExperienceSection';
 
 const DeveloperCVSlide = () => {
   return (
-    <div>
+    <div className="space-y-6 pr-2">
       <h2 className="text-xl font-bold mb-4">Developer CV</h2>
-      <div className="space-y-4 text-gray-700 text-sm">
+      <div className="space-y-6 text-gray-700 text-sm">
         <DeveloperProfile />
         <SkillsSection />
         <ExperienceSection />

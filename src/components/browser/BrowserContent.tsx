@@ -6,6 +6,7 @@ import SlideIndicator from "./SlideIndicator";
 import LoadingOverlay from "./LoadingOverlay";
 import DeveloperCVSlide from "./DeveloperCVSlide";
 import ResumeAnalysisSlide from "./ResumeAnalysisSlide";
+import { ScrollArea } from "../ui/scroll-area";
 
 interface BrowserContentProps {
   loaded: boolean;
@@ -29,15 +30,17 @@ const BrowserContent = ({ loaded }: BrowserContentProps) => {
         "transition-opacity duration-1000",
         loaded ? "opacity-100" : "opacity-0"
       )}>
-        {/* Slide 1: Developer CV */}
-        <div className={`${activeSlide === 0 ? 'block' : 'hidden'}`}>
-          <DeveloperCVSlide />
-        </div>
-        
-        {/* Slide 2: Resume Analysis */}
-        <div className={`${activeSlide === 1 ? 'block' : 'hidden'}`}>
-          <ResumeAnalysisSlide />
-        </div>
+        <ScrollArea className="h-[320px]">
+          {/* Slide 1: Developer CV */}
+          <div className={`${activeSlide === 0 ? 'block' : 'hidden'}`}>
+            <DeveloperCVSlide />
+          </div>
+          
+          {/* Slide 2: Resume Analysis */}
+          <div className={`${activeSlide === 1 ? 'block' : 'hidden'}`}>
+            <ResumeAnalysisSlide />
+          </div>
+        </ScrollArea>
         
         {/* Navigation arrows */}
         <SlideNavigation onPrevious={goToPrevSlide} onNext={goToNextSlide} />
