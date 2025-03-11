@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -50,7 +51,6 @@ const Index = () => {
                     {/* This is a placeholder for the actual video embed */}
                     <div className="text-center p-8">
                       <p className="text-gray-500 mb-2">Video placeholder</p>
-                      <p className="text-sm text-gray-400">Product Demo (1280x720)</p>
                     </div>
                   </div>
                 </div>

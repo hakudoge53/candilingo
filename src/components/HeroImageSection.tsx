@@ -24,16 +24,9 @@ const HeroImageSection = ({ className }: HeroImageSectionProps) => {
       "relative w-full h-full flex items-center justify-center",
       className
     )}>
-      {/* Browser window mockup with placeholder overlay */}
+      {/* Browser window mockup */}
       <div className="relative w-full">
         <BrowserWindow loaded={loaded} />
-        
-        {/* Dimensions indicator overlay */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="bg-black bg-opacity-20 text-white px-3 py-1 rounded text-sm">
-            Product Demo (1280x720)
-          </div>
-        </div>
       </div>
       
       {/* Decorative elements */}
