@@ -19,15 +19,16 @@ const CTASection = () => {
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-8 md:p-12 border border-gray-100 relative overflow-hidden">
           {/* Decorative elements */}
-          <div className="absolute -top-12 -right-12 w-24 h-24 bg-techlex-blue opacity-10 rounded-full blur-2xl"></div>
-          <div className="absolute -bottom-16 -left-16 w-32 h-32 bg-techlex-lightblue opacity-10 rounded-full blur-3xl"></div>
+          <div className="absolute -top-12 -right-12 w-24 h-24 bg-candilingo-orange opacity-10 rounded-full blur-2xl"></div>
+          <div className="absolute -bottom-16 -left-16 w-32 h-32 bg-candilingo-lightorange opacity-10 rounded-full blur-3xl"></div>
           
           <div className="relative z-10">
             <CTAContent seatsRemaining={seatsRemaining} />
             
             <div className="mt-8 flex flex-col sm:flex-row items-center gap-4 justify-center">
               <Button 
-                className="w-full sm:w-auto bg-techlex-blue hover:bg-techlex-blue/90 text-lg py-6 px-8"
+                variant="orange"
+                className="w-full sm:w-auto text-lg py-6 px-8 shadow-md hover:shadow-lg transition-all duration-300"
                 onClick={() => window.location.href = '/dashboard'}
               >
                 Start Your Free Trial

@@ -34,25 +34,28 @@ const HeroSection = ({ onShowVideo }: { onShowVideo?: () => void }) => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <div className="lg:pr-10 animate-fade-in">
             <div className="flex flex-wrap items-center gap-2 mb-4">
-              <span className="px-3 py-1 bg-techlex-blue bg-opacity-10 text-techlex-blue rounded-full text-sm font-medium">
+              <span className="px-3 py-1 bg-candilingo-orange bg-opacity-10 text-candilingo-orange rounded-full text-sm font-medium">
                 Early Access
               </span>
               <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium">
                 Browser Extension
               </span>
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-techlex-blue">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-candilingo-blue">
               AI-Powered Keyword Highlighter for Recruiters
             </h1>
             <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed">
               Instantly highlight key terms on LinkedIn, Teamtailor & PDFs to improve hiring speed and quality.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
-              <Button className="btn-primary text-lg py-6 px-8 font-semibold">
+              <Button 
+                variant="orange" 
+                className="text-lg py-6 px-8 font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+              >
                 Try for Free
               </Button>
               <Button 
-                variant="outline" 
+                variant="outline-orange" 
                 className="flex items-center gap-2 text-lg py-6 px-8 font-semibold"
                 onClick={onShowVideo}
               >

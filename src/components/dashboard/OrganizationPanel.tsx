@@ -39,7 +39,7 @@ const OrganizationPanel = ({
         <h2 className="text-xl font-semibold">Your Organizations</h2>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-techlex-blue">
+            <Button variant="orange">
               <PlusCircle className="mr-2 h-4 w-4" /> New Organization
             </Button>
           </DialogTrigger>
@@ -65,7 +65,7 @@ const OrganizationPanel = ({
               <Button 
                 onClick={handleCreateOrganization} 
                 disabled={isSubmitting || !newOrgName.trim()}
-                className="bg-techlex-blue"
+                variant="orange"
               >
                 {isSubmitting ? "Creating..." : "Create Organization"}
               </Button>

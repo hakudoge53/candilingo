@@ -83,7 +83,7 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full bg-techlex-blue">
+        <Button type="submit" variant="orange" className="w-full">
           Sign In
         </Button>
       </form>

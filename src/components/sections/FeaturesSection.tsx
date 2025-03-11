@@ -57,9 +57,9 @@ const FeaturesSection = () => {
           </div>
           
           <Button 
-            variant="outline" 
+            variant="outline-orange" 
             onClick={toggleFeatures} 
-            className="mb-10 flex items-center gap-2 mx-auto"
+            className="mb-10 flex items-center gap-2 mx-auto hover:bg-candilingo-orange/10"
           >
             {showAllFeatures ? "Less is More" : "See All Features"}
             {showAllFeatures ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
