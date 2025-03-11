@@ -1,5 +1,11 @@
 
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface TermBadgeProps {
   children: React.ReactNode;
@@ -9,15 +15,25 @@ interface TermBadgeProps {
 
 const TermBadge = ({ children, definition, className }: TermBadgeProps) => {
   return (
-    <span
-      className={cn(
-        "tech-term inline-flex items-center bg-techlex-pink text-white rounded-full px-3 py-1 text-sm font-medium",
-        className
-      )}
-      title={definition}
-    >
-      {children}
-    </span>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span
+            className={cn(
+              "tech-term inline-flex items-center bg-techlex-pink text-white rounded-full px-3 py-1 text-sm font-medium cursor-help",
+              className
+            )}
+          >
+            {children}
+          </span>
+        </TooltipTrigger>
+        {definition && (
+          <TooltipContent className="max-w-[200px] text-sm">
+            {definition}
+          </TooltipContent>
+        )}
+      </Tooltip>
+    </TooltipProvider>
   );
 };
 
