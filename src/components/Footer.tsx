@@ -8,7 +8,7 @@ const Footer = () => {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-1">
-            <h3 className="text-lg font-semibold mb-3">HighlightHire</h3>
+            <h3 className="text-lg font-semibold mb-3">Candilingo</h3>
             <p className="text-sm text-gray-600">
               Decoding technical jargon to help recruiters make better technical hiring decisions.
             </p>
@@ -47,7 +47,7 @@ const Footer = () => {
         
         <div className="border-t border-gray-200 mt-8 pt-6 flex flex-col md:flex-row justify-between">
           <p className="text-sm text-gray-600 mb-4 md:mb-0">
-            © 2023 HighlightHire. All rights reserved.
+            © 2023 Candilingo. All rights reserved.
           </p>
           <div className="space-x-6">
             <a href="#" className="text-sm text-gray-600 hover:text-techlex-blue">Privacy Policy</a>

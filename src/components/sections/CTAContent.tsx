@@ -10,7 +10,7 @@ const CTAContent = ({ seatsRemaining }: CTAContentProps) => {
     <div className="text-center">
       <h2 className="text-3xl font-bold mb-4">Ready to Transform Your Technical Recruitment?</h2>
       <p className="text-gray-600 mb-4">
-        Start your free trial today and see how HighlightHire can help your technical recruitment process.
+        Start your free trial today and see how Candilingo can help your technical recruitment process.
         No credit card required to get started.
       </p>
       <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
