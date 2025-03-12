@@ -1,0 +1,19 @@
+
+# Global build settings
+[build]
+  # Directory where your built files are (relative to root)
+  publish = "dist"
+  # Command to build your site
+  command = "npm run build"
+  # Base directory where your source code is
+  base = "/"
+
+# Build environment variables
+[build.environment]
+  NODE_VERSION = "18"
+
+# Redirect all routes to index.html for single-page applications
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
