@@ -9,6 +9,8 @@
 # Environment variables
 [build.environment]
   NODE_VERSION = "18"
+  # Add an environment variable to identify this as the main project
+  PROJECT_ID = "techlingo-wikilaunchiii"
 
 # Redirect rule for single-page applications
 [[redirects]]
@@ -16,3 +18,6 @@
   to = "/index.html"
   status = 200
 
+# Explicitly ignore any other directories that might be causing confusion
+[build.processing]
+  skip_processing = true

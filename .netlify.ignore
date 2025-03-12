@@ -1,0 +1,7 @@
+
+# Ignore any extension-related directories
+extension/
+browser-extension/
+ext/
+chrome-extension/
+firefox-extension/
