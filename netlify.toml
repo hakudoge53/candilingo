@@ -1,5 +1,5 @@
 
-# Build configuration
+# Build configuration for the main project only
 [build]
   publish = "dist"
   command = "npm run build"
