@@ -1,8 +1,10 @@
 
-# Build configuration for the main project only
+# Build configuration specifically for techlingo-wikilaunchiii project
 [build]
   publish = "dist"
   command = "npm run build"
+  # Ensure this is the base directory for the main project
+  base = "."
 
 # Environment variables
 [build.environment]
@@ -13,3 +15,4 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
