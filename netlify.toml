@@ -6,7 +6,7 @@
   # Command to build your site
   command = "npm run build"
   # Base directory where your source code is
-  base = "/"
+  base = ""
 
 # Build environment variables
 [build.environment]
