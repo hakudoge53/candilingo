@@ -15,7 +15,7 @@ const AuthContainer = ({ setIsLoading }: AuthContainerProps) => {
   return (
     <Card>
       <AuthHeader 
-        title="Welcome to TechLex" 
+        title="Welcome to Candilingo" 
         description="Login or create an account to access exclusive features and resources." 
       />
       <CardContent>

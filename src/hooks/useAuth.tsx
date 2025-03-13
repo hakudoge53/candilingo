@@ -11,12 +11,14 @@ export type User = {
   status?: string;
   preferred_language?: string;
   extension_settings?: Record<string, any>;
+  hasOrganization?: boolean;
 };
 
 export const useAuth = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [activeUser, setActiveUser] = useState<User | null>(null);
+  const [missingInformation, setMissingInformation] = useState<string[]>([]);
 
   // Check if user is already logged in
   useEffect(() => {
@@ -32,7 +34,8 @@ export const useAuth = () => {
         }
         
         if (data.session) {
-          setIsLoggedIn(true);
+          // Check if the user has all required information before setting isLoggedIn to true
+          const missingInfo: string[] = [];
           
           try {
             // Fetch user profile data
@@ -44,7 +47,27 @@ export const useAuth = () => {
             
             if (profileError) {
               console.error("Profile fetch error:", profileError);
+              missingInfo.push('profile');
             }
+            
+            // Check if user has an organization
+            const { data: orgData, error: orgError } = await supabase
+              .from('organization_members')
+              .select('organization_id')
+              .eq('user_id', data.session.user.id)
+              .limit(1);
+            
+            const hasOrganization = orgData && orgData.length > 0;
+            if (!hasOrganization) {
+              missingInfo.push('organization');
+            }
+            
+            if (missingInfo.length > 0) {
+              setMissingInformation(missingInfo);
+              toast.warning(`Please complete your ${missingInfo.join(' and ')} information`);
+            }
+            
+            setIsLoggedIn(true);
             
             if (profileData) {
               setActiveUser({
@@ -54,7 +77,8 @@ export const useAuth = () => {
                 membership_tier: profileData.membership_tier,
                 status: profileData.status,
                 preferred_language: profileData.preferred_language,
-                extension_settings: profileData.extension_settings as Record<string, any> || {}
+                extension_settings: profileData.extension_settings as Record<string, any> || {},
+                hasOrganization: hasOrganization
               });
             } else {
               // Fallback if profile not found
@@ -62,6 +86,7 @@ export const useAuth = () => {
                 id: data.session.user.id,
                 name: data.session.user.email?.split('@')[0] || 'User',
                 email: data.session.user.email || '',
+                hasOrganization: hasOrganization
               });
             }
           } catch (profileError) {
@@ -71,6 +96,7 @@ export const useAuth = () => {
               id: data.session.user.id,
               name: data.session.user.email?.split('@')[0] || 'User',
               email: data.session.user.email || '',
+              hasOrganization: false
             });
           }
         }
@@ -86,7 +112,8 @@ export const useAuth = () => {
     // Set up auth state change listener
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
-        setIsLoggedIn(true);
+        const missingInfo: string[] = [];
+        
         try {
           // Fetch user profile
           const { data: profileData, error: profileError } = await supabase
@@ -97,7 +124,27 @@ export const useAuth = () => {
           
           if (profileError) {
             console.error("Profile fetch error on auth state change:", profileError);
+            missingInfo.push('profile');
           }
+          
+          // Check if user has an organization
+          const { data: orgData, error: orgError } = await supabase
+            .from('organization_members')
+            .select('organization_id')
+            .eq('user_id', session.user.id)
+            .limit(1);
+          
+          const hasOrganization = orgData && orgData.length > 0;
+          if (!hasOrganization) {
+            missingInfo.push('organization');
+          }
+          
+          if (missingInfo.length > 0) {
+            setMissingInformation(missingInfo);
+            toast.warning(`Please complete your ${missingInfo.join(' and ')} information`);
+          }
+          
+          setIsLoggedIn(true);
           
           if (profileData) {
             setActiveUser({
@@ -107,13 +154,15 @@ export const useAuth = () => {
               membership_tier: profileData.membership_tier,
               status: profileData.status,
               preferred_language: profileData.preferred_language,
-              extension_settings: profileData.extension_settings as Record<string, any> || {}
+              extension_settings: profileData.extension_settings as Record<string, any> || {},
+              hasOrganization: hasOrganization
             });
           } else {
             setActiveUser({
               id: session.user.id,
               name: session.user.email?.split('@')[0] || 'User',
               email: session.user.email || '',
+              hasOrganization: hasOrganization
             });
           }
         } catch (error) {
@@ -122,11 +171,13 @@ export const useAuth = () => {
             id: session.user.id,
             name: session.user.email?.split('@')[0] || 'User',
             email: session.user.email || '',
+            hasOrganization: false
           });
         }
       } else if (event === 'SIGNED_OUT') {
         setIsLoggedIn(false);
         setActiveUser(null);
+        setMissingInformation([]);
       } else if (event === 'PASSWORD_RECOVERY') {
         // Handle password recovery
         const newPassword = prompt('What would you like your new password to be?');
@@ -170,10 +221,58 @@ export const useAuth = () => {
     }
   };
 
+  const createDefaultOrganization = async (name: string = "My Organization") => {
+    if (!activeUser?.id) {
+      toast.error("You must be logged in to create an organization");
+      return null;
+    }
+    
+    try {
+      setIsLoading(true);
+      
+      // Create a new organization
+      const { data: orgData, error: orgError } = await supabase
+        .from('organizations')
+        .insert([{ name, created_by: activeUser.id }])
+        .select()
+        .single();
+      
+      if (orgError) {
+        throw orgError;
+      }
+      
+      // Create membership for user as admin
+      const { error: memberError } = await supabase
+        .from('organization_members')
+        .insert([{
+          organization_id: orgData.id,
+          user_id: activeUser.id,
+          role: 'admin',
+          status: 'active'
+        }]);
+      
+      if (memberError) {
+        throw memberError;
+      }
+      
+      toast.success("Default organization created successfully");
+      setActiveUser(prev => prev ? {...prev, hasOrganization: true} : null);
+      return orgData;
+    } catch (error: any) {
+      console.error("Error creating default organization:", error);
+      toast.error("Failed to create organization: " + error.message);
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return {
     isLoggedIn,
     isLoading,
     activeUser,
-    handleLogout
+    missingInformation,
+    handleLogout,
+    createDefaultOrganization
   };
 };
