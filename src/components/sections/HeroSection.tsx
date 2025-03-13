@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,11 +32,11 @@ const HeroSection = ({ onShowVideo }: { onShowVideo?: () => void }) => {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <div className="lg:pr-10 animate-fade-in">
-            <div className="flex flex-wrap items-center gap-2 mb-6">
+            <div className="flex items-center gap-2 mb-6">
               <img 
                 src="/lovable-uploads/ee060928-1fc0-46cc-86ef-09b5d5bbc218.png" 
                 alt="Candilingo Logo" 
-                className="h-12 mb-2"
+                className="h-16"
               />
             </div>
             <div className="flex flex-wrap items-center gap-2 mb-4">

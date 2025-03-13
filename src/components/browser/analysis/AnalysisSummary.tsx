@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 const AnalysisSummary = () => {
   return (
     <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded-md">
-      <h3 className="text-sm font-medium text-gray-700 mb-2">TechLex Analysis</h3>
+      <h3 className="text-sm font-medium text-gray-700 mb-2">Candilingo AI - Tech summary</h3>
       <div className="flex flex-wrap gap-2">
         <Badge variant="secondary" className="bg-green-100 text-green-800 border-0">Strong Backend Skills</Badge>
         <Badge variant="secondary" className="bg-green-100 text-green-800 border-0">Modern Tech Stack</Badge>
