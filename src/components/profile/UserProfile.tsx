@@ -18,19 +18,19 @@ const UserProfile = ({ user, onLogout, isLoading }: UserProfileProps) => {
       <CardHeader>
         <CardTitle>Welcome, {user.name}!</CardTitle>
         <CardDescription>
-          You're now logged into your TechLex account.
+          You're now logged into your Candilingo account.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="p-4 bg-gray-50 rounded-md">
-          <h3 className="font-medium text-techlex-blue mb-2">Account Information</h3>
+          <h3 className="font-medium text-candilingo-purple mb-2">Account Information</h3>
           <p className="text-gray-700"><span className="font-medium">Email:</span> {user.email}</p>
           <p className="text-gray-700"><span className="font-medium">Membership:</span> {user.membership_tier || 'Free'}</p>
           <p className="text-gray-700"><span className="font-medium">Status:</span> {user.status || 'Active'}</p>
         </div>
         
         <div className="p-4 bg-gray-50 rounded-md">
-          <h3 className="font-medium text-techlex-blue mb-2">Your Resources</h3>
+          <h3 className="font-medium text-candilingo-purple mb-2">Your Resources</h3>
           <ul className="list-disc list-inside text-gray-700">
             <li>Technical Glossary Access</li>
             <li>Resume Analysis Tools</li>
@@ -40,8 +40,8 @@ const UserProfile = ({ user, onLogout, isLoading }: UserProfileProps) => {
         </div>
         
         <Link to="/dashboard" className="block w-full">
-          <Button className="w-full bg-techlex-blue flex items-center justify-center">
-            <LayoutDashboard className="mr-2 h-4 w-4" /> Go to Dashboard
+          <Button className="w-full bg-candilingo-purple hover:bg-candilingo-lightpurple flex items-center justify-center text-lg py-6 font-bold">
+            <LayoutDashboard className="mr-2 h-5 w-5" /> Go to Dashboard
           </Button>
         </Link>
       </CardContent>

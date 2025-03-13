@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Copy, Download } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useStripeCheckout } from '@/hooks/useStripeCheckout';
 
 const CustomerPortal = () => {
   const { isLoggedIn, isLoading, activeUser, handleLogout } = useAuth();
@@ -23,9 +24,10 @@ const CustomerPortal = () => {
   const [isApplyingCode, setIsApplyingCode] = useState(false);
   const [activeReferral, setActiveReferral] = useState<any>(null);
   const [showInstallGuide, setShowInstallGuide] = useState(false);
+  const { redirectToCheckout, isLoading: isCheckoutLoading } = useStripeCheckout();
   
   // Combined loading state for both auth operations and local form submissions
-  const showLoading = isLoading || localLoading;
+  const showLoading = isLoading || localLoading || isCheckoutLoading;
 
   useEffect(() => {
     const fetchActiveReferral = async () => {
@@ -46,7 +48,7 @@ const CustomerPortal = () => {
           .eq('user_id', activeUser.id)
           .order('expires_at', { ascending: false })
           .limit(1)
-          .single();
+          .maybeSingle();
         
         if (data) {
           setActiveReferral(data);
@@ -73,43 +75,31 @@ const CustomerPortal = () => {
     setIsApplyingCode(true);
     
     try {
-      const { data, error } = await supabase.functions.invoke('validate-referral', {
-        body: { code: referralCode }
+      // Start checkout with referral code
+      await redirectToCheckout({
+        productId: 'prod_referral',
+        couponId: referralCode.toUpperCase(),
       });
-      
-      if (error) {
-        toast.error(error.message || "Error applying referral code");
-        return;
-      }
-      
-      toast.success(data.message);
-      setReferralCode("");
-      
-      // Refresh active referral
-      const { data: refreshedData } = await supabase
-        .from('referral_usage')
-        .select(`
-          id,
-          expires_at,
-          referral_codes:referral_code_id (
-            code,
-            duration_months,
-            description
-          )
-        `)
-        .eq('user_id', activeUser.id)
-        .order('expires_at', { ascending: false })
-        .limit(1)
-        .single();
-      
-      if (refreshedData) {
-        setActiveReferral(refreshedData);
-      }
     } catch (error) {
       console.error("Error applying referral code:", error);
       toast.error("An unexpected error occurred. Please try again.");
     } finally {
       setIsApplyingCode(false);
+    }
+  };
+
+  const handleWebExtensionCheckout = async (browser: string) => {
+    try {
+      setLocalLoading(true);
+      await redirectToCheckout({
+        priceId: 'price_1R15yGLRETKD7zlDSrCkpFFt', // Pro plan price ID
+        productName: 'Candilingo Web Extension',
+      });
+    } catch (error) {
+      console.error("Error starting checkout:", error);
+      toast.error("An error occurred. Please try again.");
+    } finally {
+      setLocalLoading(false);
     }
   };
 
@@ -125,11 +115,9 @@ const CustomerPortal = () => {
       <div className="flex-grow container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
-            <img 
-              src="/lovable-uploads/bea439bb-3e28-45b4-9a5e-9f8a2eaa87c1.png" 
-              alt="Candilingo Full Logo" 
-              className="mx-auto h-16 mb-4"
-            />
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <span className="text-3xl font-bold text-candilingo-purple">Candilingo</span>
+            </div>
             <h1 className="text-3xl font-bold text-candilingo-purple">Customer <span className="text-candilingo-pink">Portal</span></h1>
           </div>
           
@@ -163,12 +151,17 @@ const CustomerPortal = () => {
                         <div className="bg-gray-50 p-4 rounded-lg border">
                           <h3 className="text-lg font-semibold mb-2 text-candilingo-purple">Chrome Installation</h3>
                           <ol className="list-decimal list-inside space-y-2 text-sm">
+                            <li>Complete the purchase process</li>
                             <li>Download the extension from the Chrome Web Store</li>
                             <li>Click "Add to Chrome" in the top right</li>
                             <li>Confirm by clicking "Add extension" in the popup</li>
-                            <li>Look for the Candilingo icon in your toolbar</li>
                           </ol>
-                          <Button variant="pink" size="sm" className="mt-3 w-full">
+                          <Button 
+                            variant="pink" 
+                            size="sm" 
+                            className="mt-3 w-full"
+                            onClick={() => handleWebExtensionCheckout('chrome')}
+                          >
                             Get Chrome Extension
                           </Button>
                         </div>
@@ -176,12 +169,17 @@ const CustomerPortal = () => {
                         <div className="bg-gray-50 p-4 rounded-lg border">
                           <h3 className="text-lg font-semibold mb-2 text-candilingo-purple">Firefox Installation</h3>
                           <ol className="list-decimal list-inside space-y-2 text-sm">
+                            <li>Complete the purchase process</li>
                             <li>Visit the Firefox Add-ons page for Candilingo</li>
                             <li>Click "Add to Firefox"</li>
                             <li>Confirm by clicking "Add" in the dialog</li>
-                            <li>The Candilingo icon will appear in your toolbar</li>
                           </ol>
-                          <Button variant="pink" size="sm" className="mt-3 w-full">
+                          <Button 
+                            variant="pink" 
+                            size="sm" 
+                            className="mt-3 w-full"
+                            onClick={() => handleWebExtensionCheckout('firefox')}
+                          >
                             Get Firefox Add-on
                           </Button>
                         </div>
@@ -189,12 +187,17 @@ const CustomerPortal = () => {
                         <div className="bg-gray-50 p-4 rounded-lg border">
                           <h3 className="text-lg font-semibold mb-2 text-candilingo-purple">Edge Installation</h3>
                           <ol className="list-decimal list-inside space-y-2 text-sm">
+                            <li>Complete the purchase process</li>
                             <li>Open the Edge Add-ons page for Candilingo</li>
                             <li>Click "Get" and then "Add extension"</li>
                             <li>The extension will install automatically</li>
-                            <li>Look for the Candilingo icon in your toolbar</li>
                           </ol>
-                          <Button variant="pink" size="sm" className="mt-3 w-full">
+                          <Button 
+                            variant="pink" 
+                            size="sm" 
+                            className="mt-3 w-full"
+                            onClick={() => handleWebExtensionCheckout('edge')}
+                          >
                             Get Edge Add-on
                           </Button>
                         </div>
@@ -202,12 +205,17 @@ const CustomerPortal = () => {
                         <div className="bg-gray-50 p-4 rounded-lg border">
                           <h3 className="text-lg font-semibold mb-2 text-candilingo-purple">Safari Installation</h3>
                           <ol className="list-decimal list-inside space-y-2 text-sm">
+                            <li>Complete the purchase process</li>
                             <li>Open Safari and go to Preferences</li>
                             <li>Go to the Extensions tab</li>
                             <li>Search for "Candilingo" and click Install</li>
-                            <li>Follow the on-screen instructions to complete setup</li>
                           </ol>
-                          <Button variant="pink" size="sm" className="mt-3 w-full">
+                          <Button 
+                            variant="pink" 
+                            size="sm" 
+                            className="mt-3 w-full"
+                            onClick={() => handleWebExtensionCheckout('safari')}
+                          >
                             Get Safari Extension
                           </Button>
                         </div>
@@ -256,9 +264,6 @@ const CustomerPortal = () => {
                               Apply
                             </Button>
                           </div>
-                          <p className="text-sm text-gray-500 mt-2">
-                            Try using codes like: WELCOME2024, EARLYBIRD, CANDILINGO
-                          </p>
                         </div>
 
                         <div className="border-t pt-6">

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,6 +32,7 @@ interface LoginFormProps {
 const LoginForm = ({ setIsLoading }: LoginFormProps) => {
   const [isResetMode, setIsResetMode] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
+  const [loginSuccess, setLoginSuccess] = useState(false);
 
   // Login form
   const loginForm = useForm<LoginFormValues>({
@@ -51,7 +52,7 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
   });
 
   // Handle login submission
-  const onLoginSubmit = async (values: LoginFormValues) => {
+  const onLoginSubmit = useCallback(async (values: LoginFormValues) => {
     try {
       setIsLoading(true);
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -64,6 +65,7 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
         return;
       }
       
+      setLoginSuccess(true);
       toast.success("Login successful!");
     } catch (error) {
       console.error("Login error:", error);
@@ -71,10 +73,10 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [setIsLoading]);
 
   // You can also sign in with the test credentials
-  const handleTestLogin = async () => {
+  const handleTestLogin = useCallback(async () => {
     try {
       setIsLoading(true);
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -87,6 +89,7 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
         return;
       }
       
+      setLoginSuccess(true);
       toast.success("Logged in with test account!");
     } catch (error) {
       console.error("Test login error:", error);
@@ -94,10 +97,10 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [setIsLoading]);
 
   // Handle password reset submission
-  const onResetSubmit = async (values: ResetFormValues) => {
+  const onResetSubmit = useCallback(async (values: ResetFormValues) => {
     try {
       setIsLoading(true);
       const { error } = await supabase.auth.resetPasswordForEmail(values.email, {
@@ -117,7 +120,30 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [setIsLoading]);
+
+  // Successful login message
+  if (loginSuccess) {
+    return (
+      <div className="text-center space-y-4 py-4">
+        <div className="mx-auto w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+          <CheckIcon className="h-6 w-6 text-green-600" />
+        </div>
+        <h3 className="text-lg font-medium text-candilingo-purple">To my account</h3>
+        <p className="text-sm text-gray-500">
+          You've successfully logged in to your Candilingo account.
+        </p>
+        <Button 
+          type="button" 
+          variant="purple"
+          className="mt-4 w-full text-lg py-6 font-bold"
+          onClick={() => window.location.href = '/dashboard'}
+        >
+          Go to Dashboard
+        </Button>
+      </div>
+    );
+  }
 
   // Reset password form component
   const renderResetPasswordForm = () => {
