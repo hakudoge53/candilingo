@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -86,6 +87,64 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
       setIsLoading(false);
     }
   }, [setIsLoading, missingInformation]);
+
+  const handleGoogleLogin = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      
+      const currentUrl = window.location.href;
+      const baseUrl = currentUrl.split('/').slice(0, 3).join('/');
+      const redirectUrl = `${baseUrl}/customer-portal`;
+      
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: redirectUrl
+        }
+      });
+      
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      
+      // Google OAuth will redirect to the authentication provider
+      // User will be logged in automatically when redirected back
+    } catch (error) {
+      console.error("Google login error:", error);
+      toast.error("An error occurred during Google login. Please try again.");
+      setIsLoading(false);
+    }
+  }, [setIsLoading]);
+
+  const handleLinkedInLogin = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      
+      const currentUrl = window.location.href;
+      const baseUrl = currentUrl.split('/').slice(0, 3).join('/');
+      const redirectUrl = `${baseUrl}/customer-portal`;
+      
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'linkedin_oidc',
+        options: {
+          redirectTo: redirectUrl
+        }
+      });
+      
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      
+      // LinkedIn OAuth will redirect to the authentication provider
+      // User will be logged in automatically when redirected back
+    } catch (error) {
+      console.error("LinkedIn login error:", error);
+      toast.error("An error occurred during LinkedIn login. Please try again.");
+      setIsLoading(false);
+    }
+  }, [setIsLoading]);
 
   const onResetSubmit = useCallback(async (values: { email: string }) => {
     try {
@@ -185,7 +244,9 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
     <LoginFormFields 
       onLoginSubmit={onLoginSubmit} 
       onForgotPassword={handleResetModeToggle} 
-      handleTestLogin={handleTestLogin} 
+      handleTestLogin={handleTestLogin}
+      handleGoogleLogin={handleGoogleLogin}
+      handleLinkedInLogin={handleLinkedInLogin}
     />
   );
 };

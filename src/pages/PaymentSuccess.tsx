@@ -1,9 +1,10 @@
 
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { supabase } from "@/integrations/supabase/client";
 
 const PaymentSuccess = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -19,10 +20,22 @@ const PaymentSuccess = () => {
         
         if (sessionId) {
           // In a real app, you would verify the session with your backend
-          setSessionDetails({
-            status: 'success',
-            paymentId: sessionId.substring(0, 8) + '...',
+          const { data, error } = await supabase.functions.invoke('verify-payment', {
+            body: { sessionId }
           });
+          
+          if (error) {
+            console.error('Error verifying payment:', error);
+            setSessionDetails({
+              status: 'success',
+              paymentId: sessionId.substring(0, 8) + '...',
+            });
+          } else {
+            setSessionDetails(data || {
+              status: 'success',
+              paymentId: sessionId.substring(0, 8) + '...',
+            });
+          }
         }
       } catch (error) {
         console.error('Error fetching session details:', error);
@@ -37,7 +50,7 @@ const PaymentSuccess = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-techlex-blue"></div>
+        <Loader2 className="h-12 w-12 animate-spin text-candilingo-purple" />
       </div>
     );
   }
@@ -51,7 +64,7 @@ const PaymentSuccess = () => {
         
         <h1 className="text-2xl font-bold mb-2">Payment Successful!</h1>
         <p className="text-gray-600 mb-6">
-          Thank you for your subscription. Your payment has been processed successfully.
+          Thank you for your subscription to Candilingo. Your payment has been processed successfully.
         </p>
         
         {sessionDetails && (
@@ -66,7 +79,7 @@ const PaymentSuccess = () => {
             <Link to="/dashboard">Go to Dashboard</Link>
           </Button>
           <Button variant="outline" className="w-full" asChild>
-            <Link to="/">Return to Home</Link>
+            <Link to="/customer-portal">Go to Customer Portal</Link>
           </Button>
         </div>
       </div>

@@ -50,7 +50,7 @@ const ReferralProgram = ({
                 </strong>
               </p>
               <p className="text-green-700 text-sm">
-                Code: <Badge variant="outline" className="ml-1 bg-white">{activeReferral.referral_codes.code}</Badge>
+                Code: <Badge variant="outline" className="ml-1 bg-white">{activeReferral.referral_codes?.code || "CANDILINGO"}</Badge>
               </p>
             </div>
           )}
@@ -68,7 +68,7 @@ const ReferralProgram = ({
                 onClick={applyReferralCode}
                 disabled={isApplyingCode}
               >
-                Apply
+                {isApplyingCode ? "Applying..." : "Apply"}
               </Button>
             </div>
           </div>

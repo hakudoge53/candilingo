@@ -49,7 +49,8 @@ const PricingCard = ({
         productName: "Enterprise Plan",
         customPrice: 199, // Custom price for enterprise
         couponId,
-        trialPeriod
+        trialPeriod,
+        cancelUrl: 'https://candilingo.com/customer-portal'
       });
     } else if (stripePriceId) {
       // If a specific price ID is provided, use it
@@ -57,7 +58,8 @@ const PricingCard = ({
         priceId: stripePriceId,
         productName: name,
         couponId,
-        trialPeriod
+        trialPeriod,
+        cancelUrl: 'https://candilingo.com/customer-portal'
       });
     } else if (stripeProductId) {
       // If a product ID is provided, let the backend find the price
@@ -65,7 +67,8 @@ const PricingCard = ({
         productId: stripeProductId,
         productName: name,
         couponId,
-        trialPeriod
+        trialPeriod,
+        cancelUrl: 'https://candilingo.com/customer-portal'
       });
     } else {
       toast.error("No price configuration found for this plan");
@@ -100,12 +103,12 @@ const PricingCard = ({
             <div className="flex items-center">
               <span className="text-xl text-candilingo-midgray line-through mr-2">{originalPrice}</span>
               <span className="text-3xl font-bold text-candilingo-purple">{price}</span>
-              {price !== "Custom" && <span className="text-candilingo-midgray ml-1">/month</span>}
+              {price !== "Custom" && <span className="text-candilingo-midgray ml-1">/user/month</span>}
             </div>
           ) : (
             <>
               <span className="text-3xl font-bold text-candilingo-purple">{price}</span>
-              {price !== "Custom" && <span className="text-candilingo-midgray ml-1">/month</span>}
+              {price !== "Custom" && <span className="text-candilingo-midgray ml-1">/user/month</span>}
             </>
           )}
           

@@ -9,6 +9,7 @@ interface ReferralCode {
   description: string | null;
   duration_months: number;
   is_active: boolean;
+  usage_count: number;
 }
 
 export const useReferralCode = () => {
@@ -71,6 +72,19 @@ export const useReferralCode = () => {
       const expiresAt = new Date();
       expiresAt.setMonth(expiresAt.getMonth() + referral.duration_months);
       
+      // Check if this user has already used this code
+      const { data: existingUsage, error: checkError } = await supabase
+        .from('referral_usage')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('referral_code_id', referral.id)
+        .single();
+        
+      if (existingUsage) {
+        toast.error("You've already used this referral code.");
+        return false;
+      }
+      
       // Insert into referral_usage table
       const { error } = await supabase
         .from('referral_usage')
@@ -93,10 +107,25 @@ export const useReferralCode = () => {
       // Increment usage_count
       await supabase
         .from('referral_codes')
-        .update({ usage_count: referral.usage_count + 1 })
+        .update({ usage_count: (referral.usage_count || 0) + 1 })
         .eq('id', referral.id);
       
+      // Update user profile with membership information
+      await supabase
+        .from('profiles')
+        .update({ 
+          membership_tier: 'Pro',
+          status: 'Active'
+        })
+        .eq('id', userId);
+      
       toast.success(`Referral code applied! You'll get ${referral.duration_months} months free.`);
+      
+      // Redirect to customer portal after successful application
+      setTimeout(() => {
+        window.location.href = '/customer-portal';
+      }, 1500);
+      
       return true;
     } catch (error) {
       console.error("Error in applyReferralCode:", error);

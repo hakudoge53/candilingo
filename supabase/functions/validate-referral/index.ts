@@ -111,6 +111,15 @@ serve(async (req) => {
       );
     }
     
+    // Update user profile with membership tier
+    await supabase
+      .from('profiles')
+      .update({ 
+        membership_tier: 'Pro',
+        status: 'Active'
+      })
+      .eq('id', user.id);
+    
     // Increment usage count
     await supabase
       .from('referral_codes')

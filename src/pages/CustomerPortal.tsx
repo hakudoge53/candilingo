@@ -9,6 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useStripeCheckout } from '@/hooks/useStripeCheckout';
+import { useLocation } from 'react-router-dom';
 
 // Import new components
 import PortalHeader from '@/components/customer-portal/PortalHeader';
@@ -23,9 +24,19 @@ const CustomerPortal = () => {
   const [activeReferral, setActiveReferral] = useState<any>(null);
   const [showInstallGuide, setShowInstallGuide] = useState(false);
   const { redirectToCheckout, isLoading: isCheckoutLoading } = useStripeCheckout();
+  const location = useLocation();
   
   // Combined loading state for both auth operations and local form submissions
   const showLoading = isLoading || localLoading || isCheckoutLoading;
+
+  useEffect(() => {
+    // Check for referral code in URL params
+    const urlParams = new URLSearchParams(location.search);
+    const refCode = urlParams.get('ref');
+    if (refCode) {
+      setReferralCode(refCode);
+    }
+  }, [location]);
 
   useEffect(() => {
     const fetchActiveReferral = async () => {
@@ -73,11 +84,75 @@ const CustomerPortal = () => {
     setIsApplyingCode(true);
     
     try {
-      // Start checkout with referral code
-      await redirectToCheckout({
-        productId: 'prod_referral',
-        couponId: referralCode.toUpperCase(),
-      });
+      // Validate and apply the referral code directly
+      const { data: referralData, error: referralError } = await supabase
+        .from('referral_codes')
+        .select('*')
+        .eq('code', referralCode.toUpperCase())
+        .eq('is_active', true)
+        .single();
+        
+      if (referralError || !referralData) {
+        toast.error("Invalid referral code. Please try again.");
+        setIsApplyingCode(false);
+        return;
+      }
+      
+      // Check if user has already used this code
+      const { data: existingUsage, error: usageError } = await supabase
+        .from('referral_usage')
+        .select('*')
+        .eq('user_id', activeUser.id)
+        .eq('referral_code_id', referralData.id)
+        .maybeSingle();
+        
+      if (existingUsage) {
+        toast.error("You've already used this referral code");
+        setIsApplyingCode(false);
+        return;
+      }
+      
+      // Calculate expiry date
+      const expiresAt = new Date();
+      expiresAt.setMonth(expiresAt.getMonth() + referralData.duration_months);
+      
+      // Apply the referral code
+      const { error: applyError } = await supabase
+        .from('referral_usage')
+        .insert({
+          referral_code_id: referralData.id,
+          user_id: activeUser.id,
+          expires_at: expiresAt.toISOString()
+        });
+        
+      if (applyError) {
+        toast.error("Error applying referral code. Please try again.");
+        console.error("Error applying referral code:", applyError);
+        setIsApplyingCode(false);
+        return;
+      }
+      
+      // Update usage count
+      await supabase
+        .from('referral_codes')
+        .update({ usage_count: (referralData.usage_count || 0) + 1 })
+        .eq('id', referralData.id);
+        
+      // Update user profile
+      await supabase
+        .from('profiles')
+        .update({ 
+          membership_tier: 'Pro',
+          status: 'Active'
+        })
+        .eq('id', activeUser.id);
+      
+      // Refresh the page to show the updated status
+      toast.success(`Referral code applied! You'll get ${referralData.duration_months} months free.`);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+      
     } catch (error) {
       console.error("Error applying referral code:", error);
       toast.error("An unexpected error occurred. Please try again.");
@@ -92,6 +167,7 @@ const CustomerPortal = () => {
       await redirectToCheckout({
         priceId: 'price_1R15yGLRETKD7zlDSrCkpFFt', // Pro plan price ID
         productName: 'Candilingo Web Extension',
+        cancelUrl: 'https://candilingo.com/customer-portal'
       });
     } catch (error) {
       console.error("Error starting checkout:", error);

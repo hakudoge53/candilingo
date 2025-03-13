@@ -10,6 +10,7 @@ type CheckoutOptions = {
   customPrice?: number;
   couponId?: string;
   trialPeriod?: boolean;
+  cancelUrl?: string;
 }
 
 export const useStripeCheckout = () => {
@@ -19,6 +20,11 @@ export const useStripeCheckout = () => {
     setIsLoading(true);
     
     try {
+      // If no cancelUrl is provided, default to current origin + /payment-canceled
+      if (!options.cancelUrl) {
+        options.cancelUrl = `${window.location.origin}/payment-canceled`;
+      }
+      
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: options
       });

@@ -3,30 +3,8 @@ import PricingCard from "@/components/PricingCard";
 import ROICalculator from "@/components/ROICalculator";
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useState } from "react";
-import { toast } from "sonner";
 
 const PricingSection = () => {
-  const [referralCode, setReferralCode] = useState("");
-  const [isApplyingCode, setIsApplyingCode] = useState(false);
-
-  const handleApplyCode = () => {
-    if (!referralCode.trim()) {
-      toast.error("Please enter a referral code");
-      return;
-    }
-
-    setIsApplyingCode(true);
-    // Simulate API call
-    setTimeout(() => {
-      toast.success("Referral code applied! You'll get 3 months free when you sign up.");
-      setIsApplyingCode(false);
-    }, 1500);
-  };
-
   return (
     <section id="pricing" className="section-padding">
       <div className="container mx-auto px-4">
@@ -35,50 +13,11 @@ const PricingSection = () => {
             Simple, Clear Pricing
           </h2>
           <p className="text-lg text-gray-600 mb-2">
-            Choose the plan that fits your team's needs. Pricing is per account.
+            Choose the plan that fits your team's needs. All pricing is per user account.
           </p>
           <p className="text-md text-candilingo-purple font-medium">
             Start with a 1-month free trial. No billing until your trial ends.
           </p>
-          
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline-teal" className="mt-4">
-                Have a referral code? Get 3 months free!
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Apply Referral Code</DialogTitle>
-                <DialogDescription>
-                  Enter your referral code to get 3 months completely free, no credit card required.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label htmlFor="referral-code">Referral Code</Label>
-                  <Input 
-                    id="referral-code" 
-                    placeholder="Enter your referral code" 
-                    value={referralCode}
-                    onChange={(e) => setReferralCode(e.target.value)}
-                  />
-                </div>
-                <p className="text-sm text-gray-500">
-                  Your free period will be applied automatically when you create an account.
-                </p>
-              </div>
-              <DialogFooter>
-                <Button 
-                  variant="purple" 
-                  onClick={handleApplyCode}
-                  disabled={isApplyingCode}
-                >
-                  {isApplyingCode ? "Applying..." : "Apply Code"}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
