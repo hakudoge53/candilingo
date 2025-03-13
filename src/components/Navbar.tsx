@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -30,10 +31,11 @@ const Navbar = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
-              <div className="h-10 w-10 rounded-md bg-techlex-blue text-white flex items-center justify-center mr-2 animate-pulse-subtle">
-                <span className="font-bold text-lg">C</span>
-              </div>
-              <span className="font-bold text-xl hidden sm:inline-block">Candilingo</span>
+              <img 
+                src="/lovable-uploads/ee060928-1fc0-46cc-86ef-09b5d5bbc218.png" 
+                alt="Candilingo Logo" 
+                className="h-10 w-auto"
+              />
             </Link>
           </div>
           
