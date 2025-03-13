@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -86,6 +87,48 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
       setIsLoading(false);
     }
   }, [setIsLoading, missingInformation]);
+
+  const handleGoogleLogin = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/customer-portal`
+        }
+      });
+      
+      if (error) {
+        toast.error(error.message);
+      }
+    } catch (error) {
+      console.error("Google login error:", error);
+      toast.error("An error occurred during Google login. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [setIsLoading]);
+
+  const handleLinkedInLogin = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'linkedin_oidc',
+        options: {
+          redirectTo: `${window.location.origin}/customer-portal`
+        }
+      });
+      
+      if (error) {
+        toast.error(error.message);
+      }
+    } catch (error) {
+      console.error("LinkedIn login error:", error);
+      toast.error("An error occurred during LinkedIn login. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [setIsLoading]);
 
   const onResetSubmit = useCallback(async (values: { email: string }) => {
     try {
@@ -185,7 +228,9 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
     <LoginFormFields 
       onLoginSubmit={onLoginSubmit} 
       onForgotPassword={handleResetModeToggle} 
-      handleTestLogin={handleTestLogin} 
+      handleTestLogin={handleTestLogin}
+      handleGoogleLogin={handleGoogleLogin}
+      handleLinkedInLogin={handleLinkedInLogin}
     />
   );
 };

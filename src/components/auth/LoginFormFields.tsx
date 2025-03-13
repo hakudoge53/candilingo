@@ -6,6 +6,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { FcGoogle } from 'react-icons/fc';
+import { FaLinkedin } from 'react-icons/fa';
 
 // Login form schema
 const loginSchema = z.object({
@@ -19,9 +22,17 @@ interface LoginFormFieldsProps {
   onLoginSubmit: (values: LoginFormValues) => Promise<void>;
   onForgotPassword: () => void;
   handleTestLogin: () => Promise<void>;
+  handleGoogleLogin: () => Promise<void>;
+  handleLinkedInLogin: () => Promise<void>;
 }
 
-const LoginFormFields = ({ onLoginSubmit, onForgotPassword, handleTestLogin }: LoginFormFieldsProps) => {
+const LoginFormFields = ({ 
+  onLoginSubmit, 
+  onForgotPassword, 
+  handleTestLogin,
+  handleGoogleLogin,
+  handleLinkedInLogin
+}: LoginFormFieldsProps) => {
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -76,11 +87,33 @@ const LoginFormFields = ({ onLoginSubmit, onForgotPassword, handleTestLogin }: L
         
         <div className="relative py-2">
           <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t"></span>
+            <Separator className="w-full" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-white px-2 text-muted-foreground">Or</span>
+            <span className="bg-white px-2 text-muted-foreground">Or continue with</span>
           </div>
+        </div>
+        
+        <div className="grid grid-cols-2 gap-3">
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={handleGoogleLogin}
+            className="flex items-center justify-center space-x-2"
+          >
+            <FcGoogle className="h-5 w-5" />
+            <span>Google</span>
+          </Button>
+          
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={handleLinkedInLogin}
+            className="flex items-center justify-center space-x-2 text-[#0077b5]"
+          >
+            <FaLinkedin className="h-5 w-5" />
+            <span>LinkedIn</span>
+          </Button>
         </div>
         
         <Button type="button" variant="outline-purple" className="w-full" onClick={handleTestLogin}>
