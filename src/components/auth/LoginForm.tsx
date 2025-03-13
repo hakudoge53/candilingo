@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -6,6 +7,13 @@ import ResetPasswordForm from './ResetPasswordForm';
 import LoginSuccess from './LoginSuccess';
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription 
+} from "@/components/ui/dialog";
 
 interface LoginFormProps {
   setIsLoading: (loading: boolean) => void;
@@ -18,6 +26,17 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
   const { activeUser, missingInformation, createDefaultOrganization } = useAuth();
   const [showOrganizationPrompt, setShowOrganizationPrompt] = useState(false);
   const [orgName, setOrgName] = useState("My Organization");
+  const [showLoginDialog, setShowLoginDialog] = useState(false);
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+
+  // Check URL for password reset token on component mount
+  React.useEffect(() => {
+    const hash = window.location.hash;
+    if (hash && hash.includes('type=recovery')) {
+      setShowLoginDialog(true);
+    }
+  }, []);
 
   const onLoginSubmit = useCallback(async (values: LoginFormValues) => {
     try {
@@ -129,6 +148,79 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
     setResetEmailSent(false);
   };
 
+  const handlePasswordLogin = async () => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: loginEmail,
+        password: loginPassword,
+      });
+      
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      
+      // Clear URL hash to remove the token
+      window.history.replaceState(null, document.title, window.location.pathname + window.location.search);
+      
+      setShowLoginDialog(false);
+      if (missingInformation && missingInformation.includes('organization')) {
+        setShowOrganizationPrompt(true);
+      } else {
+        setLoginSuccess(true);
+        toast.success("Login successful!");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error("An error occurred during login. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/customer-portal`
+        }
+      });
+      
+      if (error) {
+        toast.error(error.message);
+      }
+    } catch (error) {
+      console.error("Google login error:", error);
+      toast.error("An error occurred during Google login. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleLinkedInLogin = async () => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'linkedin_oidc',
+        options: {
+          redirectTo: `${window.location.origin}/customer-portal`
+        }
+      });
+      
+      if (error) {
+        toast.error(error.message);
+      }
+    } catch (error) {
+      console.error("LinkedIn login error:", error);
+      toast.error("An error occurred during LinkedIn login. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (showOrganizationPrompt) {
     return (
       <div className="space-y-4">
@@ -182,11 +274,60 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
   }
 
   return (
-    <LoginFormFields 
-      onLoginSubmit={onLoginSubmit} 
-      onForgotPassword={handleResetModeToggle} 
-      handleTestLogin={handleTestLogin} 
-    />
+    <>
+      <LoginFormFields 
+        onLoginSubmit={onLoginSubmit} 
+        onForgotPassword={handleResetModeToggle} 
+        handleTestLogin={handleTestLogin}
+        handleGoogleLogin={handleGoogleLogin}
+        handleLinkedInLogin={handleLinkedInLogin}
+      />
+      
+      <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Complete your login</DialogTitle>
+            <DialogDescription>
+              Enter your credentials to complete the login process.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label htmlFor="email" className="text-sm font-medium">Email</label>
+              <input
+                id="email"
+                type="email" 
+                value={loginEmail}
+                onChange={(e) => setLoginEmail(e.target.value)}
+                className="w-full p-2 border rounded"
+                placeholder="Enter your email"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <label htmlFor="password" className="text-sm font-medium">New Password</label>
+              <input
+                id="password"
+                type="password"
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+                className="w-full p-2 border rounded"
+                placeholder="Enter your new password"
+              />
+            </div>
+            
+            <Button 
+              onClick={handlePasswordLogin}
+              variant="purple" 
+              className="w-full"
+            >
+              Complete Login
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 

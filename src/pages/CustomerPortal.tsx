@@ -10,10 +10,11 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useStripeCheckout } from '@/hooks/useStripeCheckout';
 
-// Import new components
+// Import components
 import PortalHeader from '@/components/customer-portal/PortalHeader';
 import InstallationGuide from '@/components/customer-portal/InstallationGuide';
 import ReferralProgram from '@/components/customer-portal/ReferralProgram';
+import LogoSection from '@/components/customer-portal/LogoSection';
 
 const CustomerPortal = () => {
   const { isLoggedIn, isLoading, activeUser, handleLogout } = useAuth();
@@ -127,6 +128,8 @@ const CustomerPortal = () => {
                       isLoading={localLoading} 
                     />
                   )}
+
+                  <LogoSection />
 
                   <InstallationGuide 
                     handleWebExtensionCheckout={handleWebExtensionCheckout} 

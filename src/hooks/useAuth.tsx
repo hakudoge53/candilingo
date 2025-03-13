@@ -179,7 +179,6 @@ export const useAuth = () => {
         setActiveUser(null);
         setMissingInformation([]);
       } else if (event === 'PASSWORD_RECOVERY') {
-        // Handle password recovery
         console.log("PASSWORD_RECOVERY event triggered");
         
         // Get the current URL for proper redirection after password update
