@@ -88,6 +88,22 @@ export const useAuth = () => {
       } else if (event === 'SIGNED_OUT') {
         setIsLoggedIn(false);
         setActiveUser(null);
+      } else if (event === 'PASSWORD_RECOVERY') {
+        // Handle password recovery
+        const newPassword = prompt('What would you like your new password to be?');
+        if (newPassword) {
+          const { error } = await supabase.auth.updateUser({ 
+            password: newPassword 
+          });
+          
+          if (error) {
+            toast.error('Error updating password: ' + error.message);
+          } else {
+            toast.success('Password updated successfully!');
+            // Force refresh to apply new session
+            window.location.reload();
+          }
+        }
       }
     });
     
