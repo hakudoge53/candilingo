@@ -77,7 +77,7 @@ const ReferralCodeDialog = ({ isOpen, onClose, onSuccess }: ReferralCodeDialogPr
               Cancel
             </Button>
             <Button type="submit" variant="purple" disabled={isLoading}>
-              {isLoading ? <LoadingSpinner size="sm" /> : "Apply Code"}
+              {isLoading ? <LoadingSpinner /> : "Apply Code"}
             </Button>
           </DialogFooter>
         </form>
