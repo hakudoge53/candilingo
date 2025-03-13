@@ -3,9 +3,9 @@ import { useState } from 'react';
 import { useAuthSession } from './useAuthSession';
 import { useAuthStateListener } from './useAuthStateListener';
 import { useAuthActions } from './useAuthActions';
-import { User } from './types';
+import type { User } from './types';
 
-export { User } from './types';
+export type { User } from './types';
 
 export const useAuth = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);

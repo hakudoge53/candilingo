@@ -1,2 +1,3 @@
 
-export { useAuth, User } from './auth/useAuth';
+export { useAuth } from './auth/useAuth';
+export type { User } from './auth/types';
