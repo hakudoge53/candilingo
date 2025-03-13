@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -63,15 +64,15 @@ export default {
           ring: 'hsl(var(--sidebar-ring))'
         },
         candilingo: {
-          blue: '#2E86C1',
-          darkblue: '#236A9B',
-          lightblue: '#3498DB',
-          green: '#4CAF50',
-          darkgreen: '#3E8E41',
-          lightgreen: '#72C176',
-          orange: '#FF9800',
-          darkorange: '#E68A00',
-          lightorange: '#FFB84D',
+          purple: '#5544C4',
+          lightpurple: '#7A6BD3',
+          darkpurple: '#43359E',
+          teal: '#44B3C4',
+          lightteal: '#6DCAD7',
+          darkteal: '#3590A0',
+          coral: '#C44834',
+          lightcoral: '#D87563',
+          darkcoral: '#A33C2D',
           gray: '#F0F0F0',
           darkgray: '#333333',
           midgray: '#666666'

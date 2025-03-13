@@ -54,6 +54,29 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
     }
   };
 
+  // You can also sign in with the test credentials
+  const handleTestLogin = async () => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: "test@candilingo.com",
+        password: "password123",
+      });
+      
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      
+      toast.success("Logged in with test account!");
+    } catch (error) {
+      console.error("Test login error:", error);
+      toast.error("An error occurred during login. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Form {...loginForm}>
       <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
@@ -83,8 +106,21 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
             </FormItem>
           )}
         />
-        <Button type="submit" variant="orange" className="w-full">
+        <Button type="submit" variant="purple" className="w-full">
           Sign In
+        </Button>
+        
+        <div className="relative py-2">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t"></span>
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-white px-2 text-muted-foreground">Or</span>
+          </div>
+        </div>
+        
+        <Button type="button" variant="outline-purple" className="w-full" onClick={handleTestLogin}>
+          Use Test Account
         </Button>
       </form>
     </Form>

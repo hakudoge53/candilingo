@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -15,16 +16,16 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 204 70% 47%;
+    --primary: 252 43% 52%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 120 42% 49%;
+    --secondary: 188 49% 52%;
     --secondary-foreground: 210 40% 98%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 36 100% 50%;
+    --accent: 9 57% 49%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 84.2% 60.2%;
@@ -32,7 +33,7 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 204 70% 47%;
+    --ring: 252 43% 52%;
 
     --radius: 0.5rem;
   }
@@ -57,24 +58,24 @@
   }
   
   .tech-term {
-    @apply bg-candilingo-blue text-white px-1 py-0.5 rounded-md cursor-pointer transition-all duration-300 hover:bg-candilingo-lightblue;
+    @apply bg-candilingo-purple text-white px-1 py-0.5 rounded-md cursor-pointer transition-all duration-300 hover:bg-candilingo-lightpurple;
   }
   
   .btn-primary {
-    @apply bg-candilingo-blue text-white font-medium py-2.5 px-5 rounded-md transition-all duration-300
-    hover:bg-candilingo-lightblue focus:outline-none focus:ring-2 focus:ring-candilingo-blue focus:ring-opacity-50
+    @apply bg-candilingo-purple text-white font-medium py-2.5 px-5 rounded-md transition-all duration-300
+    hover:bg-candilingo-lightpurple focus:outline-none focus:ring-2 focus:ring-candilingo-purple focus:ring-opacity-50
     active:scale-95 shadow-md hover:shadow-lg;
   }
   
   .btn-secondary {
-    @apply bg-white text-candilingo-blue font-medium py-2.5 px-5 rounded-md transition-all duration-300
-    hover:bg-candilingo-gray focus:outline-none focus:ring-2 focus:ring-candilingo-blue focus:ring-opacity-50
-    active:scale-95 shadow-sm hover:shadow border border-candilingo-blue;
+    @apply bg-white text-candilingo-purple font-medium py-2.5 px-5 rounded-md transition-all duration-300
+    hover:bg-candilingo-gray focus:outline-none focus:ring-2 focus:ring-candilingo-purple focus:ring-opacity-50
+    active:scale-95 shadow-sm hover:shadow border border-candilingo-purple;
   }
 
   .btn-accent {
-    @apply bg-candilingo-orange text-white font-medium py-2.5 px-5 rounded-md transition-all duration-300
-    hover:bg-candilingo-lightorange focus:outline-none focus:ring-2 focus:ring-candilingo-orange focus:ring-opacity-50
+    @apply bg-candilingo-coral text-white font-medium py-2.5 px-5 rounded-md transition-all duration-300
+    hover:bg-candilingo-lightcoral focus:outline-none focus:ring-2 focus:ring-candilingo-coral focus:ring-opacity-50
     active:scale-95 shadow-md hover:shadow-lg;
   }
   
@@ -88,7 +89,7 @@
   
   .input-primary {
     @apply w-full px-4 py-3 rounded-md bg-white border border-gray-300 focus:outline-none
-    focus:ring-2 focus:ring-candilingo-blue focus:border-transparent;
+    focus:ring-2 focus:ring-candilingo-purple focus:border-transparent;
   }
 }
 

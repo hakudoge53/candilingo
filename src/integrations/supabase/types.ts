@@ -222,6 +222,95 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_codes: {
+        Row: {
+          code: string
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          duration_months: number
+          id: string
+          is_active: boolean
+          usage_count: number | null
+          usage_limit: number | null
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          duration_months?: number
+          id?: string
+          is_active?: boolean
+          usage_count?: number | null
+          usage_limit?: number | null
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          duration_months?: number
+          id?: string
+          is_active?: boolean
+          usage_count?: number | null
+          usage_limit?: number | null
+        }
+        Relationships: []
+      }
+      referral_usage: {
+        Row: {
+          applied_at: string | null
+          expires_at: string
+          id: string
+          referral_code_id: string
+          user_id: string
+        }
+        Insert: {
+          applied_at?: string | null
+          expires_at: string
+          id?: string
+          referral_code_id: string
+          user_id: string
+        }
+        Update: {
+          applied_at?: string | null
+          expires_at?: string
+          id?: string
+          referral_code_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_usage_referral_code_id_fkey"
+            columns: ["referral_code_id"]
+            isOneToOne: false
+            referencedRelation: "referral_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_settings: {
         Row: {
           created_at: string | null
