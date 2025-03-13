@@ -14,15 +14,7 @@ interface BrowserContentProps {
 
 const BrowserContent = ({ loaded }: BrowserContentProps) => {
   const [activeSlide, setActiveSlide] = useState(0);
-  const totalSlides = 2;
-
-  const goToNextSlide = () => {
-    setActiveSlide((prev) => (prev + 1) % totalSlides);
-  };
-
-  const goToPrevSlide = () => {
-    setActiveSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
-  };
+  const totalSlides = 1; // Now we only have 1 slide
 
   return (
     <div className="bg-white p-6 relative">
@@ -30,22 +22,17 @@ const BrowserContent = ({ loaded }: BrowserContentProps) => {
         "transition-opacity duration-1000",
         loaded ? "opacity-100" : "opacity-0"
       )}>
-        <ScrollArea className="h-[320px]">
-          {/* Slide 1: Developer CV */}
-          <div className={`${activeSlide === 0 ? 'block' : 'hidden'}`}>
+        <ScrollArea className="h-[420px]">
+          {/* Combined Developer CV and Resume Analysis in one slide */}
+          <div className="space-y-8">
             <DeveloperCVSlide />
-          </div>
-          
-          {/* Slide 2: Resume Analysis */}
-          <div className={`${activeSlide === 1 ? 'block' : 'hidden'}`}>
-            <ResumeAnalysisSlide />
+            <div className="border-t pt-6">
+              <ResumeAnalysisSlide />
+            </div>
           </div>
         </ScrollArea>
         
-        {/* Navigation arrows */}
-        <SlideNavigation onPrevious={goToPrevSlide} onNext={goToNextSlide} />
-        
-        {/* Slide indicator */}
+        {/* Slide indicator - now showing one dot */}
         <SlideIndicator 
           totalSlides={totalSlides} 
           activeSlide={activeSlide} 
