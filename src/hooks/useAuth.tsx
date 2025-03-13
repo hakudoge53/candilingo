@@ -180,18 +180,30 @@ export const useAuth = () => {
         setMissingInformation([]);
       } else if (event === 'PASSWORD_RECOVERY') {
         // Handle password recovery
+        console.log("PASSWORD_RECOVERY event triggered");
+        
+        // Get the current URL for proper redirection after password update
+        const currentUrl = window.location.href;
+        // Use the base URL (without path) for the redirect
+        const baseUrl = currentUrl.split('/').slice(0, 3).join('/');
+        
         const newPassword = prompt('What would you like your new password to be?');
         if (newPassword) {
-          const { error } = await supabase.auth.updateUser({ 
-            password: newPassword 
-          });
-          
-          if (error) {
-            toast.error('Error updating password: ' + error.message);
-          } else {
-            toast.success('Password updated successfully!');
-            // Redirect to customer portal
-            window.location.href = '/customer-portal';
+          try {
+            const { error } = await supabase.auth.updateUser({ 
+              password: newPassword 
+            });
+            
+            if (error) {
+              toast.error('Error updating password: ' + error.message);
+            } else {
+              toast.success('Password updated successfully!');
+              // Redirect to customer portal with absolute URL
+              window.location.href = `${baseUrl}/customer-portal`;
+            }
+          } catch (err) {
+            console.error("Password update error:", err);
+            toast.error("An error occurred while updating the password. Please try again.");
           }
         }
       }

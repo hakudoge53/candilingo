@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -20,7 +19,6 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
   const [showOrganizationPrompt, setShowOrganizationPrompt] = useState(false);
   const [orgName, setOrgName] = useState("My Organization");
 
-  // Handle login submission
   const onLoginSubmit = useCallback(async (values: LoginFormValues) => {
     try {
       setIsLoading(true);
@@ -34,7 +32,6 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
         return;
       }
       
-      // Check if the user is missing required information
       if (missingInformation && missingInformation.includes('organization')) {
         setShowOrganizationPrompt(true);
         return;
@@ -50,7 +47,6 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
     }
   }, [setIsLoading, missingInformation]);
 
-  // Handle organization creation
   const handleCreateOrganization = async () => {
     setIsLoading(true);
     const result = await createDefaultOrganization(orgName);
@@ -63,7 +59,6 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
     }
   };
 
-  // You can also sign in with the test credentials
   const handleTestLogin = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -77,7 +72,6 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
         return;
       }
       
-      // Check if the user is missing required information
       if (missingInformation && missingInformation.includes('organization')) {
         setShowOrganizationPrompt(true);
         return;
@@ -93,13 +87,15 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
     }
   }, [setIsLoading, missingInformation]);
 
-  // Handle password reset submission
   const onResetSubmit = useCallback(async (values: { email: string }) => {
     try {
       setIsLoading(true);
-      // Get the current origin with correct protocol
-      const origin = window.location.origin;
-      const redirectUrl = `${origin}/customer-portal`;
+      
+      const currentUrl = window.location.href;
+      const baseUrl = currentUrl.split('/').slice(0, 3).join('/');
+      const redirectUrl = `${baseUrl}/customer-portal`;
+      
+      console.log("Password reset redirect URL:", redirectUrl);
       
       const { error } = await supabase.auth.resetPasswordForEmail(values.email, {
         redirectTo: redirectUrl,
@@ -133,7 +129,6 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
     setResetEmailSent(false);
   };
 
-  // Render organization creation prompt
   if (showOrganizationPrompt) {
     return (
       <div className="space-y-4">
@@ -172,7 +167,6 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
     );
   }
 
-  // Render the appropriate component based on state
   if (loginSuccess) {
     return <LoginSuccess navigateToDashboard={navigateToDashboard} />;
   }
