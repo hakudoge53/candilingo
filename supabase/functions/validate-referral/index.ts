@@ -117,16 +117,10 @@ serve(async (req) => {
       .update({ usage_count: referralCode.usage_count + 1 })
       .eq('id', referralCode.id);
     
-    // Update user's membership tier
-    await supabase
-      .from('profiles')
-      .update({ membership_tier: 'Premium' })
-      .eq('id', user.id);
-    
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: `Referral code applied! You'll get ${referralCode.duration_months} months of Premium access.`,
+        message: `Referral code applied! You'll get ${referralCode.duration_months} months free.`,
         expiresAt: expiresAt.toISOString(),
         durationMonths: referralCode.duration_months
       }),

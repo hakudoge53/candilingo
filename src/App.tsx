@@ -1,14 +1,13 @@
 
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import './App.css';
 import Index from './pages/Index';
 import Dashboard from './pages/Dashboard';
-import Glossary from './pages/Glossary';
 import CustomerPortal from './pages/CustomerPortal';
+import Glossary from './pages/Glossary';
 import NotFound from './pages/NotFound';
+import { Toaster as SonnerToaster } from 'sonner';
+import { Toaster } from './components/ui/toaster';
 import PaymentSuccess from './pages/PaymentSuccess';
-import PaymentCancelled from './pages/PaymentCancelled';
 
 function App() {
   return (
@@ -16,12 +15,13 @@ function App() {
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/glossary" element={<Glossary />} />
+        <Route path="/glossary/:id?" element={<Glossary />} />
         <Route path="/customer-portal" element={<CustomerPortal />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
-        <Route path="/payment-cancelled" element={<PaymentCancelled />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <SonnerToaster position="top-right" />
+      <Toaster />
     </Router>
   );
 }

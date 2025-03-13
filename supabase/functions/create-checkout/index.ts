@@ -65,7 +65,7 @@ serve(async (req) => {
       line_items: lineItems,
       mode: 'subscription',
       success_url: `${baseUrl}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${baseUrl}/payment-cancelled?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/#pricing`,
     };
     
     // Add trial period only if explicitly requested (not for Enterprise plan)

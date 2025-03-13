@@ -10,11 +10,10 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useStripeCheckout } from '@/hooks/useStripeCheckout';
 
-// Import components
+// Import new components
 import PortalHeader from '@/components/customer-portal/PortalHeader';
 import InstallationGuide from '@/components/customer-portal/InstallationGuide';
 import ReferralProgram from '@/components/customer-portal/ReferralProgram';
-import ReferralCodeDialog from '@/components/customer-portal/ReferralCodeDialog';
 
 const CustomerPortal = () => {
   const { isLoggedIn, isLoading, activeUser, handleLogout } = useAuth();
@@ -24,7 +23,6 @@ const CustomerPortal = () => {
   const [activeReferral, setActiveReferral] = useState<any>(null);
   const [showInstallGuide, setShowInstallGuide] = useState(false);
   const { redirectToCheckout, isLoading: isCheckoutLoading } = useStripeCheckout();
-  const [isReferralDialogOpen, setIsReferralDialogOpen] = useState(false);
   
   // Combined loading state for both auth operations and local form submissions
   const showLoading = isLoading || localLoading || isCheckoutLoading;
@@ -67,50 +65,19 @@ const CustomerPortal = () => {
       return;
     }
 
-    if (!isLoggedIn) {
-      // Open dialog to prompt login/signup if not logged in
-      setIsReferralDialogOpen(true);
+    if (!activeUser?.id) {
+      toast.error("You must be logged in to apply a referral code");
       return;
     }
 
     setIsApplyingCode(true);
     
     try {
-      // Use the edge function to validate and apply the code
-      const { data, error } = await supabase.functions.invoke('validate-referral', {
-        body: { code: referralCode.trim() }
+      // Start checkout with referral code
+      await redirectToCheckout({
+        productId: 'prod_referral',
+        couponId: referralCode.toUpperCase(),
       });
-      
-      if (error) {
-        throw new Error(error.message);
-      }
-      
-      if (data.success) {
-        toast.success(data.message);
-        // Refresh active referral
-        const { data: referralData } = await supabase
-          .from('referral_usage')
-          .select(`
-            id,
-            expires_at,
-            referral_codes:referral_code_id (
-              code,
-              duration_months,
-              description
-            )
-          `)
-          .eq('user_id', activeUser.id)
-          .order('expires_at', { ascending: false })
-          .limit(1)
-          .maybeSingle();
-          
-        if (referralData) {
-          setActiveReferral(referralData);
-        }
-        setReferralCode("");
-      } else {
-        toast.error(data.error || "Failed to apply referral code");
-      }
     } catch (error) {
       console.error("Error applying referral code:", error);
       toast.error("An unexpected error occurred. Please try again.");
@@ -132,13 +99,6 @@ const CustomerPortal = () => {
     } finally {
       setLocalLoading(false);
     }
-  };
-
-  const handleReferralSuccess = () => {
-    setIsReferralDialogOpen(false);
-    toast.success("Referral code applied successfully!");
-    // Refresh the page or fetch updated referral data
-    window.location.reload();
   };
 
   return (
@@ -186,13 +146,6 @@ const CustomerPortal = () => {
         </div>
       </div>
       <Footer />
-
-      {/* Referral code dialog for non-logged in users */}
-      <ReferralCodeDialog 
-        isOpen={isReferralDialogOpen}
-        onClose={() => setIsReferralDialogOpen(false)}
-        onSuccess={handleReferralSuccess}
-      />
     </div>
   );
 };

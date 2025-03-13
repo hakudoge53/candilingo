@@ -46,7 +46,7 @@ const Navbar = () => {
             <a href="#pricing" className="font-medium text-gray-700 hover:text-candilingo-pink transition-colors">Pricing</a>
             <a href="#contact" className="font-medium text-gray-700 hover:text-candilingo-pink transition-colors">Contact</a>
             <Link to="/customer-portal">
-              <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+              <Button className="btn-primary">
                 Customer Login
               </Button>
             </Link>
@@ -118,7 +118,7 @@ const Navbar = () => {
                 Contact
               </a>
               <Link to="/customer-portal" onClick={() => setIsMobileMenuOpen(false)}>
-                <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+                <Button className="btn-primary">
                   Customer Login
                 </Button>
               </Link>

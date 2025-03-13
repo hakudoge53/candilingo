@@ -1,13 +1,14 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { toast } from 'sonner';
 import HeroImageSection from "@/components/HeroImageSection";
-import { Play, BookOpen } from "lucide-react";
+import { MailIcon, Play, BookOpen } from "lucide-react";
 
 const HeroSection = ({ onShowVideo }: { onShowVideo?: () => void }) => {
+  const [email, setEmail] = useState('');
   const [confirmedLicenses, setConfirmedLicenses] = useState(1); // Starting with 1 confirmed license
-  const [seatsRemaining, setSeatsRemaining] = useState(199); // 200 - 1 = 199 remaining seats
+  const [seatsRemaining, setSeatsRemaining] = useState(200 - 1); // Calculate remaining seats
 
   useEffect(() => {
     // This is where we would fetch the actual confirmed licenses count
@@ -15,12 +16,23 @@ const HeroSection = ({ onShowVideo }: { onShowVideo?: () => void }) => {
     setSeatsRemaining(200 - confirmedLicenses);
   }, [confirmedLicenses]);
 
+  const handleNewsletterSignup = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) {
+      toast.error('Please enter your email address');
+      return;
+    }
+    
+    toast.success('Thank you for subscribing to our newsletter! We\'ll keep you updated on our progress.');
+    setEmail('');
+  };
+
   return (
     <section className="pt-28 pb-16 md:pt-32 md:pb-24 bg-gradient-to-b from-white to-gray-50 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <div className="lg:pr-10 animate-fade-in">
-            <div className="mb-8">
+            <div className="mb-8 flex items-center">
               <div className="flex items-center gap-3">
                 <BookOpen className="h-12 w-12 text-candilingo-pink" />
                 <span className="font-bold text-3xl text-candilingo-purple">Candilingo</span>
