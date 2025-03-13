@@ -13,7 +13,8 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Copy } from "lucide-react";
+import { CheckCircle, Copy, Download } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 const CustomerPortal = () => {
   const { isLoggedIn, isLoading, activeUser, handleLogout } = useAuth();
@@ -21,6 +22,7 @@ const CustomerPortal = () => {
   const [referralCode, setReferralCode] = useState("");
   const [isApplyingCode, setIsApplyingCode] = useState(false);
   const [activeReferral, setActiveReferral] = useState<any>(null);
+  const [showInstallGuide, setShowInstallGuide] = useState(false);
   
   // Combined loading state for both auth operations and local form submissions
   const showLoading = isLoading || localLoading;
@@ -122,7 +124,14 @@ const CustomerPortal = () => {
       <Navbar />
       <div className="flex-grow container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-bold mb-8 text-candilingo-purple text-center">Customer Portal</h1>
+          <div className="text-center mb-8">
+            <img 
+              src="/lovable-uploads/bea439bb-3e28-45b4-9a5e-9f8a2eaa87c1.png" 
+              alt="Candilingo Full Logo" 
+              className="mx-auto h-16 mb-4"
+            />
+            <h1 className="text-3xl font-bold text-candilingo-purple">Customer <span className="text-candilingo-pink">Portal</span></h1>
+          </div>
           
           {showLoading ? (
             <div className="flex items-center justify-center">
@@ -143,6 +152,68 @@ const CustomerPortal = () => {
                       isLoading={localLoading} 
                     />
                   )}
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-candilingo-purple">Installation Guide</CardTitle>
+                      <CardDescription>Follow these simple steps to install Candilingo</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="bg-gray-50 p-4 rounded-lg border">
+                          <h3 className="text-lg font-semibold mb-2 text-candilingo-purple">Chrome Installation</h3>
+                          <ol className="list-decimal list-inside space-y-2 text-sm">
+                            <li>Download the extension from the Chrome Web Store</li>
+                            <li>Click "Add to Chrome" in the top right</li>
+                            <li>Confirm by clicking "Add extension" in the popup</li>
+                            <li>Look for the Candilingo icon in your toolbar</li>
+                          </ol>
+                          <Button variant="pink" size="sm" className="mt-3 w-full">
+                            Get Chrome Extension
+                          </Button>
+                        </div>
+                        
+                        <div className="bg-gray-50 p-4 rounded-lg border">
+                          <h3 className="text-lg font-semibold mb-2 text-candilingo-purple">Firefox Installation</h3>
+                          <ol className="list-decimal list-inside space-y-2 text-sm">
+                            <li>Visit the Firefox Add-ons page for Candilingo</li>
+                            <li>Click "Add to Firefox"</li>
+                            <li>Confirm by clicking "Add" in the dialog</li>
+                            <li>The Candilingo icon will appear in your toolbar</li>
+                          </ol>
+                          <Button variant="pink" size="sm" className="mt-3 w-full">
+                            Get Firefox Add-on
+                          </Button>
+                        </div>
+                        
+                        <div className="bg-gray-50 p-4 rounded-lg border">
+                          <h3 className="text-lg font-semibold mb-2 text-candilingo-purple">Edge Installation</h3>
+                          <ol className="list-decimal list-inside space-y-2 text-sm">
+                            <li>Open the Edge Add-ons page for Candilingo</li>
+                            <li>Click "Get" and then "Add extension"</li>
+                            <li>The extension will install automatically</li>
+                            <li>Look for the Candilingo icon in your toolbar</li>
+                          </ol>
+                          <Button variant="pink" size="sm" className="mt-3 w-full">
+                            Get Edge Add-on
+                          </Button>
+                        </div>
+                        
+                        <div className="bg-gray-50 p-4 rounded-lg border">
+                          <h3 className="text-lg font-semibold mb-2 text-candilingo-purple">Safari Installation</h3>
+                          <ol className="list-decimal list-inside space-y-2 text-sm">
+                            <li>Open Safari and go to Preferences</li>
+                            <li>Go to the Extensions tab</li>
+                            <li>Search for "Candilingo" and click Install</li>
+                            <li>Follow the on-screen instructions to complete setup</li>
+                          </ol>
+                          <Button variant="pink" size="sm" className="mt-3 w-full">
+                            Get Safari Extension
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
 
                   <Card>
                     <CardHeader>
@@ -178,7 +249,7 @@ const CustomerPortal = () => {
                               onChange={(e) => setReferralCode(e.target.value)}
                             />
                             <Button 
-                              variant="purple" 
+                              variant="pink" 
                               onClick={applyReferralCode}
                               disabled={isApplyingCode}
                             >

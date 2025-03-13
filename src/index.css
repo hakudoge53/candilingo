@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -25,7 +24,7 @@
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 9 57% 49%;
+    --accent: 328 52% 52%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 84.2% 60.2%;
@@ -74,8 +73,14 @@
   }
 
   .btn-accent {
-    @apply bg-candilingo-coral text-white font-medium py-2.5 px-5 rounded-md transition-all duration-300
-    hover:bg-candilingo-lightcoral focus:outline-none focus:ring-2 focus:ring-candilingo-coral focus:ring-opacity-50
+    @apply bg-candilingo-pink text-white font-medium py-2.5 px-5 rounded-md transition-all duration-300
+    hover:bg-candilingo-lightpink focus:outline-none focus:ring-2 focus:ring-candilingo-pink focus:ring-opacity-50
+    active:scale-95 shadow-md hover:shadow-lg;
+  }
+  
+  .btn-pink {
+    @apply bg-candilingo-pink text-white font-medium py-2.5 px-5 rounded-md transition-all duration-300
+    hover:bg-candilingo-lightpink focus:outline-none focus:ring-2 focus:ring-candilingo-pink focus:ring-opacity-50
     active:scale-95 shadow-md hover:shadow-lg;
   }
   
@@ -90,6 +95,26 @@
   .input-primary {
     @apply w-full px-4 py-3 rounded-md bg-white border border-gray-300 focus:outline-none
     focus:ring-2 focus:ring-candilingo-purple focus:border-transparent;
+  }
+
+  .pink-accent {
+    @apply text-candilingo-pink;
+  }
+  
+  .purple-accent {
+    @apply text-candilingo-purple;
+  }
+
+  .browser-window {
+    @apply bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200;
+  }
+  
+  .browser-header {
+    @apply bg-gray-100 px-4 py-2 flex items-center border-b border-gray-200;
+  }
+  
+  .browser-content {
+    @apply p-6;
   }
 }
 

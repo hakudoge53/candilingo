@@ -75,7 +75,10 @@ export default {
           darkcoral: '#A33C2D',
           gray: '#F0F0F0',
           darkgray: '#333333',
-          midgray: '#666666'
+          midgray: '#666666',
+          pink: '#C44483',    // Adding the requested pink color
+          lightpink: '#D870A3',
+          darkpink: '#A23569'
         }
       },
       borderRadius: {

@@ -22,9 +22,11 @@ const buttonVariants = cva(
         purple: "bg-candilingo-purple text-white hover:bg-candilingo-lightpurple",
         teal: "bg-candilingo-teal text-white hover:bg-candilingo-lightteal",
         coral: "bg-candilingo-coral text-white hover:bg-candilingo-lightcoral",
+        pink: "bg-candilingo-pink text-white hover:bg-candilingo-lightpink",
         "outline-purple": "border border-candilingo-purple text-candilingo-purple bg-transparent hover:bg-candilingo-purple/10",
         "outline-teal": "border border-candilingo-teal text-candilingo-teal bg-transparent hover:bg-candilingo-teal/10",
         "outline-coral": "border border-candilingo-coral text-candilingo-coral bg-transparent hover:bg-candilingo-coral/10",
+        "outline-pink": "border border-candilingo-pink text-candilingo-pink bg-transparent hover:bg-candilingo-pink/10",
       },
       size: {
         default: "h-10 px-4 py-2",
