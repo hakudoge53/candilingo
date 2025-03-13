@@ -33,11 +33,11 @@ const HeroSection = ({ onShowVideo }: { onShowVideo?: () => void }) => {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <div className="lg:pr-10 animate-fade-in">
-            <div className="mb-6">
+            <div className="mb-8">
               <img 
                 src="/lovable-uploads/ee060928-1fc0-46cc-86ef-09b5d5bbc218.png" 
                 alt="Candilingo Logo" 
-                className="h-24 w-auto"
+                className="h-32 w-auto"
               />
             </div>
             <div className="flex flex-wrap items-center gap-2 mb-4">

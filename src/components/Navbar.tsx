@@ -34,17 +34,17 @@ const Navbar = () => {
               <img 
                 src="/lovable-uploads/ee060928-1fc0-46cc-86ef-09b5d5bbc218.png" 
                 alt="Candilingo Logo" 
-                className="h-10 w-auto"
+                className="h-12 w-auto"
               />
             </Link>
           </div>
           
           {/* Desktop menu */}
           <div className="hidden md:flex items-center space-x-8">
-            <a href="#features" className="font-medium text-gray-700 hover:text-techlex-blue transition-colors">Features</a>
-            <a href="#how-it-works" className="font-medium text-gray-700 hover:text-techlex-blue transition-colors">How It Works</a>
-            <a href="#pricing" className="font-medium text-gray-700 hover:text-techlex-blue transition-colors">Pricing</a>
-            <a href="#contact" className="font-medium text-gray-700 hover:text-techlex-blue transition-colors">Contact</a>
+            <a href="#features" className="font-medium text-gray-700 hover:text-candilingo-pink transition-colors">Features</a>
+            <a href="#how-it-works" className="font-medium text-gray-700 hover:text-candilingo-pink transition-colors">How It Works</a>
+            <a href="#pricing" className="font-medium text-gray-700 hover:text-candilingo-pink transition-colors">Pricing</a>
+            <a href="#contact" className="font-medium text-gray-700 hover:text-candilingo-pink transition-colors">Contact</a>
             <Link to="/customer-portal">
               <Button className="btn-primary">
                 Customer Login
@@ -91,34 +91,34 @@ const Navbar = () => {
             <div className="flex flex-col space-y-4">
               <a 
                 href="#features" 
-                className="font-medium text-gray-700 hover:text-techlex-blue transition-colors px-2 py-1.5"
+                className="font-medium text-gray-700 hover:text-candilingo-pink transition-colors px-2 py-1.5"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Features
               </a>
               <a 
                 href="#how-it-works" 
-                className="font-medium text-gray-700 hover:text-techlex-blue transition-colors px-2 py-1.5"
+                className="font-medium text-gray-700 hover:text-candilingo-pink transition-colors px-2 py-1.5"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 How It Works
               </a>
               <a 
                 href="#pricing" 
-                className="font-medium text-gray-700 hover:text-techlex-blue transition-colors px-2 py-1.5"
+                className="font-medium text-gray-700 hover:text-candilingo-pink transition-colors px-2 py-1.5"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Pricing
               </a>
               <a 
                 href="#contact" 
-                className="font-medium text-gray-700 hover:text-techlex-blue transition-colors px-2 py-1.5"
+                className="font-medium text-gray-700 hover:text-candilingo-pink transition-colors px-2 py-1.5"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Contact
               </a>
               <Link to="/customer-portal" onClick={() => setIsMobileMenuOpen(false)}>
-                <Button className="btn-primary w-full">
+                <Button className="btn-primary">
                   Customer Login
                 </Button>
               </Link>

@@ -8,7 +8,7 @@ const FAQSection = () => {
             Frequently Asked Questions
           </h2>
           <p className="text-lg text-gray-600">
-            Everything you need to know about TechLex EU
+            Everything you need to know about Candilingo
           </p>
         </div>
         
@@ -16,7 +16,7 @@ const FAQSection = () => {
           <div className="p-6 bg-gray-50 rounded-xl border border-gray-100">
             <h3 className="font-semibold text-xl mb-2">How does the browser extension work?</h3>
             <p className="text-gray-600">
-              TechLex EU integrates with your browser and automatically identifies technical terms on web pages, PDFs, and other documents. It highlights these terms and provides instant definitions when you hover over them.
+              Candilingo integrates with your browser and automatically identifies technical terms on web pages, PDFs, and other documents. It highlights these terms and provides instant definitions when you hover over them.
             </p>
           </div>
           
@@ -30,7 +30,7 @@ const FAQSection = () => {
           <div className="p-6 bg-gray-50 rounded-xl border border-gray-100">
             <h3 className="font-semibold text-xl mb-2">Which browsers are supported?</h3>
             <p className="text-gray-600">
-              TechLex EU works with all major browsers including Chrome, Firefox, Safari, and Edge. The extension offers the same features and functionality across all supported browsers.
+              Candilingo works with all major browsers including Chrome, Firefox, Safari, and Edge. The extension offers the same features and functionality across all supported browsers.
             </p>
           </div>
           
