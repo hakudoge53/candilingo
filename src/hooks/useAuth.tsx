@@ -233,49 +233,6 @@ export const useAuth = () => {
     }
   };
 
-  // Add social login methods
-  const signInWithGoogle = async () => {
-    try {
-      setIsLoading(true);
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/customer-portal`
-        }
-      });
-      
-      if (error) {
-        toast.error(error.message);
-      }
-    } catch (error) {
-      console.error("Google login error:", error);
-      toast.error("An error occurred during Google login. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const signInWithLinkedIn = async () => {
-    try {
-      setIsLoading(true);
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'linkedin_oidc',
-        options: {
-          redirectTo: `${window.location.origin}/customer-portal`
-        }
-      });
-      
-      if (error) {
-        toast.error(error.message);
-      }
-    } catch (error) {
-      console.error("LinkedIn login error:", error);
-      toast.error("An error occurred during LinkedIn login. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const createDefaultOrganization = async (name: string = "My Organization") => {
     if (!activeUser?.id) {
       toast.error("You must be logged in to create an organization");
@@ -328,8 +285,6 @@ export const useAuth = () => {
     activeUser,
     missingInformation,
     handleLogout,
-    createDefaultOrganization,
-    signInWithGoogle,
-    signInWithLinkedIn
+    createDefaultOrganization
   };
 };

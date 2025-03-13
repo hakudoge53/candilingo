@@ -15,9 +15,8 @@ const SlideIndicator = ({ totalSlides, activeSlide, onSlideChange }: SlideIndica
           key={i}
           onClick={() => onSlideChange(i)}
           className={`w-2 h-2 rounded-full ${
-            i === activeSlide ? 'bg-candilingo-pink' : 'bg-gray-300'
+            i === activeSlide ? 'bg-techlex-pink' : 'bg-gray-300'
           }`}
-          aria-label={`Go to slide ${i + 1}`}
         />
       ))}
     </div>

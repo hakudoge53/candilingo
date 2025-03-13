@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -10,10 +9,9 @@ import { Button } from "@/components/ui/button";
 
 interface LoginFormProps {
   setIsLoading: (loading: boolean) => void;
-  onSuccess?: () => void;
 }
 
-const LoginForm = ({ setIsLoading, onSuccess }: LoginFormProps) => {
+const LoginForm = ({ setIsLoading }: LoginFormProps) => {
   const [isResetMode, setIsResetMode] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [loginSuccess, setLoginSuccess] = useState(false);
@@ -41,17 +39,13 @@ const LoginForm = ({ setIsLoading, onSuccess }: LoginFormProps) => {
       
       setLoginSuccess(true);
       toast.success("Login successful!");
-      
-      if (onSuccess) {
-        onSuccess();
-      }
     } catch (error) {
       console.error("Login error:", error);
       toast.error("An error occurred during login. Please try again.");
     } finally {
       setIsLoading(false);
     }
-  }, [setIsLoading, missingInformation, onSuccess]);
+  }, [setIsLoading, missingInformation]);
 
   const handleCreateOrganization = async () => {
     setIsLoading(true);
@@ -62,10 +56,6 @@ const LoginForm = ({ setIsLoading, onSuccess }: LoginFormProps) => {
       setShowOrganizationPrompt(false);
       setLoginSuccess(true);
       toast.success("Organization created and login successful!");
-      
-      if (onSuccess) {
-        onSuccess();
-      }
     }
   };
 
@@ -89,17 +79,13 @@ const LoginForm = ({ setIsLoading, onSuccess }: LoginFormProps) => {
       
       setLoginSuccess(true);
       toast.success("Logged in with test account!");
-      
-      if (onSuccess) {
-        onSuccess();
-      }
     } catch (error) {
       console.error("Test login error:", error);
       toast.error("An error occurred during login. Please try again.");
     } finally {
       setIsLoading(false);
     }
-  }, [setIsLoading, missingInformation, onSuccess]);
+  }, [setIsLoading, missingInformation]);
 
   const onResetSubmit = useCallback(async (values: { email: string }) => {
     try {
@@ -132,9 +118,6 @@ const LoginForm = ({ setIsLoading, onSuccess }: LoginFormProps) => {
 
   const navigateToDashboard = () => {
     window.location.href = '/dashboard';
-    if (onSuccess) {
-      onSuccess();
-    }
   };
 
   const handleResetModeToggle = () => {
