@@ -97,8 +97,12 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
   const onResetSubmit = useCallback(async (values: { email: string }) => {
     try {
       setIsLoading(true);
+      // Get the current origin with correct protocol
+      const origin = window.location.origin;
+      const redirectUrl = `${origin}/customer-portal`;
+      
       const { error } = await supabase.auth.resetPasswordForEmail(values.email, {
-        redirectTo: `${window.location.origin}/CustomerPortal`,
+        redirectTo: redirectUrl,
       });
       
       if (error) {

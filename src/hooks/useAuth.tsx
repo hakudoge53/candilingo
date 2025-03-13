@@ -190,8 +190,8 @@ export const useAuth = () => {
             toast.error('Error updating password: ' + error.message);
           } else {
             toast.success('Password updated successfully!');
-            // Force refresh to apply new session
-            window.location.reload();
+            // Redirect to customer portal
+            window.location.href = '/customer-portal';
           }
         }
       }
