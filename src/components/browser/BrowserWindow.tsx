@@ -4,8 +4,8 @@ import BrowserHeader from './BrowserHeader';
 import LoadingOverlay from './LoadingOverlay';
 import BrowserContent from './BrowserContent';
 import TooltipOverlay from './TooltipOverlay';
-import { ResumeAnalysisSlide } from './ResumeAnalysisSlide';
-import { DeveloperCVSlide } from './DeveloperCVSlide';
+import ResumeAnalysisSlide from './ResumeAnalysisSlide';
+import DeveloperCVSlide from './DeveloperCVSlide';
 import SlideIndicator from './SlideIndicator';
 
 interface BrowserWindowProps {
@@ -35,7 +35,7 @@ const BrowserWindow: React.FC<BrowserWindowProps> = ({
         <ResumeAnalysisSlide key="analysis" />
       ]);
     } else {
-      setSlides([<BrowserContent key="content" />]);
+      setSlides([<BrowserContent key="content" loaded={true} />]);
     }
   }, [showAnalysis]);
 
@@ -45,17 +45,17 @@ const BrowserWindow: React.FC<BrowserWindowProps> = ({
 
   return (
     <div className="relative border border-gray-200 rounded-lg shadow-lg overflow-hidden bg-white w-full max-w-4xl mx-auto">
-      <BrowserHeader text={headerText} />
+      <BrowserHeader headerText={headerText} />
       
       <div className="relative">
         {slides[activeSlide]}
         
-        {showLoading && <LoadingOverlay />}
+        {showLoading && <LoadingOverlay loaded={false} />}
         
         {tooltipText && tooltipTarget && (
           <TooltipOverlay
             text={tooltipText}
-            position={tooltipPosition || 'bottom'}
+            position={tooltipPosition === 'top' || tooltipPosition === 'bottom' ? 'right' : tooltipPosition || 'right'}
             target={tooltipTarget}
           />
         )}

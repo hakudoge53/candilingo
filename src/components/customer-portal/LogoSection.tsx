@@ -1,8 +1,11 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import LogoUploader from '@/components/LogoUploader';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface LogoSectionProps {
   title?: string;
@@ -14,9 +17,63 @@ const LogoSection: React.FC<LogoSectionProps> = ({
   description = "Upload your company logo to personalize your dashboard."
 }) => {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const { activeUser } = useAuth();
   
-  const handleLogoUpload = (url: string) => {
+  // Fetch the user's logo when component mounts
+  useEffect(() => {
+    const fetchUserLogo = async () => {
+      if (!activeUser?.id) return;
+      
+      try {
+        setIsLoading(true);
+        
+        // Try to get the user's profile which might contain a logo URL
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('logo_url')
+          .eq('id', activeUser.id)
+          .single();
+          
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error fetching logo:', error);
+        } else if (data && data.logo_url) {
+          setLogoUrl(data.logo_url);
+        }
+      } catch (error) {
+        console.error('Failed to fetch logo:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchUserLogo();
+  }, [activeUser?.id]);
+  
+  const handleLogoUpload = async (url: string) => {
+    if (!activeUser?.id) {
+      toast.error('You must be logged in to upload a logo.');
+      return;
+    }
+    
     setLogoUrl(url);
+    
+    try {
+      // Update the user's profile with the new logo URL
+      const { error } = await supabase
+        .from('profiles')
+        .update({ logo_url: url })
+        .eq('id', activeUser.id);
+        
+      if (error) {
+        throw error;
+      }
+      
+      toast.success('Logo updated successfully.');
+    } catch (error) {
+      console.error('Failed to save logo to profile:', error);
+      toast.error('Failed to save logo to your profile. Please try again.');
+    }
   };
   
   return (
@@ -27,7 +84,11 @@ const LogoSection: React.FC<LogoSectionProps> = ({
       </CardHeader>
       
       <CardContent className="space-y-4">
-        {logoUrl ? (
+        {isLoading ? (
+          <div className="h-32 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+          </div>
+        ) : logoUrl ? (
           <div className="border rounded-md p-4 bg-gray-50">
             <div className="max-w-xs mx-auto">
               <AspectRatio ratio={3/1} className="bg-white">

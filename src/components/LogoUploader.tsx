@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   Dialog, 
@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 interface LogoUploaderProps {
   onLogoUpload?: (logoUrl: string) => void;
@@ -28,6 +29,8 @@ const LogoUploader: React.FC<LogoUploaderProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -39,11 +42,18 @@ const LogoUploader: React.FC<LogoUploaderProps> = ({
       return;
     }
     
+    // Check file size (2MB max)
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('File size exceeds 2MB limit.');
+      return;
+    }
+    
     // Load image to check dimensions
     const img = new Image();
     const objectUrl = URL.createObjectURL(file);
     
     img.onload = () => {
+      // Release object URL after loading
       setPreviewUrl(objectUrl);
       setSelectedFile(file);
     };
@@ -56,17 +66,82 @@ const LogoUploader: React.FC<LogoUploaderProps> = ({
     img.src = objectUrl;
   };
   
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!selectedFile || !previewUrl) return;
     
-    // In a real app, you would upload the file to a server here
-    // For now, we'll just pass the local preview URL
-    if (onLogoUpload) {
-      onLogoUpload(previewUrl);
-    }
+    setIsUploading(true);
     
-    toast.success('Logo uploaded successfully.');
-    setIsOpen(false);
+    try {
+      // Generate a unique filename with timestamp
+      const fileExt = selectedFile.name.split('.').pop();
+      const fileName = `${Date.now()}.${fileExt}`;
+      const filePath = `logos/${fileName}`;
+      
+      // Upload the file to Supabase Storage
+      const { error } = await supabase.storage
+        .from('public')
+        .upload(filePath, selectedFile);
+        
+      if (error) {
+        throw error;
+      }
+      
+      // Get the public URL
+      const { data } = supabase.storage
+        .from('public')
+        .getPublicUrl(filePath);
+        
+      if (data && data.publicUrl) {
+        if (onLogoUpload) {
+          onLogoUpload(data.publicUrl);
+        }
+        toast.success('Logo uploaded successfully.');
+      } else {
+        throw new Error('Failed to get public URL');
+      }
+    } catch (error) {
+      console.error('Error uploading logo:', error);
+      toast.error('Failed to upload logo. Please try again.');
+      
+      // Fallback: If storage upload fails, use the local preview URL
+      if (onLogoUpload) {
+        onLogoUpload(previewUrl);
+        toast.success('Logo uploaded successfully (local only).');
+      }
+    } finally {
+      setIsUploading(false);
+      setIsOpen(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+  
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+  
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const file = e.dataTransfer.files[0];
+      
+      // Create a synthetic change event for the file input
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      
+      if (fileInputRef.current) {
+        fileInputRef.current.files = dataTransfer.files;
+        
+        // Trigger the change handler
+        const changeEvent = new Event('change', { bubbles: true });
+        fileInputRef.current.dispatchEvent(changeEvent);
+      }
+    }
   };
   
   return (
@@ -104,7 +179,11 @@ const LogoUploader: React.FC<LogoUploaderProps> = ({
           </DialogHeader>
           
           <div className="space-y-4">
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+            <div 
+              className="border-2 border-dashed border-gray-300 rounded-lg p-4 relative"
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+            >
               {previewUrl ? (
                 <div className="max-w-xs mx-auto">
                   <AspectRatio ratio={aspectRatio} className="bg-muted">
@@ -138,6 +217,7 @@ const LogoUploader: React.FC<LogoUploaderProps> = ({
               )}
               
               <input 
+                ref={fileInputRef}
                 type="file" 
                 accept="image/*" 
                 onChange={handleFileChange}
@@ -171,9 +251,9 @@ const LogoUploader: React.FC<LogoUploaderProps> = ({
             <Button 
               variant="purple" 
               onClick={handleUpload}
-              disabled={!selectedFile}
+              disabled={!selectedFile || isUploading}
             >
-              Upload Logo
+              {isUploading ? 'Uploading...' : 'Upload Logo'}
             </Button>
           </DialogFooter>
         </DialogContent>
