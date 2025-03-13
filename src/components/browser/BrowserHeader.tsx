@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Search } from 'lucide-react';
+import { Search, BookOpen } from 'lucide-react';
 
 const BrowserHeader = () => {
   return (
@@ -14,11 +14,7 @@ const BrowserHeader = () => {
         <div className="flex items-center w-full">
           <Search className="w-3.5 h-3.5 mr-2 text-gray-400" />
           <span className="truncate">resume-review.candilingo.com</span>
-          <img 
-            src="/lovable-uploads/7a750ab3-5d13-4260-96d5-1c489f3a4102.png" 
-            alt="Candilingo Icon" 
-            className="w-4 h-4 ml-auto"
-          />
+          <BookOpen className="w-4 h-4 ml-auto text-candilingo-pink" />
         </div>
       </div>
     </div>

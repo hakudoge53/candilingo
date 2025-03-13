@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Link } from 'react-router-dom';
+import { BookOpen } from 'lucide-react';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -31,11 +32,10 @@ const Navbar = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
-              <img 
-                src="/lovable-uploads/ee060928-1fc0-46cc-86ef-09b5d5bbc218.png" 
-                alt="Candilingo Logo" 
-                className="h-12 w-auto"
-              />
+              <div className="flex items-center gap-2">
+                <BookOpen className="h-8 w-8 text-candilingo-pink" />
+                <span className="font-bold text-xl text-candilingo-purple">Candilingo</span>
+              </div>
             </Link>
           </div>
           
