@@ -98,7 +98,7 @@ const BasicInfoForm = ({ onSubmit }: BasicInfoFormProps) => {
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full bg-techlex-blue">
+          <Button type="submit" variant="purple" className="w-full">
             Next Step
           </Button>
         </form>

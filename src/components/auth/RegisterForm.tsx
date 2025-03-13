@@ -13,6 +13,7 @@ const RegisterForm = ({ setIsLoading }: RegisterFormProps) => {
   const {
     currentStep,
     registrationComplete,
+    autoLoginFailed,
     onBasicInfoSubmit,
     onAdditionalInfoSubmit,
     handleBackToBasicInfo,
@@ -21,7 +22,12 @@ const RegisterForm = ({ setIsLoading }: RegisterFormProps) => {
 
   // Render registration success
   if (registrationComplete) {
-    return <RegistrationSuccess onNavigate={navigateToCustomerPortal} />;
+    return (
+      <RegistrationSuccess 
+        onNavigate={navigateToCustomerPortal} 
+        autoLoginFailed={autoLoginFailed}
+      />
+    );
   }
 
   // Render step 1 - Basic info

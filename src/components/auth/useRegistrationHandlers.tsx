@@ -9,6 +9,7 @@ export const useRegistrationHandlers = (setIsLoading: (loading: boolean) => void
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [basicInfo, setBasicInfo] = useState<BasicInfoFormValues | null>(null);
   const [registrationComplete, setRegistrationComplete] = useState<boolean>(false);
+  const [autoLoginFailed, setAutoLoginFailed] = useState<boolean>(false);
   
   // Handle basic info submission (step 1)
   const onBasicInfoSubmit = (values: BasicInfoFormValues) => {
@@ -49,16 +50,18 @@ export const useRegistrationHandlers = (setIsLoading: (loading: boolean) => void
       
       if (error) {
         toast.error(error.message);
+        setIsLoading(false);
         return;
       }
       
       // Check if email confirmation is required
       if (data.user && data.user.identities && data.user.identities.length === 0) {
         toast.info("This email is already registered. Please sign in instead.");
+        setIsLoading(false);
         return;
       }
       
-      toast.success("Registration successful! Logging you in...");
+      // Registration successful
       setRegistrationComplete(true);
       
       // Sign in immediately after registration
@@ -68,9 +71,14 @@ export const useRegistrationHandlers = (setIsLoading: (loading: boolean) => void
       });
       
       if (signInError) {
+        console.error("Auto-login error:", signInError);
         toast.error("Registration complete, but auto-login failed. Please log in manually.");
+        setAutoLoginFailed(true);
+        setIsLoading(false);
         return;
       }
+      
+      toast.success("Registration successful! Logging you in...");
       
       // Redirect to customer portal after successful registration
       setTimeout(() => {
@@ -88,6 +96,7 @@ export const useRegistrationHandlers = (setIsLoading: (loading: boolean) => void
   return {
     currentStep,
     registrationComplete,
+    autoLoginFailed,
     basicInfo,
     onBasicInfoSubmit,
     onAdditionalInfoSubmit,
