@@ -11,14 +11,15 @@ import { Toaster } from './components/ui/toaster';
 import PaymentSuccess from './pages/PaymentSuccess';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
+import { supabase } from "@/integrations/supabase/client";
 
 function App() {
-  // Check for URL parameters that indicate issues
+  // Handle URL parameters and errors
   useEffect(() => {
     // Check for canceled payment
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('canceled') === 'true') {
-      window.location.href = 'https://candilingo.com/customer-portal';
+      window.location.href = '/customer-portal';
     }
 
     // Check for hash errors (typically auth related)
@@ -30,6 +31,12 @@ function App() {
       
       if (error === 'access_denied' && hashParams.get('error_code') === 'otp_expired') {
         toast.error("Email confirmation link has expired. Please request a new one.");
+        
+        // Redirect to customer portal
+        setTimeout(() => {
+          window.location.href = '/customer-portal';
+        }, 2000);
+        
         // Clear the hash from the URL
         window.history.replaceState(null, '', window.location.pathname);
       } else if (error) {
@@ -48,7 +55,7 @@ function App() {
         <Route path="/customer-portal" element={<CustomerPortal />} />
         <Route path="/portal" element={<Portal />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
-        <Route path="/payment-canceled" element={<Navigate to="https://candilingo.com/customer-portal" />} />
+        <Route path="/payment-canceled" element={<Navigate to="/customer-portal" />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <SonnerToaster position="top-right" />

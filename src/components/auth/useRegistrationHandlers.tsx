@@ -25,11 +25,7 @@ export const useRegistrationHandlers = (setIsLoading: (loading: boolean) => void
   
   // Navigate to customer portal
   const navigateToCustomerPortal = () => {
-    if (emailConfirmationRequired) {
-      window.location.href = '/customer-portal'; // Go to customer portal page if email confirmation is required
-    } else {
-      window.location.href = '/customer-portal';
-    }
+    window.location.href = '/customer-portal';
   };
   
   // Handle going back to step 1
@@ -62,17 +58,8 @@ export const useRegistrationHandlers = (setIsLoading: (loading: boolean) => void
     try {
       setIsLoading(true);
       
-      // Get the current URL to use as a base for redirects
-      const hostname = window.location.hostname;
-      let baseUrl;
-      
-      // Use production URL for deployed site or localhost for development
-      if (hostname === 'localhost' || hostname === '127.0.0.1') {
-        baseUrl = window.location.origin;
-      } else {
-        baseUrl = 'https://candilingo.com';
-      }
-      const redirectUrl = `${baseUrl}/customer-portal`;
+      // Always use the current domain for the redirect
+      const redirectUrl = window.location.origin + '/customer-portal';
       
       console.log("Using redirect URL:", redirectUrl);
       
@@ -87,7 +74,7 @@ export const useRegistrationHandlers = (setIsLoading: (loading: boolean) => void
             industry: additionalInfo.industry,
             referral_source: additionalInfo.referralSource,
           },
-          emailRedirectTo: redirectUrl, // Use proper redirect URL based on environment
+          emailRedirectTo: redirectUrl,
         },
       });
       
@@ -122,10 +109,10 @@ export const useRegistrationHandlers = (setIsLoading: (loading: boolean) => void
       
       if (signInError) {
         console.error("Auto-login error:", signInError);
-        toast.error("Registration complete, but auto-login failed. Please log in manually.");
-        setAutoLoginFailed(true);
+        setEmailConfirmationRequired(true);
         setRegistrationComplete(true);
         setIsLoading(false);
+        toast.info("Please check your email to confirm your account.");
         return;
       }
       
