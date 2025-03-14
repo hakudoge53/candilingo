@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { OrganizationMember, UserRole } from '@/types/organization';
+import { OrganizationMember, UserRole, MemberStatus } from '@/types/organization';
 import { useAuth } from '../useAuth';
 
 export const useOrganizationMembers = (organizationId: string | undefined) => {
@@ -20,7 +20,7 @@ export const useOrganizationMembers = (organizationId: string | undefined) => {
     
     try {
       // First, get active members with profile information
-      const { data: activeMembers, error: activeMembersError } = await supabase
+      const { data: membersData, error: membersError } = await supabase
         .from('organization_members')
         .select(`
           id,
@@ -30,39 +30,53 @@ export const useOrganizationMembers = (organizationId: string | undefined) => {
           status,
           created_at,
           updated_at,
-          profiles:user_id (name, email, membership_tier, status)
+          invitation_token,
+          invited_email,
+          invited_name
         `)
-        .eq('organization_id', organizationId)
-        .eq('status', 'active');
+        .eq('organization_id', organizationId);
       
-      if (activeMembersError) throw activeMembersError;
+      if (membersError) throw membersError;
       
-      // Then get pending members (invited but not joined)
-      const { data: pendingMembers, error: pendingMembersError } = await supabase
-        .from('organization_members')
-        .select('*')
-        .eq('organization_id', organizationId)
-        .eq('status', 'pending');
+      // For active members, fetch their profile info
+      const activeMembers = [];
+      const pendingMembers = [];
       
-      if (pendingMembersError) throw pendingMembersError;
-      
-      // Transform active members data
-      const formattedActiveMembers = activeMembers.map(member => ({
-        ...member,
-        user: {
-          name: member.profiles?.name,
-          email: member.profiles?.email,
-          membership_tier: member.profiles?.membership_tier,
-          status: member.profiles?.status
-        },
-        // These properties are not used for active members
-        invited_name: null,
-        invited_email: null,
-        invitation_token: null
-      })) as OrganizationMember[];
+      for (const member of membersData || []) {
+        if (member.status === 'active' && member.user_id !== '00000000-0000-0000-0000-000000000000') {
+          // Fetch profile data for active members
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('name, email, membership_tier, status')
+            .eq('id', member.user_id)
+            .maybeSingle();
+          
+          activeMembers.push({
+            ...member,
+            user: {
+              name: profileData?.name || 'Unknown User',
+              email: profileData?.email || 'unknown@example.com',
+              membership_tier: profileData?.membership_tier || 'Free',
+              status: profileData?.status || 'Active'
+            },
+            // For active members, these are null
+            invited_name: member.invited_name,
+            invited_email: member.invited_email,
+            invitation_token: member.invitation_token,
+            status: member.status as MemberStatus
+          } as OrganizationMember);
+        } else {
+          // For pending members, use the invitation info
+          pendingMembers.push({
+            ...member,
+            user: null,
+            status: member.status as MemberStatus
+          } as OrganizationMember);
+        }
+      }
       
       // Combine the lists
-      setMembers([...formattedActiveMembers, ...pendingMembers]);
+      setMembers([...activeMembers, ...pendingMembers]);
     } catch (error: any) {
       console.error("Error fetching members:", error);
       setError(error.message);
@@ -98,10 +112,16 @@ export const useOrganizationMembers = (organizationId: string | undefined) => {
       
       if (error) throw error;
       
-      setMembers(prev => [data as OrganizationMember, ...prev]);
+      const newMember: OrganizationMember = {
+        ...data,
+        user: null,
+        status: data.status as MemberStatus
+      };
+      
+      setMembers(prev => [newMember, ...prev]);
       
       toast.success("Invitation sent successfully");
-      return data as OrganizationMember;
+      return newMember;
     } catch (error: any) {
       console.error("Error inviting member:", error);
       toast.error("Failed to send invitation");
