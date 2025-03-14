@@ -6,6 +6,8 @@ import ResetPasswordForm from './ResetPasswordForm';
 import LoginSuccess from './LoginSuccess';
 import OrganizationPrompt from './OrganizationPrompt';
 import { useAuthHandlers } from './useAuthHandlers';
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface LoginFormProps {
   setIsLoading: (loading: boolean) => void;
