@@ -131,7 +131,8 @@ export const useGlossaryList = (organizationId?: string): UseGlossaryListReturn 
       setGlossaries(prev => prev.filter(glossary => glossary.id !== glossaryId));
       
       if (activeGlossary?.id === glossaryId) {
-        setActiveGlossary(glossaries.length > 1 ? glossaries[0] : null);
+        setActiveGlossary(glossaries.length > 1 ? 
+          glossaries.find(g => g.id !== glossaryId) || null : null);
       }
       
       toast.success("Glossary deleted successfully");

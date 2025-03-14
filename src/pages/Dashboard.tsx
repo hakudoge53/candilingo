@@ -1,14 +1,30 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useAuth } from '@/hooks/useAuth';
 import Dashboard from '@/components/dashboard/Dashboard';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { supabase } from "@/integrations/supabase/client";
 
 const DashboardPage = () => {
   const { isLoggedIn, isLoading, activeUser } = useAuth();
+  const navigate = useNavigate();
+
+  // Check if user is logged in when component mounts
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) {
+        toast.error("Please log in to access the dashboard");
+        navigate('/customer-portal');
+      }
+    };
+
+    checkSession();
+  }, [navigate]);
 
   if (isLoading) {
     return (

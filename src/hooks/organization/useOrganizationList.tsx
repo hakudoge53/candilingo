@@ -14,26 +14,40 @@ export const useOrganizationList = () => {
 
   // Fetch user's organizations
   const fetchOrganizations = async () => {
-    if (!isLoggedIn) return;
+    if (!isLoggedIn || !activeUser) return;
     
     setIsLoading(true);
     setError(null);
     
     try {
-      const { data, error } = await supabase
-        .from('organizations')
-        .select('*')
-        .order('created_at', { ascending: false });
+      // First check if user is a member of any organizations
+      const { data: memberData, error: memberError } = await supabase
+        .from('organization_members')
+        .select('organization_id')
+        .eq('user_id', activeUser.id)
+        .eq('status', 'active');
       
-      if (error) {
-        throw error;
-      }
+      if (memberError) throw memberError;
       
-      setOrganizations(data);
-      
-      // Set active organization to first one by default if none is selected
-      if (data.length > 0 && !activeOrganization) {
-        setActiveOrganization(data[0]);
+      if (memberData && memberData.length > 0) {
+        const orgIds = memberData.map(item => item.organization_id);
+        
+        const { data, error } = await supabase
+          .from('organizations')
+          .select('*')
+          .in('id', orgIds)
+          .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        setOrganizations(data);
+        
+        // Set active organization to first one by default if none is selected
+        if (data.length > 0 && !activeOrganization) {
+          setActiveOrganization(data[0]);
+        }
+      } else {
+        setOrganizations([]);
       }
     } catch (error: any) {
       console.error("Error fetching organizations:", error);
@@ -46,14 +60,14 @@ export const useOrganizationList = () => {
 
   // Create a new organization
   const createOrganization = async (name: string) => {
-    if (!isLoggedIn) return null;
+    if (!isLoggedIn || !activeUser) return null;
     
     setIsLoading(true);
     
     try {
       const { data, error } = await supabase
         .from('organizations')
-        .insert([{ name, created_by: activeUser?.id }])
+        .insert([{ name, created_by: activeUser.id }])
         .select()
         .single();
       
@@ -64,7 +78,7 @@ export const useOrganizationList = () => {
         .from('organization_members')
         .insert([{
           organization_id: data.id,
-          user_id: activeUser?.id,
+          user_id: activeUser.id,
           role: 'admin',
           status: 'active'
         }]);
@@ -87,13 +101,13 @@ export const useOrganizationList = () => {
 
   // Load organizations when user logs in
   useEffect(() => {
-    if (isLoggedIn) {
+    if (isLoggedIn && activeUser) {
       fetchOrganizations();
     } else {
       setOrganizations([]);
       setActiveOrganization(null);
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, activeUser]);
 
   return {
     organizations,

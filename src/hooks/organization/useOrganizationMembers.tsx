@@ -6,7 +6,7 @@ import { OrganizationMember, UserRole } from '@/types/organization';
 import { useAuth } from '../useAuth';
 
 export const useOrganizationMembers = (organizationId: string | undefined) => {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, activeUser } = useAuth();
   const [members, setMembers] = useState<OrganizationMember[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -19,29 +19,50 @@ export const useOrganizationMembers = (organizationId: string | undefined) => {
     setError(null);
     
     try {
-      const { data, error } = await supabase
+      // First, get active members with profile information
+      const { data: activeMembers, error: activeMembersError } = await supabase
         .from('organization_members')
         .select(`
-          *,
-          user:profiles(*)
+          id,
+          organization_id,
+          user_id,
+          role,
+          status,
+          created_at,
+          updated_at,
+          profiles:user_id (name, email, membership_tier, status)
         `)
         .eq('organization_id', organizationId)
-        .order('created_at', { ascending: false });
+        .eq('status', 'active');
       
-      if (error) throw error;
+      if (activeMembersError) throw activeMembersError;
       
-      // Transform data to match our types
-      const formattedMembers = data.map(member => ({
+      // Then get pending members (invited but not joined)
+      const { data: pendingMembers, error: pendingMembersError } = await supabase
+        .from('organization_members')
+        .select('*')
+        .eq('organization_id', organizationId)
+        .eq('status', 'pending');
+      
+      if (pendingMembersError) throw pendingMembersError;
+      
+      // Transform active members data
+      const formattedActiveMembers = activeMembers.map(member => ({
         ...member,
-        user: member.user ? {
-          name: (member.user as any).name,
-          email: (member.user as any).email,
-          membership_tier: (member.user as any).membership_tier,
-          status: (member.user as any).status
-        } : undefined
+        user: {
+          name: member.profiles?.name,
+          email: member.profiles?.email,
+          membership_tier: member.profiles?.membership_tier,
+          status: member.profiles?.status
+        },
+        // These properties are not used for active members
+        invited_name: null,
+        invited_email: null,
+        invitation_token: null
       })) as OrganizationMember[];
       
-      setMembers(formattedMembers);
+      // Combine the lists
+      setMembers([...formattedActiveMembers, ...pendingMembers]);
     } catch (error: any) {
       console.error("Error fetching members:", error);
       setError(error.message);
