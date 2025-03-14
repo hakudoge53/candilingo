@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -11,7 +10,7 @@ export const useAuthHandlers = (
   setShowOrganizationPrompt: (show: boolean) => void,
   setResetEmailSent: (sent: boolean) => void
 ) => {
-  const { missingInformation, createDefaultOrganization } = useAuth();
+  const { missingInformation, createDefaultOrganization, activeUser } = useAuth();
   const [orgName, setOrgName] = useState("My Organization");
 
   const onLoginSubmit = useCallback(async (values: LoginFormValues) => {
@@ -24,11 +23,22 @@ export const useAuthHandlers = (
       
       if (error) {
         toast.error(error.message);
+        setIsLoading(false);
         return;
       }
       
-      if (missingInformation && missingInformation.includes('organization')) {
+      const { data: orgData, error: orgError } = await supabase
+        .from('organization_members')
+        .select('organization_id')
+        .eq('user_id', data.user.id)
+        .limit(1);
+      
+      const hasOrganization = orgData && orgData.length > 0;
+      
+      if (!hasOrganization) {
         setShowOrganizationPrompt(true);
+        toast.info("Please create an organization to continue");
+        setIsLoading(false);
         return;
       }
       
@@ -40,9 +50,14 @@ export const useAuthHandlers = (
     } finally {
       setIsLoading(false);
     }
-  }, [setIsLoading, missingInformation, setShowOrganizationPrompt, setLoginSuccess]);
+  }, [setIsLoading, setShowOrganizationPrompt, setLoginSuccess]);
 
   const handleCreateOrganization = async () => {
+    if (!orgName.trim()) {
+      toast.error("Organization name cannot be empty");
+      return;
+    }
+    
     setIsLoading(true);
     const result = await createDefaultOrganization(orgName);
     setIsLoading(false);
@@ -64,11 +79,22 @@ export const useAuthHandlers = (
       
       if (error) {
         toast.error(error.message);
+        setIsLoading(false);
         return;
       }
       
-      if (missingInformation && missingInformation.includes('organization')) {
+      const { data: orgData, error: orgError } = await supabase
+        .from('organization_members')
+        .select('organization_id')
+        .eq('user_id', data.user.id)
+        .limit(1);
+      
+      const hasOrganization = orgData && orgData.length > 0;
+      
+      if (!hasOrganization) {
         setShowOrganizationPrompt(true);
+        toast.info("Please create an organization to continue");
+        setIsLoading(false);
         return;
       }
       
@@ -80,7 +106,7 @@ export const useAuthHandlers = (
     } finally {
       setIsLoading(false);
     }
-  }, [setIsLoading, missingInformation, setShowOrganizationPrompt, setLoginSuccess]);
+  }, [setIsLoading, setShowOrganizationPrompt, setLoginSuccess]);
 
   const handleSocialLogin = useCallback(async (provider: 'google' | 'linkedin_oidc') => {
     try {

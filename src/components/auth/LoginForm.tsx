@@ -34,7 +34,7 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
   );
 
   const navigateToDashboard = () => {
-    window.location.href = '/dashboard';
+    window.location.href = '/customer-portal';
   };
 
   const handleResetModeToggle = () => {
@@ -48,7 +48,9 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
 
   const handleCancelOrgPrompt = () => {
     setShowOrganizationPrompt(false);
-    setIsLoading(false);
+    // Sign out the user since they canceled organization creation
+    supabase.auth.signOut();
+    toast.info("Login canceled. Please try again.");
   };
 
   // Render based on current state
