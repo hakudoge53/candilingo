@@ -1,3 +1,4 @@
+
 import { User } from '@/hooks/useAuth';
 
 export type UserRole = 'admin' | 'manager' | 'team_lead' | 'employee' | 'consultant';
