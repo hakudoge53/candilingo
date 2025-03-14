@@ -2,12 +2,21 @@
 import { useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { UserRole } from '@/types/organization';
+import { UserRole, OrganizationMember } from '@/types/organization';
 import { useAuth } from '../../useAuth';
 
-export const useMemberRoleUpdate = (
-  setMembers: React.Dispatch<React.SetStateAction<any[]>>
-) => {
+export interface UseMemberRoleUpdateProps {
+  setMembers: React.Dispatch<React.SetStateAction<OrganizationMember[]>>;
+}
+
+export interface UseMemberRoleUpdateReturn {
+  updateMemberRole: (memberId: string, role: UserRole) => Promise<void>;
+  isLoading: boolean;
+}
+
+export const useMemberRoleUpdate = ({
+  setMembers
+}: UseMemberRoleUpdateProps): UseMemberRoleUpdateReturn => {
   const { isLoggedIn } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 

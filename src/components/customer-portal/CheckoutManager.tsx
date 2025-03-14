@@ -4,11 +4,11 @@ import { toast } from "sonner";
 import { useStripeCheckout } from '@/hooks/useStripeCheckout';
 import InstallationGuide from '@/components/customer-portal/InstallationGuide';
 
-interface CheckoutManagerProps {
+export interface CheckoutManagerProps {
   setLocalLoading: (loading: boolean) => void;
 }
 
-const CheckoutManager = ({ setLocalLoading }: CheckoutManagerProps) => {
+const CheckoutManager: React.FC<CheckoutManagerProps> = ({ setLocalLoading }) => {
   const { redirectToCheckout, isLoading: isCheckoutLoading } = useStripeCheckout();
 
   const handleWebExtensionCheckout = async (browser: string) => {

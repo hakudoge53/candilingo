@@ -4,8 +4,19 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Organization } from '@/types/organization';
 import { useAuth } from '../useAuth';
+import { User } from '@/hooks/auth/types';
 
-export const useOrganizationList = () => {
+export interface UseOrganizationListReturn {
+  organizations: Organization[];
+  activeOrganization: Organization | null;
+  setActiveOrganization: (org: Organization | null) => void;
+  createOrganization: (name: string) => Promise<Organization | null>;
+  isLoading: boolean;
+  error: string | null;
+  refetch: () => Promise<void>;
+}
+
+export const useOrganizationList = (): UseOrganizationListReturn => {
   const { isLoggedIn, activeUser } = useAuth();
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [activeOrganization, setActiveOrganization] = useState<Organization | null>(null);

@@ -5,10 +5,20 @@ import { toast } from "sonner";
 import { OrganizationMember, UserRole, MemberStatus } from '@/types/organization';
 import { useAuth } from '../../useAuth';
 
-export const useMemberInvite = (
-  organizationId: string | undefined,
-  setMembers: React.Dispatch<React.SetStateAction<OrganizationMember[]>>
-) => {
+export interface UseMemberInviteProps {
+  organizationId: string | undefined;
+  setMembers: React.Dispatch<React.SetStateAction<OrganizationMember[]>>;
+}
+
+export interface UseMemberInviteReturn {
+  inviteMember: (email: string, name: string, role: UserRole) => Promise<OrganizationMember | null>;
+  isLoading: boolean;
+}
+
+export const useMemberInvite = ({
+  organizationId,
+  setMembers
+}: UseMemberInviteProps): UseMemberInviteReturn => {
   const { isLoggedIn } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 

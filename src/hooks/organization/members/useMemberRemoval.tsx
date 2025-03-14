@@ -2,11 +2,21 @@
 import { useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { OrganizationMember } from '@/types/organization';
 import { useAuth } from '../../useAuth';
 
-export const useMemberRemoval = (
-  setMembers: React.Dispatch<React.SetStateAction<any[]>>
-) => {
+export interface UseMemberRemovalProps {
+  setMembers: React.Dispatch<React.SetStateAction<OrganizationMember[]>>;
+}
+
+export interface UseMemberRemovalReturn {
+  removeMember: (memberId: string) => Promise<void>;
+  isLoading: boolean;
+}
+
+export const useMemberRemoval = ({
+  setMembers
+}: UseMemberRemovalProps): UseMemberRemovalReturn => {
   const { isLoggedIn } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 

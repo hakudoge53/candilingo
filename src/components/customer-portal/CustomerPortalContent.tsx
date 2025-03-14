@@ -5,24 +5,25 @@ import UserProfile from '@/components/profile/UserProfile';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import CheckoutManager from './CheckoutManager';
 import ReferralCodeManager from './ReferralCodeManager';
+import { User } from '@/hooks/auth/types';
 
-interface CustomerPortalContentProps {
+export interface CustomerPortalContentProps {
   isLoggedIn: boolean;
   isLoading: boolean;
-  activeUser: any;
+  activeUser: User | null;
   localLoading: boolean;
   setLocalLoading: (loading: boolean) => void;
-  handleLogout: () => void;
+  handleLogout: () => Promise<void>;
 }
 
-const CustomerPortalContent = ({
+const CustomerPortalContent: React.FC<CustomerPortalContentProps> = ({
   isLoggedIn,
   isLoading,
   activeUser,
   localLoading,
   setLocalLoading,
   handleLogout
-}: CustomerPortalContentProps) => {
+}) => {
   // Combined loading state for both auth operations and local form submissions
   const showLoading = isLoading || localLoading;
 

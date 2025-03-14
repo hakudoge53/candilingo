@@ -2,10 +2,37 @@
 import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { OrganizationMember } from '@/types/organization';
+import { OrganizationMember, MemberStatus } from '@/types/organization';
 import { useAuth } from '../../useAuth';
 
-export const useMembersFetch = (organizationId: string | undefined) => {
+interface MemberResponse {
+  id: string;
+  organization_id: string;
+  user_id: string;
+  role: OrganizationMember['role'];
+  status: string;
+  created_at: string;
+  updated_at: string;
+  invited_email: string | null;
+  invited_name: string | null;
+  invitation_token: string | null;
+  user: {
+    name: string;
+    email: string;
+    membership_tier?: string;
+    status?: string;
+  } | null;
+}
+
+export interface UseMembersFetchReturn {
+  members: OrganizationMember[];
+  isLoading: boolean;
+  error: string | null;
+  refetchMembers: () => Promise<void>;
+  setMembers: React.Dispatch<React.SetStateAction<OrganizationMember[]>>;
+}
+
+export const useMembersFetch = (organizationId: string | undefined): UseMembersFetchReturn => {
   const { isLoggedIn } = useAuth();
   const [members, setMembers] = useState<OrganizationMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -35,7 +62,13 @@ export const useMembersFetch = (organizationId: string | undefined) => {
       
       if (error) throw error;
       
-      setMembers(data);
+      // Convert the data to the correct type
+      const typedMembers: OrganizationMember[] = (data as MemberResponse[]).map(member => ({
+        ...member,
+        status: member.status as MemberStatus
+      }));
+      
+      setMembers(typedMembers);
     } catch (error: any) {
       console.error("Error fetching members:", error);
       setError(error.message);

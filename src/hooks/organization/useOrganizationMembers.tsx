@@ -1,12 +1,21 @@
 
-import { useState } from 'react';
 import { OrganizationMember, UserRole } from '@/types/organization';
-import { useMembersFetch } from './members/useMembersFetch';
-import { useMemberInvite } from './members/useMemberInvite';
-import { useMemberRoleUpdate } from './members/useMemberRoleUpdate';
-import { useMemberRemoval } from './members/useMemberRemoval';
+import { useMembersFetch, UseMembersFetchReturn } from './members/useMembersFetch';
+import { useMemberInvite, UseMemberInviteReturn } from './members/useMemberInvite';
+import { useMemberRoleUpdate, UseMemberRoleUpdateReturn } from './members/useMemberRoleUpdate';
+import { useMemberRemoval, UseMemberRemovalReturn } from './members/useMemberRemoval';
 
-export const useOrganizationMembers = (organizationId: string | undefined) => {
+export interface UseOrganizationMembersReturn {
+  members: OrganizationMember[];
+  inviteMember: (email: string, name: string, role: UserRole) => Promise<OrganizationMember | null>;
+  updateMemberRole: (memberId: string, role: UserRole) => Promise<void>;
+  removeMember: (memberId: string) => Promise<void>;
+  isLoading: boolean;
+  error: string | null;
+  refetchMembers: () => Promise<void>;
+}
+
+export const useOrganizationMembers = (organizationId: string | undefined): UseOrganizationMembersReturn => {
   // Use the member fetching hook
   const { 
     members, 
@@ -20,19 +29,26 @@ export const useOrganizationMembers = (organizationId: string | undefined) => {
   const { 
     inviteMember: inviteMemberToOrg, 
     isLoading: isInviteLoading 
-  } = useMemberInvite(organizationId, setMembers);
+  } = useMemberInvite({
+    organizationId,
+    setMembers
+  });
   
   // Use the role update hook
   const { 
     updateMemberRole, 
     isLoading: isRoleUpdateLoading 
-  } = useMemberRoleUpdate(setMembers);
+  } = useMemberRoleUpdate({
+    setMembers
+  });
   
   // Use the member removal hook
   const { 
     removeMember, 
     isLoading: isRemovalLoading 
-  } = useMemberRemoval(setMembers);
+  } = useMemberRemoval({
+    setMembers
+  });
 
   // Combine loading states
   const isLoading = isFetchLoading || isInviteLoading || isRoleUpdateLoading || isRemovalLoading;

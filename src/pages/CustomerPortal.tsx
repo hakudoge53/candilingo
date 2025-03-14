@@ -8,9 +8,11 @@ import { useLocation } from 'react-router-dom';
 import PortalHeader from '@/components/customer-portal/PortalHeader';
 import CustomerPortalContent from '@/components/customer-portal/CustomerPortalContent';
 
-const CustomerPortal = () => {
+interface CustomerPortalProps {}
+
+const CustomerPortal: React.FC<CustomerPortalProps> = () => {
   const { isLoggedIn, isLoading, activeUser, handleLogout } = useAuth();
-  const [localLoading, setLocalLoading] = useState(false);
+  const [localLoading, setLocalLoading] = useState<boolean>(false);
   const location = useLocation();
   
   useEffect(() => {
