@@ -4,18 +4,31 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { BasicInfoFormValues } from './BasicInfoForm';
 import { AdditionalInfoFormValues } from './AdditionalInfoForm';
-import { useAuth } from "@/hooks/useAuth";
 
 export const useRegistrationHandlers = (setIsLoading: (loading: boolean) => void) => {
-  const { createDefaultOrganization } = useAuth();
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [basicInfo, setBasicInfo] = useState<BasicInfoFormValues | null>(null);
   const [registrationComplete, setRegistrationComplete] = useState<boolean>(false);
   const [autoLoginFailed, setAutoLoginFailed] = useState<boolean>(false);
   const [emailConfirmationRequired, setEmailConfirmationRequired] = useState<boolean>(false);
   const [additionalInfo, setAdditionalInfo] = useState<AdditionalInfoFormValues | null>(null);
-  const [showOrganizationPrompt, setShowOrganizationPrompt] = useState<boolean>(false);
-  const [orgName, setOrgName] = useState<string>("My Organization");
+  const [isInvitedUser, setIsInvitedUser] = useState<boolean>(false);
+  const [invitationToken, setInvitationToken] = useState<string | null>(null);
+  
+  // Check for invitation token in URL
+  useState(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('invitation');
+    if (token) {
+      setIsInvitedUser(true);
+      setInvitationToken(token);
+    }
+  });
+  
+  // Navigate to customer portal
+  const navigateToCustomerPortal = () => {
+    window.location.href = '/customer-portal';
+  };
   
   // Handle basic info submission (step 1)
   const onBasicInfoSubmit = (values: BasicInfoFormValues) => {
@@ -23,37 +36,29 @@ export const useRegistrationHandlers = (setIsLoading: (loading: boolean) => void
     setCurrentStep(2);
   };
   
-  // Navigate to customer portal
-  const navigateToCustomerPortal = () => {
-    window.location.href = '/customer-portal';
-  };
-  
   // Handle going back to step 1
   const handleBackToBasicInfo = () => {
     setCurrentStep(1);
   };
 
-  // Handle going back to step 2
-  const handleBackToAdditionalInfo = () => {
-    setCurrentStep(2);
-    setShowOrganizationPrompt(false);
-  };
-  
   // Handle additional info submission (step 2)
   const onAdditionalInfoSubmit = async (values: AdditionalInfoFormValues) => {
     if (!basicInfo) return;
     
     setAdditionalInfo(values);
-    setCurrentStep(3);
+    
+    // For business owners, move to step 3
+    // For invited users, complete registration directly
+    if (isInvitedUser) {
+      await handleCompleteInvitedUserRegistration(values);
+    } else {
+      setCurrentStep(3);
+    }
   };
 
-  // Handle organization creation and complete registration (step 3)
-  const handleCreateOrganization = async () => {
+  // Complete registration for business owners (formerly step 3 with organization)
+  const handleCompleteBusinessOwnerRegistration = async () => {
     if (!basicInfo || !additionalInfo) return;
-    if (!orgName.trim()) {
-      toast.error("Organization name cannot be empty");
-      return;
-    }
     
     try {
       setIsLoading(true);
@@ -73,6 +78,7 @@ export const useRegistrationHandlers = (setIsLoading: (loading: boolean) => void
             role: additionalInfo.role,
             industry: additionalInfo.industry,
             referral_source: additionalInfo.referralSource,
+            user_type: 'business_owner' // Add user type for business owners
           },
           emailRedirectTo: redirectUrl,
         },
@@ -101,33 +107,6 @@ export const useRegistrationHandlers = (setIsLoading: (loading: boolean) => void
         return;
       }
       
-      // Sign in immediately after registration
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: basicInfo.email,
-        password: basicInfo.password,
-      });
-      
-      if (signInError) {
-        console.error("Auto-login error:", signInError);
-        setEmailConfirmationRequired(true);
-        setRegistrationComplete(true);
-        setIsLoading(false);
-        toast.info("Please check your email to confirm your account.");
-        return;
-      }
-      
-      // Create organization for the user
-      const result = await createDefaultOrganization(orgName);
-      
-      if (!result) {
-        console.error("Failed to create organization");
-        toast.error("Registration complete, but failed to create organization. Please try again after logging in.");
-        setAutoLoginFailed(true);
-        setRegistrationComplete(true);
-        setIsLoading(false);
-        return;
-      }
-      
       // Registration successful
       setRegistrationComplete(true);
       toast.success("Registration successful! Logging you in...");
@@ -145,10 +124,92 @@ export const useRegistrationHandlers = (setIsLoading: (loading: boolean) => void
     }
   };
 
-  const handleCancelRegistration = () => {
-    // This would be used if the user cancels during the organization creation step
-    setCurrentStep(2);
-    setShowOrganizationPrompt(false);
+  // Complete registration for invited users
+  const handleCompleteInvitedUserRegistration = async (values: AdditionalInfoFormValues) => {
+    if (!basicInfo || !invitationToken) return;
+    
+    try {
+      setIsLoading(true);
+      
+      // Always use the current domain for the redirect
+      const redirectUrl = window.location.origin + '/customer-portal';
+      
+      // Verify invitation token
+      const { data: invitationData, error: invitationError } = await supabase
+        .from('organization_members')
+        .select('*')
+        .eq('invitation_token', invitationToken)
+        .eq('status', 'pending')
+        .maybeSingle();
+      
+      if (invitationError || !invitationData) {
+        toast.error("Invalid or expired invitation. Please request a new invitation.");
+        setIsLoading(false);
+        return;
+      }
+      
+      // Register user with Supabase
+      const { data, error } = await supabase.auth.signUp({
+        email: basicInfo.email,
+        password: basicInfo.password,
+        options: {
+          data: {
+            name: basicInfo.name,
+            role: values.role,
+            industry: values.industry,
+            referral_source: values.referralSource,
+            user_type: 'invited_user' // Add user type for invited users
+          },
+          emailRedirectTo: redirectUrl,
+        },
+      });
+      
+      if (error) {
+        toast.error(error.message);
+        setIsLoading(false);
+        return;
+      }
+      
+      // Update organization member with the new user ID
+      if (data.user) {
+        const { error: updateError } = await supabase
+          .from('organization_members')
+          .update({
+            user_id: data.user.id,
+            status: 'active'
+          })
+          .eq('invitation_token', invitationToken);
+        
+        if (updateError) {
+          console.error("Error updating invitation status:", updateError);
+        }
+      }
+      
+      // Check if email confirmation is required
+      if (data.user && !data.session) {
+        console.log("Email confirmation required");
+        setEmailConfirmationRequired(true);
+        setRegistrationComplete(true);
+        setIsLoading(false);
+        toast.info("Registration successful! Please check your email to confirm your account.");
+        return;
+      }
+      
+      // Registration successful
+      setRegistrationComplete(true);
+      toast.success("Registration successful! You've been added to the organization.");
+      
+      // Redirect to customer portal after successful registration
+      setTimeout(() => {
+        navigateToCustomerPortal();
+      }, 2000);
+      
+    } catch (error) {
+      console.error("Invited user registration error:", error);
+      toast.error("An error occurred during registration. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   return {
@@ -157,15 +218,11 @@ export const useRegistrationHandlers = (setIsLoading: (loading: boolean) => void
     autoLoginFailed,
     emailConfirmationRequired,
     basicInfo,
-    showOrganizationPrompt,
-    orgName,
-    setOrgName,
+    isInvitedUser,
     onBasicInfoSubmit,
     onAdditionalInfoSubmit,
-    handleCreateOrganization,
+    handleCompleteBusinessOwnerRegistration,
     handleBackToBasicInfo,
-    handleBackToAdditionalInfo,
-    handleCancelRegistration,
     navigateToCustomerPortal
   };
 };

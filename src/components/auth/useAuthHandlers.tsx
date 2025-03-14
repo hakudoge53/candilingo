@@ -8,10 +8,9 @@ import { useAuth } from "@/hooks/useAuth";
 export const useAuthHandlers = (
   setIsLoading: (loading: boolean) => void,
   setLoginSuccess: (success: boolean) => void,
-  setShowOrganizationPrompt: (show: boolean) => void,
   setResetEmailSent: (sent: boolean) => void
 ) => {
-  const { missingInformation, createDefaultOrganization, activeUser } = useAuth();
+  const { missingInformation, activeUser } = useAuth();
   const [orgName, setOrgName] = useState("My Organization");
 
   const onLoginSubmit = useCallback(async (values: LoginFormValues) => {
@@ -28,21 +27,6 @@ export const useAuthHandlers = (
         return;
       }
       
-      const { data: orgData, error: orgError } = await supabase
-        .from('organization_members')
-        .select('organization_id')
-        .eq('user_id', data.user.id)
-        .limit(1);
-      
-      const hasOrganization = orgData && orgData.length > 0;
-      
-      if (!hasOrganization) {
-        setShowOrganizationPrompt(true);
-        toast.info("Please create an organization to continue");
-        setIsLoading(false);
-        return;
-      }
-      
       setLoginSuccess(true);
       toast.success("Login successful!");
     } catch (error) {
@@ -51,24 +35,7 @@ export const useAuthHandlers = (
     } finally {
       setIsLoading(false);
     }
-  }, [setIsLoading, setShowOrganizationPrompt, setLoginSuccess]);
-
-  const handleCreateOrganization = async () => {
-    if (!orgName.trim()) {
-      toast.error("Organization name cannot be empty");
-      return;
-    }
-    
-    setIsLoading(true);
-    const result = await createDefaultOrganization(orgName);
-    setIsLoading(false);
-    
-    if (result) {
-      setShowOrganizationPrompt(false);
-      setLoginSuccess(true);
-      toast.success("Organization created and login successful!");
-    }
-  };
+  }, [setIsLoading, setLoginSuccess]);
 
   const handleTestLogin = useCallback(async () => {
     try {
@@ -84,21 +51,6 @@ export const useAuthHandlers = (
         return;
       }
       
-      const { data: orgData, error: orgError } = await supabase
-        .from('organization_members')
-        .select('organization_id')
-        .eq('user_id', data.user.id)
-        .limit(1);
-      
-      const hasOrganization = orgData && orgData.length > 0;
-      
-      if (!hasOrganization) {
-        setShowOrganizationPrompt(true);
-        toast.info("Please create an organization to continue");
-        setIsLoading(false);
-        return;
-      }
-      
       setLoginSuccess(true);
       toast.success("Logged in with test account!");
     } catch (error) {
@@ -107,7 +59,7 @@ export const useAuthHandlers = (
     } finally {
       setIsLoading(false);
     }
-  }, [setIsLoading, setShowOrganizationPrompt, setLoginSuccess]);
+  }, [setIsLoading, setLoginSuccess]);
 
   const handleSocialLogin = useCallback(async (provider: 'google' | 'linkedin_oidc') => {
     try {
@@ -178,7 +130,6 @@ export const useAuthHandlers = (
     orgName,
     setOrgName,
     onLoginSubmit,
-    handleCreateOrganization,
     handleTestLogin,
     handleGoogleLogin,
     handleLinkedInLogin,

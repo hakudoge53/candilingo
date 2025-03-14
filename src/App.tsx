@@ -22,6 +22,12 @@ function App() {
       window.location.href = '/customer-portal';
     }
 
+    // Check for email confirmation success
+    const confirmationSuccess = urlParams.get('confirmed') === 'true';
+    if (confirmationSuccess) {
+      toast.success("Email confirmed successfully! You can now log in.");
+    }
+
     // Check for hash errors (typically auth related)
     const hash = window.location.hash;
     if (hash.includes('error=')) {
@@ -48,6 +54,12 @@ function App() {
           window.location.href = '/customer-portal';
         }, 2000);
       }
+    }
+    
+    // Check for signup success via hash type parameter
+    if (hash.includes('type=signup')) {
+      toast.success("Email confirmation successful! You are now logged in.");
+      window.history.replaceState(null, '', window.location.pathname);
     }
   }, []);
 

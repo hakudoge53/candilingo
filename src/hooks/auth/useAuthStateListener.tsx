@@ -54,6 +54,12 @@ export const useAuthStateListener = ({
       if (event === 'SIGNED_IN' && session) {
         const missingInfo: string[] = [];
         
+        // Show email confirmation success notification
+        if (window.location.hash.includes('type=signup')) {
+          toast.success("Email confirmed successfully! You are now logged in.");
+          window.history.replaceState(null, '', window.location.pathname);
+        }
+        
         try {
           // Fetch user profile
           const { data: profileData, error: profileError } = await supabase
@@ -67,21 +73,9 @@ export const useAuthStateListener = ({
             missingInfo.push('profile');
           }
           
-          // Check if user has an organization
-          const { data: orgData, error: orgError } = await supabase
-            .from('organization_members')
-            .select('organization_id')
-            .eq('user_id', session.user.id)
-            .limit(1);
-          
-          const hasOrganization = orgData && orgData.length > 0;
-          if (!hasOrganization) {
-            missingInfo.push('organization');
-          }
-          
           if (missingInfo.length > 0) {
             setMissingInformation(missingInfo);
-            toast.warning(`Please complete your ${missingInfo.join(' and ')} information`);
+            // Remove organization warning
           }
           
           setIsLoggedIn(true);
@@ -95,14 +89,14 @@ export const useAuthStateListener = ({
               status: profileData.status,
               preferred_language: profileData.preferred_language,
               extension_settings: profileData.extension_settings as Record<string, any> || {},
-              hasOrganization: hasOrganization
+              // Remove hasOrganization field
             });
           } else {
             setActiveUser({
               id: session.user.id,
               name: session.user.email?.split('@')[0] || 'User',
               email: session.user.email || '',
-              hasOrganization: hasOrganization
+              // Remove hasOrganization field
             });
           }
         } catch (error) {
@@ -111,7 +105,7 @@ export const useAuthStateListener = ({
             id: session.user.id,
             name: session.user.email?.split('@')[0] || 'User',
             email: session.user.email || '',
-            hasOrganization: false
+            // Remove hasOrganization field
           });
         }
       } else if (event === 'SIGNED_OUT') {

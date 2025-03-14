@@ -47,21 +47,9 @@ export const useAuthSession = (): AuthSession => {
               missingInfo.push('profile');
             }
             
-            // Check if user has an organization
-            const { data: orgData, error: orgError } = await supabase
-              .from('organization_members')
-              .select('organization_id')
-              .eq('user_id', data.session.user.id)
-              .limit(1);
-            
-            const hasOrganization = orgData && orgData.length > 0;
-            if (!hasOrganization) {
-              missingInfo.push('organization');
-            }
-            
             if (missingInfo.length > 0) {
               setMissingInformation(missingInfo);
-              toast.warning(`Please complete your ${missingInfo.join(' and ')} information`);
+              // Don't show organization warnings anymore
             }
             
             setIsLoggedIn(true);
@@ -75,7 +63,7 @@ export const useAuthSession = (): AuthSession => {
                 status: profileData.status,
                 preferred_language: profileData.preferred_language,
                 extension_settings: profileData.extension_settings as Record<string, any> || {},
-                hasOrganization: hasOrganization
+                // Remove hasOrganization field
               });
             } else {
               // Fallback if profile not found
@@ -83,7 +71,7 @@ export const useAuthSession = (): AuthSession => {
                 id: data.session.user.id,
                 name: data.session.user.email?.split('@')[0] || 'User',
                 email: data.session.user.email || '',
-                hasOrganization: hasOrganization
+                // Remove hasOrganization field
               });
             }
           } catch (profileError) {
@@ -93,7 +81,7 @@ export const useAuthSession = (): AuthSession => {
               id: data.session.user.id,
               name: data.session.user.email?.split('@')[0] || 'User',
               email: data.session.user.email || '',
-              hasOrganization: false
+              // Remove hasOrganization field
             });
           }
         }

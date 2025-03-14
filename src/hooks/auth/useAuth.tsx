@@ -23,19 +23,13 @@ export const useAuth = () => {
   });
   
   // Get auth actions
-  const { isLoading: isActionLoading, handleLogout, createDefaultOrganization } = useAuthActions();
-  
-  // Wrapper for createDefaultOrganization that uses the current user
-  const createOrgForCurrentUser = async (name: string = "My Organization") => {
-    return createDefaultOrganization(activeUser?.id, name);
-  };
+  const { isLoading: isActionLoading, handleLogout } = useAuthActions();
   
   return {
     isLoggedIn,
     isLoading: isLoading || isActionLoading,
     activeUser,
     missingInformation,
-    handleLogout,
-    createDefaultOrganization: createOrgForCurrentUser
+    handleLogout
   };
 };
