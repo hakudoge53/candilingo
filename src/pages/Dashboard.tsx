@@ -23,7 +23,7 @@ const DashboardPage = () => {
   }
 
   if (!isLoggedIn) {
-    return <Navigate to="/portal" />;
+    return <Navigate to="/customer-portal" />;
   }
 
   return (

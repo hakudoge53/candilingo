@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import CustomerPortal from './pages/CustomerPortal';
 import Glossary from './pages/Glossary';
 import NotFound from './pages/NotFound';
+import Portal from './pages/Portal';
 import { Toaster as SonnerToaster } from 'sonner';
 import { Toaster } from './components/ui/toaster';
 import PaymentSuccess from './pages/PaymentSuccess';
@@ -26,6 +27,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/glossary/:id?" element={<Glossary />} />
         <Route path="/customer-portal" element={<CustomerPortal />} />
+        <Route path="/portal" element={<Portal />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/payment-canceled" element={<Navigate to="https://candilingo.com/customer-portal" />} />
         <Route path="*" element={<NotFound />} />
