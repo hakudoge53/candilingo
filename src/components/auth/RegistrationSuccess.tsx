@@ -31,7 +31,8 @@ const RegistrationSuccess = ({
         <Alert className="bg-blue-50 border-blue-200">
           <MailIcon className="h-5 w-5 text-blue-600" />
           <AlertDescription className="text-gray-700">
-            Please check your email for a confirmation link to activate your account.
+            Please check your email for a confirmation link to activate your account. 
+            The link is valid for a limited time only.
           </AlertDescription>
         </Alert>
       ) : autoLoginFailed ? (

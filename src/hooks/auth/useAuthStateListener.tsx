@@ -17,6 +17,28 @@ export const useAuthStateListener = ({
 }: AuthStateListenerProps) => {
   
   useEffect(() => {
+    // Check for URL hash error parameters
+    const handleHashParams = () => {
+      const hash = window.location.hash;
+      if (hash.includes('error=')) {
+        const params = new URLSearchParams(hash.substring(1));
+        const error = params.get('error');
+        const errorDescription = params.get('error_description');
+        
+        if (error === 'access_denied' && params.get('error_code') === 'otp_expired') {
+          toast.error("Email confirmation link has expired. Please request a new one.");
+          // Clear the hash from the URL
+          window.history.replaceState(null, '', window.location.pathname);
+        } else if (error) {
+          toast.error(errorDescription || "Authentication error occurred");
+          window.history.replaceState(null, '', window.location.pathname);
+        }
+      }
+    };
+    
+    // Call once on mount
+    handleHashParams();
+
     // Set up auth state change listener
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {

@@ -26,7 +26,7 @@ export const useRegistrationHandlers = (setIsLoading: (loading: boolean) => void
   // Navigate to customer portal
   const navigateToCustomerPortal = () => {
     if (emailConfirmationRequired) {
-      window.location.href = '/'; // Go to home page if email confirmation is required
+      window.location.href = '/customer-portal'; // Go to customer portal page if email confirmation is required
     } else {
       window.location.href = '/customer-portal';
     }
@@ -63,9 +63,18 @@ export const useRegistrationHandlers = (setIsLoading: (loading: boolean) => void
       setIsLoading(true);
       
       // Get the current URL to use as a base for redirects
-      const currentUrl = window.location.href;
-      const baseUrl = currentUrl.split('/').slice(0, 3).join('/');
+      const hostname = window.location.hostname;
+      let baseUrl;
+      
+      // Use production URL for deployed site or localhost for development
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        baseUrl = window.location.origin;
+      } else {
+        baseUrl = 'https://candilingo.com';
+      }
       const redirectUrl = `${baseUrl}/customer-portal`;
+      
+      console.log("Using redirect URL:", redirectUrl);
       
       // Register user with Supabase
       const { data, error } = await supabase.auth.signUp({
@@ -78,7 +87,7 @@ export const useRegistrationHandlers = (setIsLoading: (loading: boolean) => void
             industry: additionalInfo.industry,
             referral_source: additionalInfo.referralSource,
           },
-          emailRedirectTo: redirectUrl, // Set proper redirect URL
+          emailRedirectTo: redirectUrl, // Use proper redirect URL based on environment
         },
       });
       
