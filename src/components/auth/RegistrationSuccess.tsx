@@ -1,24 +1,40 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { CheckIcon, AlertCircle } from "lucide-react";
+import { CheckIcon, AlertCircle, MailIcon } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface RegistrationSuccessProps {
   onNavigate: () => void;
   autoLoginFailed?: boolean;
+  emailConfirmationRequired?: boolean;
 }
 
-const RegistrationSuccess = ({ onNavigate, autoLoginFailed = false }: RegistrationSuccessProps) => {
+const RegistrationSuccess = ({ 
+  onNavigate, 
+  autoLoginFailed = false,
+  emailConfirmationRequired = false
+}: RegistrationSuccessProps) => {
   return (
     <div className="text-center space-y-4 py-4">
       <div className="mx-auto w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
-        <CheckIcon className="h-6 w-6 text-green-600" />
+        {emailConfirmationRequired ? (
+          <MailIcon className="h-6 w-6 text-green-600" />
+        ) : (
+          <CheckIcon className="h-6 w-6 text-green-600" />
+        )}
       </div>
       
       <h3 className="text-lg font-medium text-candilingo-purple">Registration successful!</h3>
       
-      {autoLoginFailed ? (
+      {emailConfirmationRequired ? (
+        <Alert className="bg-blue-50 border-blue-200">
+          <MailIcon className="h-5 w-5 text-blue-600" />
+          <AlertDescription className="text-gray-700">
+            Please check your email for a confirmation link to activate your account.
+          </AlertDescription>
+        </Alert>
+      ) : autoLoginFailed ? (
         <Alert className="bg-gray-50 border-gray-200">
           <AlertCircle className="h-5 w-5 text-gray-700" />
           <AlertDescription className="text-gray-700">
@@ -37,7 +53,8 @@ const RegistrationSuccess = ({ onNavigate, autoLoginFailed = false }: Registrati
         className="mt-4 w-full"
         onClick={onNavigate}
       >
-        {autoLoginFailed ? "Log in manually" : "Go to Customer Portal"}
+        {emailConfirmationRequired ? "Return to Login" : 
+          autoLoginFailed ? "Log in manually" : "Go to Customer Portal"}
       </Button>
     </div>
   );

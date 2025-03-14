@@ -15,6 +15,7 @@ const RegisterForm = ({ setIsLoading }: RegisterFormProps) => {
     currentStep,
     registrationComplete,
     autoLoginFailed,
+    emailConfirmationRequired,
     orgName,
     setOrgName,
     onBasicInfoSubmit,
@@ -31,6 +32,7 @@ const RegisterForm = ({ setIsLoading }: RegisterFormProps) => {
       <RegistrationSuccess 
         onNavigate={navigateToCustomerPortal} 
         autoLoginFailed={autoLoginFailed}
+        emailConfirmationRequired={emailConfirmationRequired}
       />
     );
   }
