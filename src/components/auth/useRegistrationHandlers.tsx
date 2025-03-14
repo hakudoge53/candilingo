@@ -4,12 +4,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { BasicInfoFormValues } from './BasicInfoForm';
 import { AdditionalInfoFormValues } from './AdditionalInfoForm';
+import { useAuth } from "@/hooks/useAuth";
 
 export const useRegistrationHandlers = (setIsLoading: (loading: boolean) => void) => {
+  const { createDefaultOrganization } = useAuth();
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [basicInfo, setBasicInfo] = useState<BasicInfoFormValues | null>(null);
   const [registrationComplete, setRegistrationComplete] = useState<boolean>(false);
   const [autoLoginFailed, setAutoLoginFailed] = useState<boolean>(false);
+  const [additionalInfo, setAdditionalInfo] = useState<AdditionalInfoFormValues | null>(null);
+  const [showOrganizationPrompt, setShowOrganizationPrompt] = useState<boolean>(false);
+  const [orgName, setOrgName] = useState<string>("My Organization");
   
   // Handle basic info submission (step 1)
   const onBasicInfoSubmit = (values: BasicInfoFormValues) => {
@@ -26,10 +31,28 @@ export const useRegistrationHandlers = (setIsLoading: (loading: boolean) => void
   const handleBackToBasicInfo = () => {
     setCurrentStep(1);
   };
+
+  // Handle going back to step 2
+  const handleBackToAdditionalInfo = () => {
+    setCurrentStep(2);
+    setShowOrganizationPrompt(false);
+  };
   
-  // Handle additional info submission and complete registration (step 2)
+  // Handle additional info submission (step 2)
   const onAdditionalInfoSubmit = async (values: AdditionalInfoFormValues) => {
     if (!basicInfo) return;
+    
+    setAdditionalInfo(values);
+    setCurrentStep(3);
+  };
+
+  // Handle organization creation and complete registration (step 3)
+  const handleCreateOrganization = async () => {
+    if (!basicInfo || !additionalInfo) return;
+    if (!orgName.trim()) {
+      toast.error("Organization name cannot be empty");
+      return;
+    }
     
     try {
       setIsLoading(true);
@@ -41,9 +64,9 @@ export const useRegistrationHandlers = (setIsLoading: (loading: boolean) => void
         options: {
           data: {
             name: basicInfo.name,
-            role: values.role,
-            industry: values.industry,
-            referral_source: values.referralSource,
+            role: additionalInfo.role,
+            industry: additionalInfo.industry,
+            referral_source: additionalInfo.referralSource,
           },
         },
       });
@@ -61,9 +84,6 @@ export const useRegistrationHandlers = (setIsLoading: (loading: boolean) => void
         return;
       }
       
-      // Registration successful
-      setRegistrationComplete(true);
-      
       // Sign in immediately after registration
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: basicInfo.email,
@@ -74,10 +94,25 @@ export const useRegistrationHandlers = (setIsLoading: (loading: boolean) => void
         console.error("Auto-login error:", signInError);
         toast.error("Registration complete, but auto-login failed. Please log in manually.");
         setAutoLoginFailed(true);
+        setRegistrationComplete(true);
         setIsLoading(false);
         return;
       }
       
+      // Create organization for the user
+      const result = await createDefaultOrganization(orgName);
+      
+      if (!result) {
+        console.error("Failed to create organization");
+        toast.error("Registration complete, but failed to create organization. Please try again after logging in.");
+        setAutoLoginFailed(true);
+        setRegistrationComplete(true);
+        setIsLoading(false);
+        return;
+      }
+      
+      // Registration successful
+      setRegistrationComplete(true);
       toast.success("Registration successful! Logging you in...");
       
       // Redirect to customer portal after successful registration
@@ -92,15 +127,27 @@ export const useRegistrationHandlers = (setIsLoading: (loading: boolean) => void
       setIsLoading(false);
     }
   };
+
+  const handleCancelRegistration = () => {
+    // This would be used if the user cancels during the organization creation step
+    setCurrentStep(2);
+    setShowOrganizationPrompt(false);
+  };
   
   return {
     currentStep,
     registrationComplete,
     autoLoginFailed,
     basicInfo,
+    showOrganizationPrompt,
+    orgName,
+    setOrgName,
     onBasicInfoSubmit,
     onAdditionalInfoSubmit,
+    handleCreateOrganization,
     handleBackToBasicInfo,
+    handleBackToAdditionalInfo,
+    handleCancelRegistration,
     navigateToCustomerPortal
   };
 };

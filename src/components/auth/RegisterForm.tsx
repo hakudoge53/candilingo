@@ -3,6 +3,7 @@ import React from 'react';
 import BasicInfoForm from './BasicInfoForm';
 import AdditionalInfoForm from './AdditionalInfoForm';
 import RegistrationSuccess from './RegistrationSuccess';
+import OrganizationPrompt from './OrganizationPrompt';
 import { useRegistrationHandlers } from './useRegistrationHandlers';
 
 interface RegisterFormProps {
@@ -14,9 +15,13 @@ const RegisterForm = ({ setIsLoading }: RegisterFormProps) => {
     currentStep,
     registrationComplete,
     autoLoginFailed,
+    orgName,
+    setOrgName,
     onBasicInfoSubmit,
     onAdditionalInfoSubmit,
+    handleCreateOrganization,
     handleBackToBasicInfo,
+    handleBackToAdditionalInfo,
     navigateToCustomerPortal
   } = useRegistrationHandlers(setIsLoading);
 
@@ -36,10 +41,23 @@ const RegisterForm = ({ setIsLoading }: RegisterFormProps) => {
   }
 
   // Render step 2 - Additional info
+  if (currentStep === 2) {
+    return (
+      <AdditionalInfoForm 
+        onSubmit={onAdditionalInfoSubmit} 
+        onBack={handleBackToBasicInfo}
+      />
+    );
+  }
+
+  // Render step 3 - Organization setup
   return (
-    <AdditionalInfoForm 
-      onSubmit={onAdditionalInfoSubmit} 
-      onBack={handleBackToBasicInfo}
+    <OrganizationPrompt 
+      orgName={orgName}
+      setOrgName={setOrgName}
+      handleCreateOrganization={handleCreateOrganization}
+      onCancel={handleBackToAdditionalInfo}
+      isRegistration={true}
     />
   );
 };

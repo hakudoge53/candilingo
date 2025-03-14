@@ -11,22 +11,38 @@ interface OrganizationPromptProps {
   setOrgName: (name: string) => void;
   handleCreateOrganization: () => Promise<void>;
   onCancel: () => void;
+  isRegistration?: boolean;
 }
 
 const OrganizationPrompt = ({ 
   orgName, 
   setOrgName, 
   handleCreateOrganization, 
-  onCancel 
+  onCancel,
+  isRegistration = false
 }: OrganizationPromptProps) => {
+  const stepText = isRegistration ? "Step 3 of 3" : "Organization Required";
+  const progressBarClass = isRegistration ? "w-full" : "w-0";
+  
   return (
     <div className="space-y-6">
-      <Alert variant="default" className="bg-amber-50 border-amber-300">
-        <AlertTriangle className="h-5 w-5 text-amber-700" />
-        <AlertDescription className="text-amber-700 font-medium">
-          Organization Required
-        </AlertDescription>
-      </Alert>
+      {isRegistration && (
+        <div className="mb-4">
+          <p className="text-sm text-gray-500 mb-1">{stepText}</p>
+          <div className="w-full bg-gray-200 h-2 rounded-full">
+            <div className={`bg-candilingo-purple h-2 rounded-full ${progressBarClass}`}></div>
+          </div>
+        </div>
+      )}
+      
+      {!isRegistration && (
+        <Alert variant="default" className="bg-amber-50 border-amber-300">
+          <AlertTriangle className="h-5 w-5 text-amber-700" />
+          <AlertDescription className="text-amber-700 font-medium">
+            {stepText}
+          </AlertDescription>
+        </Alert>
+      )}
       
       <div className="space-y-4">
         <h3 className="text-lg font-medium">Create Your Organization</h3>
@@ -59,7 +75,7 @@ const OrganizationPrompt = ({
             Create Organization
           </Button>
           <Button onClick={onCancel} variant="outline" className="w-full">
-            Cancel
+            {isRegistration ? "Back" : "Cancel"}
           </Button>
         </div>
       </div>

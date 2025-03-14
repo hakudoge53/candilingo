@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -38,9 +37,9 @@ const BasicInfoForm = ({ onSubmit }: BasicInfoFormProps) => {
   return (
     <div>
       <div className="mb-4">
-        <p className="text-sm text-gray-500 mb-1">Step 1 of 2</p>
+        <p className="text-sm text-gray-500 mb-1">Step 1 of 3</p>
         <div className="w-full bg-gray-200 h-2 rounded-full">
-          <div className="bg-candilingo-purple h-2 rounded-full w-1/2"></div>
+          <div className="bg-candilingo-purple h-2 rounded-full w-1/3"></div>
         </div>
       </div>
       
@@ -98,7 +97,7 @@ const BasicInfoForm = ({ onSubmit }: BasicInfoFormProps) => {
               </FormItem>
             )}
           />
-          <Button type="submit" variant="purple" className="w-full">
+          <Button type="submit" variant="purple" className="w-full bg-candilingo-purple hover:bg-candilingo-purple/90">
             Next Step
           </Button>
         </form>

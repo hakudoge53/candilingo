@@ -34,9 +34,9 @@ const AdditionalInfoForm = ({ onSubmit, onBack }: AdditionalInfoFormProps) => {
   return (
     <div>
       <div className="mb-4">
-        <p className="text-sm text-gray-500 mb-1">Step 2 of 2</p>
+        <p className="text-sm text-gray-500 mb-1">Step 2 of 3</p>
         <div className="w-full bg-gray-200 h-2 rounded-full">
-          <div className="bg-candilingo-purple h-2 rounded-full w-full"></div>
+          <div className="bg-candilingo-purple h-2 rounded-full w-2/3"></div>
         </div>
       </div>
       
@@ -123,8 +123,8 @@ const AdditionalInfoForm = ({ onSubmit, onBack }: AdditionalInfoFormProps) => {
             <Button type="button" variant="outline" className="flex-1" onClick={onBack}>
               Back
             </Button>
-            <Button type="submit" className="flex-1 bg-techlex-blue">
-              Complete Registration
+            <Button type="submit" variant="purple" className="flex-1 bg-candilingo-purple hover:bg-candilingo-purple/90">
+              Next Step
             </Button>
           </div>
         </form>
