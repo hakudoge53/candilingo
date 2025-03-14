@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -112,9 +113,8 @@ export const useAuthHandlers = (
     try {
       setIsLoading(true);
       
-      const currentUrl = window.location.href;
-      const baseUrl = currentUrl.split('/').slice(0, 3).join('/');
-      const redirectUrl = `${baseUrl}/customer-portal`;
+      // Always use the current origin for the redirect URL
+      const redirectUrl = `${window.location.origin}/customer-portal`;
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
@@ -150,9 +150,8 @@ export const useAuthHandlers = (
     try {
       setIsLoading(true);
       
-      const currentUrl = window.location.href;
-      const baseUrl = currentUrl.split('/').slice(0, 3).join('/');
-      const redirectUrl = `${baseUrl}/customer-portal`;
+      // Always use the current origin for the redirect URL
+      const redirectUrl = `${window.location.origin}/customer-portal`;
       
       console.log("Password reset redirect URL:", redirectUrl);
       

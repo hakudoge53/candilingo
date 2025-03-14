@@ -42,6 +42,11 @@ function App() {
       } else if (error) {
         toast.error(errorDescription || "Authentication error occurred");
         window.history.replaceState(null, '', window.location.pathname);
+        
+        // Redirect to customer portal for any auth error
+        setTimeout(() => {
+          window.location.href = '/customer-portal';
+        }, 2000);
       }
     }
   }, []);

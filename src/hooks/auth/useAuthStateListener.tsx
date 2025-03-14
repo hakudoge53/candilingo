@@ -29,9 +29,19 @@ export const useAuthStateListener = ({
           toast.error("Email confirmation link has expired. Please request a new one.");
           // Clear the hash from the URL
           window.history.replaceState(null, '', window.location.pathname);
+          
+          // Redirect to customer portal after a delay
+          setTimeout(() => {
+            window.location.href = '/customer-portal';
+          }, 2000);
         } else if (error) {
           toast.error(errorDescription || "Authentication error occurred");
           window.history.replaceState(null, '', window.location.pathname);
+          
+          // Redirect to customer portal for any auth error
+          setTimeout(() => {
+            window.location.href = '/customer-portal';
+          }, 2000);
         }
       }
     };
@@ -112,10 +122,8 @@ export const useAuthStateListener = ({
         // Handle password recovery
         console.log("PASSWORD_RECOVERY event triggered");
         
-        // Get the current URL for proper redirection after password update
-        const currentUrl = window.location.href;
-        // Use the base URL (without path) for the redirect
-        const baseUrl = currentUrl.split('/').slice(0, 3).join('/');
+        // Use the current domain for redirection
+        const redirectUrl = window.location.origin + '/customer-portal';
         
         const newPassword = prompt('What would you like your new password to be?');
         if (newPassword) {
@@ -128,8 +136,8 @@ export const useAuthStateListener = ({
               toast.error('Error updating password: ' + error.message);
             } else {
               toast.success('Password updated successfully!');
-              // Redirect to customer portal with absolute URL
-              window.location.href = `${baseUrl}/customer-portal`;
+              // Redirect to customer portal with the current origin
+              window.location.href = redirectUrl;
             }
           } catch (err) {
             console.error("Password update error:", err);
