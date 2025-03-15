@@ -1,15 +1,17 @@
-
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { User } from '@/hooks/auth/types';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useForm } from "react-hook-form";
+import { Label } from "@/components/ui/label";
 import { toast } from 'sonner';
-import { Upload, UserCog, Palette } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AlertTriangle, Check, Upload, User as UserIcon } from 'lucide-react';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 interface ProfileSettingsSectionProps {
   user: User;
@@ -18,214 +20,196 @@ interface ProfileSettingsSectionProps {
 
 interface ProfileFormValues {
   name: string;
-  email: string;
-  themeColor: string;
+  preferredLanguage: string;
 }
 
 const ProfileSettingsSection: React.FC<ProfileSettingsSectionProps> = ({ user, setLocalLoading }) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
-  
-  const form = useForm<ProfileFormValues>({
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+
+  const profileForm = useForm<ProfileFormValues>({
     defaultValues: {
-      name: user.name || '',
-      email: user.email || '',
-      themeColor: '#9b87f5' // Default theme color
+      name: user.name,
+      preferredLanguage: user.preferredLanguage
     }
   });
-  
-  const handleUpdateProfile = async (values: ProfileFormValues) => {
+
+  const handleProfileUpdate = async (values: ProfileFormValues) => {
+    setIsSaving(true);
     try {
-      setLocalLoading(true);
-      
-      // Prepare extension settings
-      const extensionSettings = {
-        ...(user.extension_settings || {}),
-        themeColor: values.themeColor
-      };
-      
       const { data, error } = await supabase
         .from('profiles')
         .update({
           name: values.name,
-          email: values.email,
-          extension_settings: extensionSettings
+          preferred_language: values.preferredLanguage
         })
         .eq('id', user.id)
-        .select();
-        
-      if (error) throw error;
-      
+        .select()
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
       toast.success("Profile updated successfully");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating profile:", error);
       toast.error("Failed to update profile");
     } finally {
-      setLocalLoading(false);
+      setIsSaving(false);
     }
   };
-  
-  const handleAvatarClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
     }
-  };
-  
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+
+    setUploading(true);
     try {
-      setUploading(true);
-      
-      if (!event.target.files || event.target.files.length === 0) {
-        return;
-      }
-      
-      const file = event.target.files[0];
       const fileExt = file.name.split('.').pop();
-      const filePath = `avatars/${user.id}.${fileExt}`;
-      
-      // Upload the file to Supabase Storage
-      const { error: uploadError } = await supabase.storage
-        .from('profiles')
-        .upload(filePath, file, { upsert: true });
-        
-      if (uploadError) throw uploadError;
-      
-      // Get the public URL
-      const { data } = supabase.storage
-        .from('profiles')
+      const fileName = `${user.id}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
+      // Upload the image to Supabase storage
+      const { data, error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      // Get public URL of the uploaded image
+      const { data: urlData } = supabase.storage
+        .from('avatars')
         .getPublicUrl(filePath);
-        
-      setAvatarUrl(data.publicUrl);
-      
-      // Update the user profile with the avatar URL
-      const { error: updateError } = await supabase
+
+      if (!urlData?.publicUrl) {
+        throw new Error('Failed to retrieve public URL');
+      }
+
+      setImageUrl(urlData.publicUrl);
+
+      // Update the user's profile with the avatar URL
+      const { error: profileError } = await supabase
         .from('profiles')
-        .update({ avatar_url: data.publicUrl })
+        .update({ avatar_url: urlData.publicUrl })
         .eq('id', user.id);
-        
-      if (updateError) throw updateError;
-      
-      toast.success("Profile picture updated successfully");
-    } catch (error) {
+
+      if (profileError) {
+        throw profileError;
+      }
+
+      toast.success("Avatar updated successfully");
+    } catch (error: any) {
       console.error("Error uploading avatar:", error);
-      toast.error("Failed to upload profile picture");
+      toast.error("Failed to upload avatar");
     } finally {
       setUploading(false);
     }
   };
-  
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Profile Settings</CardTitle>
-        <CardDescription>
-          Update your personal information and customize your portal appearance
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Profile Avatar */}
-        <div className="flex flex-col items-center space-y-4">
-          <Avatar className="h-24 w-24 cursor-pointer" onClick={handleAvatarClick}>
-            <AvatarImage src={avatarUrl || undefined} />
-            <AvatarFallback className="text-2xl">
-              {user.name
-                ? user.name
-                    .split(' ')
-                    .map(part => part[0])
-                    .join('')
-                    .toUpperCase()
-                    .slice(0, 2)
-                : 'U'}
-            </AvatarFallback>
-          </Avatar>
-          <input
-            ref={fileInputRef}
-            type="file"
-            className="hidden"
-            accept="image/*"
-            onChange={handleFileChange}
-            disabled={uploading}
-          />
-          <Button 
-            variant="outline" 
-            onClick={handleAvatarClick}
-            disabled={uploading}
-            className="flex items-center gap-2"
-          >
-            <Upload className="h-4 w-4" />
-            {uploading ? "Uploading..." : "Change Profile Picture"}
-          </Button>
-        </div>
-        
-        {/* Profile Form */}
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleUpdateProfile)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full Name</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input {...field} type="email" disabled />
-                  </FormControl>
-                  <FormDescription>
-                    Email changes require verification
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="themeColor"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Theme Color</FormLabel>
-                  <div className="flex items-center gap-3">
-                    <FormControl>
-                      <Input 
-                        {...field} 
-                        type="color" 
-                        className="w-12 h-10 p-1 rounded"
-                      />
-                    </FormControl>
-                    <Input 
-                      value={field.value} 
-                      onChange={field.onChange} 
-                      placeholder="#9b87f5"
-                      className="flex-1"
-                    />
-                  </div>
-                  <FormDescription>
-                    Customize the color of your customer portal
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <Button type="submit" className="w-full">Save Changes</Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+    <Tabs defaultValue="profile" className="w-full">
+      <TabsList className="w-full">
+        <TabsTrigger value="profile">
+          <UserIcon className="mr-2 h-4 w-4" />
+          Profile
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent value="profile">
+        <Card>
+          <CardHeader>
+            <CardTitle>Profile Information</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center space-x-4">
+              <Avatar className="h-12 w-12">
+                <AvatarImage src={imageUrl || `/avatars/default.png`} alt="Avatar" />
+                <AvatarFallback>{user.name ? user.name[0] : '?'}</AvatarFallback>
+              </Avatar>
+              <div>
+                <Label htmlFor="avatar-upload">Update Avatar</Label>
+                <Input
+                  type="file"
+                  id="avatar-upload"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleAvatarUpload}
+                />
+                {uploading ? (
+                  <LoadingSpinner message="Uploading..." />
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    Click to upload a new avatar
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <form onSubmit={profileForm.handleSubmit(handleProfileUpdate)} className="space-y-4">
+              <div>
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="Your Name"
+                  {...profileForm.register("name")}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="your@email.com"
+                  defaultValue={user.email}
+                  readOnly
+                  disabled
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="preferredLanguage">Preferred Language</Label>
+                <Select
+                  onValueChange={profileForm.setValue}
+                  defaultValue={user.preferredLanguage}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select a language" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="en">English</SelectItem>
+                    <SelectItem value="es">Spanish</SelectItem>
+                    {/* Add more languages as needed */}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <Button type="submit" disabled={isSaving}>
+                {isSaving ? (
+                  <>
+                    <LoadingSpinner message="Saving..." />
+                  </>
+                ) : (
+                  <>
+                    <Check className="mr-2 h-4 w-4" />
+                    Update Profile
+                  </>
+                )}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </TabsContent>
+    </Tabs>
   );
 };
 

@@ -2,18 +2,19 @@
 import React, { useState, useEffect } from 'react';
 import { User } from '@/hooks/auth/types';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Search, Plus, Lock, Edit, Trash2, Save, X } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { GlossaryTerm } from '@/types/glossary';
 import { Glossary } from '@/types/organization';
-import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { toast } from 'sonner';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { Textarea } from "@/components/ui/textarea";
+import { useGlossaryList } from '@/hooks/glossary/useGlossaryList';
+import { useGlossaryTerms } from '@/hooks/glossary/useGlossaryTerms';
+
+// Import the new components
+import GlossaryList from './dictionaries/GlossaryList';
+import TermList from './dictionaries/TermList';
+import TermEditor from './dictionaries/TermEditor';
+import GlossaryCreator from './dictionaries/GlossaryCreator';
 
 interface PrivateDictionariesSectionProps {
   user: User;
@@ -32,151 +33,71 @@ interface TermFormValues {
 }
 
 const PrivateDictionariesSection: React.FC<PrivateDictionariesSectionProps> = ({ user, setLocalLoading }) => {
-  const [privateGlossaries, setPrivateGlossaries] = useState<Glossary[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedGlossary, setSelectedGlossary] = useState<string | null>(null);
-  const [glossaryTerms, setGlossaryTerms] = useState<GlossaryTerm[]>([]);
   const [isNewGlossaryDialogOpen, setIsNewGlossaryDialogOpen] = useState(false);
   const [isNewTermDialogOpen, setIsNewTermDialogOpen] = useState(false);
+  const [organizationId, setOrganizationId] = useState<string | undefined>();
 
-  // Forms
-  const glossaryForm = useForm<GlossaryFormValues>({
-    defaultValues: {
-      name: '',
-      description: ''
-    }
-  });
-
-  const termForm = useForm<TermFormValues>({
-    defaultValues: {
-      term: '',
-      definition: '',
-      category: ''
-    }
-  });
-
-  // Fetch private glossaries for the user
+  // Get user's organization
   useEffect(() => {
-    const fetchPrivateGlossaries = async () => {
+    const fetchUserOrganization = async () => {
       setIsLoading(true);
       try {
-        // First get the organizations this user belongs to
-        const { data: memberships, error: membershipError } = await supabase
+        const { data: memberships, error } = await supabase
           .from('organization_members')
           .select('organization_id')
-          .eq('user_id', user.id);
-          
-        if (membershipError) throw membershipError;
-        
-        // Then get the glossaries for these organizations
-        if (memberships && memberships.length > 0) {
-          const orgIds = memberships.map(m => m.organization_id);
-          
-          const { data: glossaries, error: glossariesError } = await supabase
-            .from('glossaries')
-            .select('id, name, description, organization_id')
-            .in('organization_id', orgIds);
-            
-          if (glossariesError) throw glossariesError;
-          setPrivateGlossaries(glossaries || []);
-          
-          // Select the first glossary by default if available
-          if (glossaries && glossaries.length > 0 && !selectedGlossary) {
-            setSelectedGlossary(glossaries[0].id);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching private glossaries:", error);
-        toast.error("Failed to load private glossaries");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchPrivateGlossaries();
-  }, [user.id]);
-
-  // Fetch glossary terms when a glossary is selected
-  useEffect(() => {
-    if (!selectedGlossary) return;
-    
-    const fetchGlossaryTerms = async () => {
-      setIsLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('glossary_terms')
-          .select('*')
-          .eq('glossary_id', selectedGlossary);
+          .eq('user_id', user.id)
+          .limit(1);
           
         if (error) throw error;
-        setGlossaryTerms(data || []);
+        
+        if (memberships && memberships.length > 0) {
+          setOrganizationId(memberships[0].organization_id);
+        }
       } catch (error) {
-        console.error("Error fetching glossary terms:", error);
-        toast.error("Failed to load glossary terms");
+        console.error("Error fetching user organization:", error);
+        toast.error("Failed to load organization information");
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchGlossaryTerms();
-  }, [selectedGlossary]);
+    fetchUserOrganization();
+  }, [user.id]);
 
-  // Filter terms by search
-  const filteredTerms = glossaryTerms.filter(term => 
-    term.term.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    term.definition.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (term.category && term.category.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  // Use the custom hooks for glossaries and terms
+  const { 
+    glossaries, 
+    activeGlossary, 
+    setActiveGlossary, 
+    createGlossary,
+    isLoading: isGlossaryLoading
+  } = useGlossaryList(organizationId);
 
-  // Group terms by category
-  const groupedTerms = filteredTerms.reduce((groups, term) => {
-    const category = term.category || 'Uncategorized';
-    if (!groups[category]) {
-      groups[category] = [];
+  const {
+    terms,
+    addTerm,
+    isLoading: isTermsLoading
+  } = useGlossaryTerms(activeGlossary?.id);
+
+  // Handle glossary selection
+  const handleSelectGlossary = (glossaryId: string) => {
+    const selected = glossaries.find(g => g.id === glossaryId);
+    if (selected) {
+      setActiveGlossary(selected);
     }
-    groups[category].push(term);
-    return groups;
-  }, {} as Record<string, GlossaryTerm[]>);
+  };
 
   // Create new glossary
   const handleCreateGlossary = async (values: GlossaryFormValues) => {
     setIsLoading(true);
     try {
-      // Get the user's organization (assuming they're in at least one)
-      const { data: memberships, error: membershipError } = await supabase
-        .from('organization_members')
-        .select('organization_id')
-        .eq('user_id', user.id)
-        .limit(1);
-        
-      if (membershipError) throw membershipError;
-      
-      if (!memberships || memberships.length === 0) {
-        toast.error("You need to be part of an organization to create a glossary");
-        return;
+      const newGlossary = await createGlossary(values.name, values.description);
+      if (newGlossary) {
+        setIsNewGlossaryDialogOpen(false);
+        toast.success("Glossary created successfully");
       }
-      
-      const organizationId = memberships[0].organization_id;
-      
-      // Create the glossary
-      const { data: newGlossary, error: glossaryError } = await supabase
-        .from('glossaries')
-        .insert({
-          name: values.name,
-          description: values.description,
-          organization_id: organizationId
-        })
-        .select()
-        .single();
-        
-      if (glossaryError) throw glossaryError;
-      
-      toast.success("Glossary created successfully");
-      setPrivateGlossaries([...privateGlossaries, newGlossary]);
-      setSelectedGlossary(newGlossary.id);
-      setIsNewGlossaryDialogOpen(false);
-      glossaryForm.reset();
     } catch (error) {
       console.error("Error creating glossary:", error);
       toast.error("Failed to create glossary");
@@ -187,30 +108,24 @@ const PrivateDictionariesSection: React.FC<PrivateDictionariesSectionProps> = ({
 
   // Add new term to glossary
   const handleAddTerm = async (values: TermFormValues) => {
-    if (!selectedGlossary) {
+    if (!activeGlossary?.id) {
       toast.error("No glossary selected");
       return;
     }
     
     setIsLoading(true);
     try {
-      const { data: newTerm, error } = await supabase
-        .from('glossary_terms')
-        .insert({
-          term: values.term,
-          definition: values.definition,
-          category: values.category || 'General',
-          glossary_id: selectedGlossary
-        })
-        .select()
-        .single();
-        
-      if (error) throw error;
+      const newTerm = await addTerm(
+        activeGlossary.id, 
+        values.term, 
+        values.definition, 
+        values.category || 'General'
+      );
       
-      toast.success("Term added successfully");
-      setGlossaryTerms([...glossaryTerms, newTerm]);
-      setIsNewTermDialogOpen(false);
-      termForm.reset();
+      if (newTerm) {
+        setIsNewTermDialogOpen(false);
+        toast.success("Term added successfully");
+      }
     } catch (error) {
       console.error("Error adding term:", error);
       toast.error("Failed to add term");
@@ -218,6 +133,8 @@ const PrivateDictionariesSection: React.FC<PrivateDictionariesSectionProps> = ({
       setIsLoading(false);
     }
   };
+
+  const totalLoading = isLoading || isGlossaryLoading || isTermsLoading;
 
   return (
     <div className="space-y-6">
@@ -229,277 +146,48 @@ const PrivateDictionariesSection: React.FC<PrivateDictionariesSectionProps> = ({
           </p>
         </div>
         
-        <Dialog open={isNewGlossaryDialogOpen} onOpenChange={setIsNewGlossaryDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              New Dictionary
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Create New Dictionary</DialogTitle>
-              <DialogDescription>
-                Add a new dictionary for your organization.
-              </DialogDescription>
-            </DialogHeader>
-            
-            <Form {...glossaryForm}>
-              <form onSubmit={glossaryForm.handleSubmit(handleCreateGlossary)} className="space-y-4">
-                <FormField
-                  control={glossaryForm.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Technical Terms" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        The name of your dictionary
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={glossaryForm.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          placeholder="A collection of technical terms for our team" 
-                          {...field} 
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Short description of the dictionary's purpose
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <DialogFooter>
-                  <Button type="submit" disabled={isLoading}>
-                    {isLoading ? "Creating..." : "Create Dictionary"}
-                  </Button>
-                </DialogFooter>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
+        <Button onClick={() => setIsNewGlossaryDialogOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" />
+          New Dictionary
+        </Button>
+        
+        <GlossaryCreator
+          isOpen={isNewGlossaryDialogOpen}
+          isLoading={totalLoading}
+          onOpenChange={setIsNewGlossaryDialogOpen}
+          onCreateGlossary={handleCreateGlossary}
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div className="lg:col-span-1">
-          <Card>
-            <CardHeader>
-              <CardTitle>Your Dictionaries</CardTitle>
-              <CardDescription>Dictionaries your organization owns</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {isLoading && !privateGlossaries.length ? (
-                <LoadingSpinner message="Loading dictionaries..." />
-              ) : (
-                privateGlossaries.map(glossary => (
-                  <Button 
-                    key={glossary.id}
-                    variant={selectedGlossary === glossary.id ? "default" : "ghost"}
-                    className="w-full justify-start"
-                    onClick={() => setSelectedGlossary(glossary.id)}
-                  >
-                    <Lock className="mr-2 h-4 w-4" />
-                    {glossary.name}
-                  </Button>
-                ))
-              )}
-              
-              {!isLoading && privateGlossaries.length === 0 && (
-                <div className="text-center py-4 text-gray-500">
-                  <p>No private dictionaries available</p>
-                  <Button 
-                    variant="outline" 
-                    className="mt-2"
-                    onClick={() => setIsNewGlossaryDialogOpen(true)}
-                  >
-                    <Plus className="mr-2 h-4 w-4" />
-                    Create first dictionary
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <GlossaryList
+            glossaries={glossaries}
+            selectedGlossaryId={activeGlossary?.id || null}
+            isLoading={totalLoading}
+            onSelectGlossary={handleSelectGlossary}
+            onCreateGlossary={() => setIsNewGlossaryDialogOpen(true)}
+          />
         </div>
 
         <div className="lg:col-span-3">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>
-                  {privateGlossaries.find(g => g.id === selectedGlossary)?.name || 'Dictionary Terms'}
-                </CardTitle>
-                <CardDescription>
-                  {privateGlossaries.find(g => g.id === selectedGlossary)?.description || 'Search and browse terms'}
-                </CardDescription>
-              </div>
-              
-              {selectedGlossary && (
-                <Dialog open={isNewTermDialogOpen} onOpenChange={setIsNewTermDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button size="sm">
-                      <Plus className="mr-2 h-4 w-4" />
-                      Add Term
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Add New Term</DialogTitle>
-                      <DialogDescription>
-                        Add a new term to your dictionary.
-                      </DialogDescription>
-                    </DialogHeader>
-                    
-                    <Form {...termForm}>
-                      <form onSubmit={termForm.handleSubmit(handleAddTerm)} className="space-y-4">
-                        <FormField
-                          control={termForm.control}
-                          name="term"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Term</FormLabel>
-                              <FormControl>
-                                <Input placeholder="API" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={termForm.control}
-                          name="definition"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Definition</FormLabel>
-                              <FormControl>
-                                <Textarea 
-                                  placeholder="Application Programming Interface" 
-                                  {...field} 
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={termForm.control}
-                          name="category"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Category</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Technical" {...field} />
-                              </FormControl>
-                              <FormDescription>
-                                Optional category to organize terms
-                              </FormDescription>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <DialogFooter>
-                          <Button type="submit" disabled={isLoading}>
-                            {isLoading ? "Adding..." : "Add Term"}
-                          </Button>
-                        </DialogFooter>
-                      </form>
-                    </Form>
-                  </DialogContent>
-                </Dialog>
-              )}
-            </CardHeader>
-            
-            <div className="px-6 pb-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Search terms..."
-                  className="pl-9"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-            </div>
-            
-            <CardContent className="max-h-[60vh] overflow-y-auto">
-              {isLoading && !glossaryTerms.length ? (
-                <LoadingSpinner message="Loading terms..." />
-              ) : (
-                Object.entries(groupedTerms).map(([category, terms]) => (
-                  <div key={category} className="mb-6">
-                    <h3 className="text-md font-semibold mb-2 text-gray-700 border-b pb-1">
-                      {category}
-                    </h3>
-                    <div className="space-y-3">
-                      {terms.map((term) => (
-                        <div key={term.id} className="border rounded-md p-3 bg-gray-50">
-                          <div className="flex justify-between">
-                            <div className="font-medium text-gray-900">{term.term}</div>
-                            <div className="flex space-x-2">
-                              <Button variant="ghost" size="icon" className="h-6 w-6">
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <Button variant="ghost" size="icon" className="h-6 w-6 text-red-500">
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                          <div className="text-sm text-gray-600 mt-1">{term.definition}</div>
-                          {term.relatedTerms && term.relatedTerms.length > 0 && (
-                            <div className="text-xs text-gray-500 mt-2">
-                              Related: {term.relatedTerms.join(', ')}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))
-              )}
-              
-              {!isLoading && selectedGlossary && filteredTerms.length === 0 && (
-                <div className="text-center py-10 text-gray-500">
-                  {searchTerm ? (
-                    <p>No terms found matching "{searchTerm}"</p>
-                  ) : (
-                    <div>
-                      <p>No terms in this dictionary yet</p>
-                      <Button 
-                        variant="outline" 
-                        className="mt-4"
-                        onClick={() => setIsNewTermDialogOpen(true)}
-                      >
-                        <Plus className="mr-2 h-4 w-4" />
-                        Add your first term
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              )}
-              
-              {!selectedGlossary && !isLoading && (
-                <div className="text-center py-10 text-gray-500">
-                  <p>Select a dictionary to view terms</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <TermList
+            activeGlossary={activeGlossary}
+            terms={terms}
+            searchTerm={searchTerm}
+            isLoading={totalLoading}
+            onSearchChange={setSearchTerm}
+            onAddTermClick={() => setIsNewTermDialogOpen(true)}
+          />
+          
+          {activeGlossary && (
+            <TermEditor
+              isOpen={isNewTermDialogOpen}
+              isLoading={totalLoading}
+              onOpenChange={setIsNewTermDialogOpen}
+              onAddTerm={handleAddTerm}
+            />
+          )}
         </div>
       </div>
     </div>
