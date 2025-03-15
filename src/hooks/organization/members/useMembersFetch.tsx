@@ -63,7 +63,7 @@ export const useMembersFetch = (organizationId: string | undefined): UseMembersF
       if (error) throw error;
       
       // Safely convert the data to the correct type
-      const typedMembers: OrganizationMember[] = (data || []).map(member => {
+      const typedMembers: OrganizationMember[] = (data || []).map((member: any) => {
         // Handle case where user might be an error object or null
         let userObject = null;
         if (member.user && typeof member.user === 'object' && !('error' in member.user)) {
