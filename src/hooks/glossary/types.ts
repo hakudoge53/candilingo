@@ -1,8 +1,6 @@
 
-import { Glossary, GlossaryTerm } from '@/types/organization';
-
-// Re-export the types with proper 'export type' syntax to fix the TS1205 error
-export type { Glossary, GlossaryTerm } from '@/types/organization';
+import { Glossary } from '@/types/organization';
+import { GlossaryTerm } from '@/types/glossary';
 
 // Common interfaces for the glossary hooks
 export interface UseGlossaryListReturn {

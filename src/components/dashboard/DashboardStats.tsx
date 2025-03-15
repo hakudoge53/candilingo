@@ -1,8 +1,6 @@
-
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
-import { Organization, OrganizationMember } from '@/types/organization';
-import { Glossary } from '@/types/glossary';
+import { Organization, OrganizationMember, Glossary } from '@/types/organization';
 import { LayoutDashboard, BookMarked, Users } from 'lucide-react';
 
 interface DashboardStatsProps {
