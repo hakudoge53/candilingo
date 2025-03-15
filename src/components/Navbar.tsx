@@ -23,24 +23,24 @@ const Navbar = () => {
   };
 
   return (
-    <div className="bg-candilingo-pink py-4">
+    <div className="bg-white py-4 shadow-sm">
       <div className="container mx-auto px-4 flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="text-2xl font-bold text-white">
-          <img 
-            src="/lovable-uploads/c4cf5eba-6c4b-4b24-9ef1-840fd66a9bd6.png" 
-            alt="Candilingo" 
-            className="h-16 w-auto" 
-          />
+        <Link to="/" className="text-2xl font-bold text-candilingo-purple">
+          <span className="text-candilingo-purple text-3xl font-bold">Candi</span>
+          <span className="text-candilingo-pink text-3xl font-bold">lingo</span>
         </Link>
 
         {/* Navigation Links */}
         <nav className="flex gap-8 items-center">
-          <Link to="/" className="text-white hover:text-gray-300 font-medium hidden md:block">
+          <Link to="/" className="text-gray-700 hover:text-candilingo-purple font-medium hidden md:block">
             Home
           </Link>
+          <Link to="/resources" className="text-gray-700 hover:text-candilingo-purple font-medium hidden md:block">
+            Resources
+          </Link>
           {isLoggedIn && (
-            <Link to="/dashboard" className="text-white hover:text-gray-300 font-medium hidden md:block">
+            <Link to="/dashboard" className="text-gray-700 hover:text-candilingo-purple font-medium hidden md:block">
               Dashboard
             </Link>
           )}
@@ -52,11 +52,11 @@ const Navbar = () => {
             </Button>
           ) : (
             <>
-              <Link to="/portal" className="text-white hover:text-gray-300 font-medium hidden md:block">
+              <Link to="/portal" className="text-gray-700 hover:text-candilingo-purple font-medium hidden md:block">
                 Login
               </Link>
-              <Link to="/portal" className="text-white hover:text-gray-300 font-medium hidden md:block">
-                Sign Up
+              <Link to="/portal" className="hidden md:block">
+                <Button size="sm" variant="purple">Sign Up</Button>
               </Link>
             </>
           )}
@@ -67,16 +67,13 @@ const Navbar = () => {
         {/* Mobile Menu Button */}
         <Sheet>
           <SheetTrigger className="md:hidden">
-            <Menu className="h-6 w-6 text-white cursor-pointer" />
+            <Menu className="h-6 w-6 text-candilingo-purple cursor-pointer" />
           </SheetTrigger>
           <SheetContent side="left" className="bg-white">
             <SheetHeader>
               <SheetTitle>
-                <img 
-                  src="/lovable-uploads/3ba829c2-54b7-4152-b767-9eb28429dbd7.png" 
-                  alt="Candilingo" 
-                  className="h-10 w-auto" 
-                />
+                <span className="text-candilingo-purple font-bold">Candi</span>
+                <span className="text-candilingo-pink font-bold">lingo</span>
               </SheetTitle>
               <SheetDescription>
                 Decoding technical jargon to help recruiters make better technical hiring decisions.
@@ -85,6 +82,9 @@ const Navbar = () => {
             <div className="mt-4">
               <Link to="/" className="block py-2 text-gray-800 hover:bg-gray-100">
                 Home
+              </Link>
+              <Link to="/resources" className="block py-2 text-gray-800 hover:bg-gray-100">
+                Resources
               </Link>
               {isLoggedIn && (
                 <>

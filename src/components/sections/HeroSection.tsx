@@ -1,9 +1,11 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from 'sonner';
 import HeroImageSection from "@/components/HeroImageSection";
 import { MailIcon, Play } from "lucide-react";
+import { Link } from 'react-router-dom';
 
 const HeroSection = ({ onShowVideo }: { onShowVideo?: () => void }) => {
   const [email, setEmail] = useState('');
@@ -36,7 +38,7 @@ const HeroSection = ({ onShowVideo }: { onShowVideo?: () => void }) => {
               <img 
                 src="/lovable-uploads/c4cf5eba-6c4b-4b24-9ef1-840fd66a9bd6.png" 
                 alt="Candilingo" 
-                className="h-20 w-auto" 
+                className="h-28 w-auto" // Increased from h-20 to h-28
               />
             </div>
             <div className="flex flex-wrap items-center gap-2 mb-4">
@@ -56,12 +58,14 @@ const HeroSection = ({ onShowVideo }: { onShowVideo?: () => void }) => {
               Instantly highlight key terms on LinkedIn, Teamtailor & PDFs to improve hiring speed and quality.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
-              <Button 
-                variant="purple" 
-                className="text-lg py-6 px-8 font-semibold shadow-md hover:shadow-lg transition-all duration-300"
-              >
-                Try for Free
-              </Button>
+              <Link to="/portal">
+                <Button 
+                  variant="purple" 
+                  className="text-lg py-6 px-8 font-semibold shadow-md hover:shadow-lg transition-all duration-300 w-full sm:w-auto"
+                >
+                  Try for Free
+                </Button>
+              </Link>
               <Button 
                 variant="outline-pink" 
                 className="flex items-center gap-2 text-lg py-6 px-8 font-semibold"

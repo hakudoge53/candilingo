@@ -6,14 +6,34 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useEffect, useState } from "react";
+import { publicGlossaryTerms } from "@/data/publicGlossaryTerms";
 
 interface TermBadgeProps {
   children: React.ReactNode;
   definition?: string;
   className?: string;
+  term?: string;
 }
 
-const TermBadge = ({ children, definition, className }: TermBadgeProps) => {
+const TermBadge = ({ children, definition, className, term }: TermBadgeProps) => {
+  const [glossaryDefinition, setGlossaryDefinition] = useState<string | undefined>(definition);
+
+  useEffect(() => {
+    // If term is provided and no definition is specified, try to find it in the glossary
+    if (term && !definition) {
+      const foundTerm = publicGlossaryTerms.find(
+        (glossaryTerm) => glossaryTerm.term.toLowerCase() === term.toLowerCase()
+      );
+      
+      if (foundTerm) {
+        setGlossaryDefinition(foundTerm.definition);
+      }
+    }
+  }, [term, definition]);
+
+  const displayDefinition = glossaryDefinition || definition;
+
   return (
     <TooltipProvider>
       <Tooltip>
@@ -27,15 +47,15 @@ const TermBadge = ({ children, definition, className }: TermBadgeProps) => {
             {children}
           </span>
         </TooltipTrigger>
-        {definition && (
+        {displayDefinition && (
           <TooltipContent 
             side="top" 
             align="start"
-            className="max-w-[200px] text-sm bg-white border border-gray-200 shadow-lg rounded-lg p-2"
+            className="max-w-[300px] text-sm bg-white border border-gray-200 shadow-lg rounded-lg p-3"
             sideOffset={5}
             alignOffset={5}
           >
-            {definition}
+            {displayDefinition}
           </TooltipContent>
         )}
       </Tooltip>

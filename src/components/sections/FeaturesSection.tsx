@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { BookOpenText, BrainCircuit, FileText, Languages, Search, Zap, BookOpen, GraduationCap, MessageCircleQuestion, ChevronDown, ChevronUp, Clock } from "lucide-react";
 import FeatureCard from "@/components/FeatureCard";
 import { Button } from "@/components/ui/button";
+import TermBadge from '../TermBadge';
 
 const FeaturesSection = () => {
   const [showAllFeatures, setShowAllFeatures] = useState(false);
@@ -39,25 +40,19 @@ const FeaturesSection = () => {
                 </div>
                 <p className="text-sm text-gray-600">Get instant explanations on any technical content online</p>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow-sm border border-candilingo-purple border-opacity-20 transition-all duration-300 hover:shadow-md hover:border-opacity-30 relative">
-                <div className="absolute -top-2 -right-2 bg-amber-100 text-amber-800 text-xs font-medium px-2 py-1 rounded-full border border-amber-200">
-                  Coming Soon
-                </div>
+              <div className="bg-white p-4 rounded-lg shadow-sm border border-candilingo-purple border-opacity-20 transition-all duration-300 hover:shadow-md hover:border-opacity-30">
                 <div className="flex items-center mb-2">
                   <BookOpen className="w-5 h-5 text-candilingo-teal mr-2" />
                   <h4 className="font-semibold">Public & Company Wikis</h4>
                 </div>
                 <p className="text-sm text-gray-600">Access and build knowledge bases with shareable glossaries</p>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow-sm border border-candilingo-purple border-opacity-20 transition-all duration-300 hover:shadow-md hover:border-opacity-30 relative">
-                <div className="absolute -top-2 -right-2 bg-amber-100 text-amber-800 text-xs font-medium px-2 py-1 rounded-full border border-amber-200">
-                  Coming Soon
-                </div>
+              <div className="bg-white p-4 rounded-lg shadow-sm border border-candilingo-purple border-opacity-20 transition-all duration-300 hover:shadow-md hover:border-opacity-30">
                 <div className="flex items-center mb-2">
                   <BrainCircuit className="w-5 h-5 text-candilingo-lightpurple mr-2" />
                   <h4 className="font-semibold">Recruitment Assistant</h4>
                 </div>
-                <p className="text-sm text-gray-600">AI-powered features to boost your recruitment process</p>
+                <p className="text-sm text-gray-600">AI-powered features such as technical summaries</p>
               </div>
             </div>
           </div>
