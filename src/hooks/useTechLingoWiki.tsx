@@ -152,6 +152,30 @@ export const useTechLingoWiki = () => {
     );
   };
 
+  // Helper function to get all available categories
+  const getCategories = () => {
+    const categorySet = new Set<string>();
+    terms.forEach(term => {
+      categorySet.add(term.category || 'General');
+    });
+    return Array.from(categorySet).sort();
+  };
+
+  // Helper function to get all available difficulty levels
+  const getDifficultyLevels = () => {
+    const difficultySet = new Set<string>();
+    terms.forEach(term => {
+      difficultySet.add(term.difficulty || 'Beginner');
+    });
+    return Array.from(difficultySet).sort();
+  };
+
+  // Filter terms by difficulty
+  const filterByDifficulty = (difficulty: string) => {
+    if (!difficulty) return terms;
+    return terms.filter(term => term.difficulty === difficulty);
+  };
+
   return {
     terms,
     isLoading,
@@ -164,6 +188,9 @@ export const useTechLingoWiki = () => {
     deleteTerm: (id: string) => deleteTermMutation.mutate(id),
     getTermsByCategory,
     searchTerms,
+    getCategories,
+    getDifficultyLevels,
+    filterByDifficulty,
     isAdding: addTermMutation.isPending,
     isUpdating: updateTermMutation.isPending,
     isDeleting: deleteTermMutation.isPending
