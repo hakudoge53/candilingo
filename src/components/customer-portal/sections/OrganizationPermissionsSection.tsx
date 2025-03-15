@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { User } from '@/hooks/auth/types';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,12 +9,13 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { useForm } from "react-hook-form";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import { OrganizationMember, Organization, ROLE_LABELS, ROLE_DESCRIPTIONS } from '@/types/organization';
+import { OrganizationMember, Organization, UserRole, ROLE_LABELS, ROLE_DESCRIPTIONS } from '@/types/organization';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Shield, UserPlus, Check, X, AlertTriangle, MoreHorizontal, Trash2 } from 'lucide-react';
 import { toast } from "sonner";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 interface OrganizationPermissionsSectionProps {
   user: User;
@@ -23,7 +25,17 @@ interface OrganizationPermissionsSectionProps {
 interface InviteFormValues {
   email: string;
   name: string;
-  role: 'owner' | 'admin' | 'employee';
+  role: UserRole;
+}
+
+interface OrganizationInvitation {
+  id: string;
+  organization_id: string;
+  invited_email: string;
+  invited_name: string | null;
+  role: UserRole;
+  status: string;
+  created_at: string;
 }
 
 const OrganizationPermissionsSection: React.FC<OrganizationPermissionsSectionProps> = ({ user, setLocalLoading }) => {
@@ -39,11 +51,11 @@ const OrganizationPermissionsSection: React.FC<OrganizationPermissionsSectionPro
   const [isChangingRole, setIsChangingRole] = useState(false);
   const [memberToChangeRole, setMemberToChangeRole] = useState<OrganizationMember | null>(null);
   const [isRoleChangeConfirmationOpen, setIsRoleChangeConfirmationOpen] = useState(false);
-  const [newRole, setNewRole] = useState<'owner' | 'admin' | 'employee'>('employee');
+  const [newRole, setNewRole] = useState<UserRole>('employee');
   const [isRevokingInvite, setIsRevokingInvite] = useState(false);
   const [inviteToRevoke, setInviteToRevoke] = useState<string | null>(null);
   const [isRevokeConfirmationOpen, setIsRevokeConfirmationOpen] = useState(false);
-  const [invites, setInvites] = useState([]);
+  const [invites, setInvites] = useState<OrganizationInvitation[]>([]);
 
   const inviteForm = useForm<InviteFormValues>({
     defaultValues: {
@@ -87,20 +99,22 @@ const OrganizationPermissionsSection: React.FC<OrganizationPermissionsSectionPro
         // Fetch organization members
         const { data: membersData, error: membersError } = await supabase
           .from('organization_members')
-          .select('*')
+          .select('*, user:profiles(name, email, membership_tier, status)')
           .eq('organization_id', organizationId);
           
         if (membersError) throw membersError;
         setMembers(membersData || []);
 
-        // Fetch organization invites
+        // Since organization_invitations table doesn't exist in the database schema
+        // we'll use the organization_members table with status='pending' instead
         const { data: invitesData, error: invitesError } = await supabase
-          .from('organization_invitations')
-          .select('*')
-          .eq('organization_id', organizationId);
+          .from('organization_members')
+          .select('id, organization_id, invited_email, invited_name, role, status, created_at')
+          .eq('organization_id', organizationId)
+          .eq('status', 'pending');
           
         if (invitesError) throw invitesError;
-        setInvites(invitesData || []);
+        setInvites(invitesData as OrganizationInvitation[] || []);
       } catch (error) {
         console.error("Error fetching organization data:", error);
         toast.error("Failed to load organization data");
@@ -117,13 +131,14 @@ const OrganizationPermissionsSection: React.FC<OrganizationPermissionsSectionPro
     setIsLoading(true);
     try {
       const { data, error } = await supabase
-        .from('organization_invitations')
+        .from('organization_members')
         .insert({
           organization_id: organization?.id,
           invited_email: values.email,
           invited_name: values.name,
           role: values.role,
-          status: 'pending'
+          status: 'pending',
+          user_id: '00000000-0000-0000-0000-000000000000' // Placeholder for pending invites
         })
         .select()
         .single();
@@ -131,7 +146,7 @@ const OrganizationPermissionsSection: React.FC<OrganizationPermissionsSectionPro
       if (error) throw error;
       
       toast.success("Invitation sent successfully");
-      setInvites([...invites, data]);
+      setInvites([...invites, data as unknown as OrganizationInvitation]);
       setIsInviteDialogOpen(false);
       inviteForm.reset();
     } catch (error) {
@@ -149,7 +164,7 @@ const OrganizationPermissionsSection: React.FC<OrganizationPermissionsSectionPro
     setIsRevokingInvite(true);
     try {
       const { error } = await supabase
-        .from('organization_invitations')
+        .from('organization_members')
         .delete()
         .eq('id', inviteToRevoke);
         
@@ -183,7 +198,9 @@ const OrganizationPermissionsSection: React.FC<OrganizationPermissionsSectionPro
       if (error) throw error;
       
       toast.success("Member role updated successfully");
-      setMembers(members.map(member => member.id === memberToChangeRole.id ? data : member));
+      setMembers(members.map(member => 
+        member.id === memberToChangeRole.id ? {...member, role: newRole} : member
+      ));
     } catch (error) {
       console.error("Error changing role:", error);
       toast.error("Failed to change role");
@@ -232,14 +249,6 @@ const OrganizationPermissionsSection: React.FC<OrganizationPermissionsSectionPro
         .eq('organization_id', organization.id);
         
       if (membersError) throw membersError;
-      
-      // Delete all invites
-      const { error: invitesError } = await supabase
-        .from('organization_invitations')
-        .delete()
-        .eq('organization_id', organization.id);
-        
-      if (invitesError) throw invitesError;
       
       // Finally, delete the organization
       const { error: orgError } = await supabase
@@ -304,10 +313,10 @@ const OrganizationPermissionsSection: React.FC<OrganizationPermissionsSectionPro
                 <li key={member.id} className="flex items-center justify-between p-3 rounded-md bg-gray-50 border">
                   <div className="flex items-center space-x-3">
                     <Avatar className="h-8 w-8">
-                      <AvatarFallback>{member.user_id.substring(0, 2).toUpperCase()}</AvatarFallback>
+                      <AvatarFallback>{member.user?.name?.substring(0, 2).toUpperCase() || member.user_id.substring(0, 2).toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-medium">{member.invited_name || member.user_id}</p>
+                      <p className="font-medium">{member.user?.name || member.invited_name || member.user_id}</p>
                       <p className="text-sm text-gray-500">{ROLE_LABELS[member.role]}</p>
                     </div>
                   </div>
@@ -516,7 +525,7 @@ const OrganizationPermissionsSection: React.FC<OrganizationPermissionsSectionPro
           <DialogHeader>
             <DialogTitle>Remove Member</DialogTitle>
             <DialogDescription>
-              Are you sure you want to remove {memberToRemove?.invited_name || memberToRemove?.user_id} from this organization?
+              Are you sure you want to remove {memberToRemove?.user?.name || memberToRemove?.invited_name || memberToRemove?.user_id} from this organization?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -534,11 +543,11 @@ const OrganizationPermissionsSection: React.FC<OrganizationPermissionsSectionPro
           <DialogHeader>
             <DialogTitle>Change Member Role</DialogTitle>
             <DialogDescription>
-              Are you sure you want to change the role of {memberToChangeRole?.invited_name || memberToChangeRole?.user_id} to {ROLE_LABELS[newRole]}?
+              Are you sure you want to change the role of {memberToChangeRole?.user?.name || memberToChangeRole?.invited_name || memberToChangeRole?.user_id} to {ROLE_LABELS[newRole]}?
             </DialogDescription>
           </DialogHeader>
           
-          <Select onValueChange={(value) => setNewRole(value as 'owner' | 'admin' | 'employee')} defaultValue={newRole}>
+          <Select onValueChange={(value) => setNewRole(value as UserRole)} defaultValue={newRole}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select a role" />
             </SelectTrigger>
