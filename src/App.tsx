@@ -35,6 +35,8 @@ function App() {
       const error = hashParams.get('error');
       const errorDescription = hashParams.get('error_description');
       
+      console.log("Auth error detected:", { error, errorDescription, hash });
+      
       if (error === 'access_denied' && hashParams.get('error_code') === 'otp_expired') {
         toast.error("Email confirmation link has expired. Please request a new one.");
         
@@ -59,6 +61,20 @@ function App() {
     // Check for signup success via hash type parameter
     if (hash.includes('type=signup')) {
       toast.success("Email confirmation successful! You are now logged in.");
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+    
+    // Check for successful auth callback via 'access_token' in hash
+    if (hash.includes('access_token=')) {
+      console.log("Auth callback detected with access token");
+      toast.success("Authentication successful!");
+      
+      // Give a moment for Supabase to process the session
+      setTimeout(() => {
+        window.location.href = '/dashboard';
+      }, 1000);
+      
+      // Clean up the URL by removing the hash
       window.history.replaceState(null, '', window.location.pathname);
     }
   }, []);

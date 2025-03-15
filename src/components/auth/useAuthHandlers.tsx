@@ -65,8 +65,10 @@ export const useAuthHandlers = (
     try {
       setIsLoading(true);
       
-      // Always use the current origin for the redirect URL
+      // Use the full path to customer-portal instead of just the origin
       const redirectUrl = `${window.location.origin}/customer-portal`;
+      
+      console.log("Social login redirect URL:", redirectUrl);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
@@ -102,7 +104,7 @@ export const useAuthHandlers = (
     try {
       setIsLoading(true);
       
-      // Always use the current origin for the redirect URL
+      // Use the full path to customer-portal for the redirect URL
       const redirectUrl = `${window.location.origin}/customer-portal`;
       
       console.log("Password reset redirect URL:", redirectUrl);
