@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User } from '@/hooks/auth/types';
-import { CreditCard, Book, Lock, Settings, Users, Palette } from 'lucide-react';
+import { CreditCard, Book, Lock, Settings, Users, Palette, BookOpen } from 'lucide-react';
 import TutorialGuide from './TutorialGuide';
+import { useLocation } from 'react-router-dom';
 
 // Section components
 import BillingSection from './sections/BillingSection';
@@ -12,6 +13,8 @@ import PrivateDictionariesSection from './sections/PrivateDictionariesSection';
 import SettingsSection from './sections/SettingsSection';
 import OrganizationPermissionsSection from './sections/OrganizationPermissionsSection';
 import ProfileSettingsSection from './sections/ProfileSettingsSection';
+import TechLingoWikiSection from './sections/TechLingoWikiSection';
+import GlossarySection from './sections/GlossarySection';
 
 interface PortalSectionsProps {
   user: User;
@@ -19,6 +22,18 @@ interface PortalSectionsProps {
 }
 
 const PortalSections: React.FC<PortalSectionsProps> = ({ user, setLocalLoading }) => {
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState('billing');
+  
+  useEffect(() => {
+    // Check for URL parameters to set active tab
+    const params = new URLSearchParams(location.search);
+    const section = params.get('section');
+    if (section) {
+      setActiveTab(section);
+    }
+  }, [location]);
+
   return (
     <div className="bg-white rounded-md shadow-sm mt-8">
       <div className="flex justify-between items-center p-4 border-b">
@@ -26,15 +41,19 @@ const PortalSections: React.FC<PortalSectionsProps> = ({ user, setLocalLoading }
         <TutorialGuide />
       </div>
       
-      <Tabs defaultValue="billing" className="w-full">
-        <TabsList className="grid grid-cols-6 w-full rounded-t-md">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid grid-cols-8 w-full rounded-t-md">
           <TabsTrigger value="billing" className="flex items-center gap-2">
             <CreditCard className="h-4 w-4" />
             <span className="hidden sm:inline">Billing</span>
           </TabsTrigger>
-          <TabsTrigger value="public-dictionaries" className="flex items-center gap-2">
+          <TabsTrigger value="dictionaries" className="flex items-center gap-2">
             <Book className="h-4 w-4" />
-            <span className="hidden sm:inline">Public Dictionary</span>
+            <span className="hidden sm:inline">Dictionaries</span>
+          </TabsTrigger>
+          <TabsTrigger value="wiki" className="flex items-center gap-2">
+            <BookOpen className="h-4 w-4" />
+            <span className="hidden sm:inline">TechLingo Wiki</span>
           </TabsTrigger>
           <TabsTrigger value="private-dictionaries" className="flex items-center gap-2">
             <Lock className="h-4 w-4" />
@@ -58,8 +77,12 @@ const PortalSections: React.FC<PortalSectionsProps> = ({ user, setLocalLoading }
           <BillingSection user={user} setLocalLoading={setLocalLoading} />
         </TabsContent>
         
-        <TabsContent value="public-dictionaries" className="p-4">
+        <TabsContent value="dictionaries" className="p-4">
           <PublicDictionariesSection user={user} setLocalLoading={setLocalLoading} />
+        </TabsContent>
+        
+        <TabsContent value="wiki" className="p-4">
+          <TechLingoWikiSection user={user} setLocalLoading={setLocalLoading} />
         </TabsContent>
         
         <TabsContent value="private-dictionaries" className="p-4">

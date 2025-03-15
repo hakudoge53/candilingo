@@ -100,8 +100,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/glossary" element={<Glossary />} />
-        <Route path="/techlingo" element={<TechLingoWiki />} />
+        <Route path="/glossary" element={<Navigate to="/portal?section=dictionaries" replace />} />
+        <Route path="/techlingo" element={<Navigate to="/portal?section=dictionaries" replace />} />
         <Route path="/customer-portal" element={<CustomerPortal />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/portal" element={<Portal />} />

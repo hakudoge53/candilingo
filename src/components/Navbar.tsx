@@ -77,9 +77,14 @@ const Navbar = () => {
                 Home
               </Link>
               {isLoggedIn && (
-                <Link to="/dashboard" className="block py-2 text-gray-800 hover:bg-gray-100">
-                  Dashboard
-                </Link>
+                <>
+                  <Link to="/dashboard" className="block py-2 text-gray-800 hover:bg-gray-100">
+                    Dashboard
+                  </Link>
+                  <Link to="/portal" className="block py-2 text-gray-800 hover:bg-gray-100">
+                    Customer Portal
+                  </Link>
+                </>
               )}
               {isLoggedIn ? (
                 <Button variant="outline" size="sm" className="w-full mt-2" onClick={handleLogout}>
