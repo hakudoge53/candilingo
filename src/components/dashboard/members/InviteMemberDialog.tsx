@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PlusCircle } from "lucide-react";
-import { UserRole } from '@/types/organization';
+import { UserRole, ROLE_LABELS, ROLE_DESCRIPTIONS } from '@/types/organization';
 
 interface InviteMemberDialogProps {
   open: boolean;
@@ -19,7 +19,7 @@ const InviteMemberDialog = ({ open, setOpen, isSubmitting, onInvite }: InviteMem
   const [newMember, setNewMember] = useState({
     name: '',
     email: '',
-    role: 'member' as UserRole
+    role: 'employee' as UserRole
   });
 
   const handleInviteMember = async () => {
@@ -30,7 +30,7 @@ const InviteMemberDialog = ({ open, setOpen, isSubmitting, onInvite }: InviteMem
     setNewMember({
       name: '',
       email: '',
-      role: 'member' as UserRole
+      role: 'employee' as UserRole
     });
   };
 
@@ -80,14 +80,15 @@ const InviteMemberDialog = ({ open, setOpen, isSubmitting, onInvite }: InviteMem
                 <SelectValue placeholder="Select role" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="admin">Admin</SelectItem>
-                <SelectItem value="member">Member</SelectItem>
-                <SelectItem value="manager">Manager</SelectItem>
-                <SelectItem value="team_lead">Team Lead</SelectItem>
-                <SelectItem value="employee">Employee</SelectItem>
-                <SelectItem value="consultant">Consultant</SelectItem>
+                <SelectItem value="owner">{ROLE_LABELS['owner']}</SelectItem>
+                <SelectItem value="manager">{ROLE_LABELS['manager']}</SelectItem>
+                <SelectItem value="team_lead">{ROLE_LABELS['team_lead']}</SelectItem>
+                <SelectItem value="employee">{ROLE_LABELS['employee']}</SelectItem>
               </SelectContent>
             </Select>
+            {newMember.role && (
+              <p className="text-sm text-gray-500 mt-2">{ROLE_DESCRIPTIONS[newMember.role]}</p>
+            )}
           </div>
         </div>
         <DialogFooter>

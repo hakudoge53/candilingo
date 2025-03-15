@@ -15,17 +15,16 @@ export interface OrganizationMember {
     email: string;
     membership_tier?: string;
     status?: string;
+    avatar_url?: string | null;
   } | null;
 }
 
 export type UserRole =
+  | 'super_admin'
   | 'owner'
-  | 'admin'
-  | 'member'
   | 'manager'
   | 'team_lead'
-  | 'employee'
-  | 'consultant';
+  | 'employee';
 
 export type MemberStatus =
   | 'pending'

@@ -7,5 +7,5 @@ export interface User {
   status?: string;
   preferred_language?: string;
   extension_settings?: Record<string, any>;
-  // Remove hasOrganization field
+  avatar_url?: string | null;
 }

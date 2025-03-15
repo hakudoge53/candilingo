@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
 import { formatDistanceToNow } from 'date-fns';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ActiveMembersTableProps {
   members: OrganizationMember[];
@@ -42,7 +43,7 @@ const ActiveMembersTable: React.FC<ActiveMembersTableProps> = ({
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Name</TableHead>
+          <TableHead>Member</TableHead>
           <TableHead>Email</TableHead>
           <TableHead>Role</TableHead>
           <TableHead>Joined</TableHead>
@@ -52,9 +53,19 @@ const ActiveMembersTable: React.FC<ActiveMembersTableProps> = ({
       <TableBody>
         {activeMembers.map(member => (
           <TableRow key={member.id}>
-            <TableCell className="font-medium">{member.user?.name || member.invited_name || "Unknown"}</TableCell>
+            <TableCell>
+              <div className="flex items-center space-x-3">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={member.user?.avatar_url || undefined} alt={member.user?.name || "Member"} />
+                  <AvatarFallback>
+                    {(member.user?.name || member.invited_name || "?").substring(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="font-medium">{member.user?.name || member.invited_name || "Unknown"}</span>
+              </div>
+            </TableCell>
             <TableCell>{member.user?.email || member.invited_email || "Unknown"}</TableCell>
-            <TableCell>{ROLE_LABELS[member.role]}</TableCell>
+            <TableCell>{ROLE_LABELS[member.role] || member.role}</TableCell>
             <TableCell>{formatDistanceToNow(new Date(member.created_at), { addSuffix: true })}</TableCell>
             <TableCell className="text-right">
               <DropdownMenu>

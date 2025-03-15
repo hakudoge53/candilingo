@@ -6,6 +6,7 @@ import InviteMemberDialog from './members/InviteMemberDialog';
 import PendingInvitationsTable from './members/PendingInvitationsTable';
 import ActiveMembersTable from './members/ActiveMembersTable';
 import EmptyMembersState from './members/EmptyMembersState';
+import { useAuth } from '@/hooks/useAuth';
 
 interface MembersPanelProps {
   members: OrganizationMember[];
@@ -25,8 +26,9 @@ const MembersPanel = ({
   isLoading 
 }: MembersPanelProps) => {
   const [open, setOpen] = useState(false);
-  const [editRoleId, setEditRoleId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { activeUser } = useAuth();
+  const currentUserId = activeUser?.id || '';
 
   const handleInviteMember = async (name: string, email: string, role: UserRole) => {
     setIsSubmitting(true);
@@ -35,9 +37,9 @@ const MembersPanel = ({
     setOpen(false);
   };
 
-  const handleRoleChange = async (memberId: string, role: UserRole) => {
-    await updateMemberRole(memberId, role);
-    setEditRoleId(null);
+  const handleRoleChange = (member: OrganizationMember) => {
+    // This will be implemented in a separate dialog component
+    updateMemberRole(member.id, member.role);
   };
 
   const pendingMembers = members.filter(m => m.status === 'pending');
@@ -66,10 +68,9 @@ const MembersPanel = ({
                 onRemoveMember={removeMember} 
               />
               <ActiveMembersTable 
-                activeMembers={activeMembers}
-                editRoleId={editRoleId}
-                setEditRoleId={setEditRoleId}
-                onRoleChange={handleRoleChange}
+                members={activeMembers}
+                currentUserId={currentUserId}
+                onChangeRole={handleRoleChange}
                 onRemoveMember={removeMember}
               />
             </>

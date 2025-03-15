@@ -17,6 +17,7 @@ export interface OrganizationMember {
     email: string;
     membership_tier?: string;
     status?: string;
+    avatar_url?: string | null;
   } | null;
 }
 
@@ -48,25 +49,22 @@ export interface OrganizationInvitation {
   status: 'pending' | 'accepted' | 'rejected' | 'expired';
 }
 
-export type UserRole = 'owner' | 'admin' | 'member' | 'manager' | 'team_lead' | 'employee' | 'consultant';
+// Updated user roles based on your requirements
+export type UserRole = 'super_admin' | 'owner' | 'manager' | 'team_lead' | 'employee';
 export type MemberStatus = 'pending' | 'active' | 'inactive';
 
 export const ROLE_LABELS: Record<string, string> = {
-  'owner': 'Owner',
-  'admin': 'Administrator',
-  'member': 'Member',
+  'super_admin': 'Super Admin',
+  'owner': 'Business Owner',
   'manager': 'Manager',
   'team_lead': 'Team Lead',
-  'employee': 'Employee',
-  'consultant': 'Consultant'
+  'employee': 'Employee'
 };
 
 export const ROLE_DESCRIPTIONS: Record<string, string> = {
-  'owner': 'Full access to all organization settings and billing. Can add/remove members and change roles.',
-  'admin': 'Can manage glossaries and members, but cannot change billing or delete the organization.',
-  'member': 'Standard member access to all shared resources.',
-  'manager': 'Can manage team members and their access levels.',
-  'team_lead': 'Can lead projects and manage team assignments.',
-  'employee': 'Can use glossaries and add terms, but cannot modify organization settings.',
-  'consultant': 'Limited access for external collaborators.'
+  'super_admin': 'Full access to all organizations and system settings. Candilingo administrator only.',
+  'owner': 'Full access to organization settings and billing. Can add/remove members and change roles.',
+  'manager': 'Can manage organization resources, members, and team assignments, but cannot change billing.',
+  'team_lead': 'Can lead projects and manage team assignments within assigned areas.',
+  'employee': 'Standard member access to shared resources without administrative privileges.'
 };
