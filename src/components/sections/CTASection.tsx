@@ -55,6 +55,12 @@ const CTASection = () => {
                   </div>
                   <p className="text-sm text-gray-700">Works with LinkedIn, PDFs, and ATS-systems</p>
                 </div>
+                <div className="flex items-start gap-2">
+                  <div className="mt-0.5 bg-green-100 p-1 rounded-full">
+                    <Check className="h-3 w-3 text-green-600" />
+                  </div>
+                  <p className="text-sm text-gray-700">Enterprise customers:<br />Contact us for custom solutions</p>
+                </div>
               </div>
               
               <div className="space-y-3">
@@ -63,12 +69,6 @@ const CTASection = () => {
                     <Check className="h-3 w-3 text-green-600" />
                   </div>
                   <p className="text-sm text-gray-700">No credit card required for trial</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <div className="mt-0.5 bg-green-100 p-1 rounded-full">
-                    <Check className="h-3 w-3 text-green-600" />
-                  </div>
-                  <p className="text-sm text-gray-700">Enterprise customers:<br />Contact us for custom solutions</p>
                 </div>
               </div>
             </div>

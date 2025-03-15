@@ -15,6 +15,8 @@ import PaymentSuccess from './pages/PaymentSuccess';
 import Glossary from './pages/Glossary';
 import TechLingoWiki from './pages/TechLingoWiki';
 import HowItWorks from './pages/HowItWorks';
+import Blog from './pages/Blog';
+import Documentation from './pages/Documentation';
 
 // Styles
 import './App.css';
@@ -36,6 +38,8 @@ function App() {
             <Route path="/glossary" element={<Glossary />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/wiki" element={<TechLingoWiki />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/documentation" element={<Documentation />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>

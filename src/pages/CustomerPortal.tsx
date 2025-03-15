@@ -19,10 +19,13 @@ const CustomerPortal: React.FC<CustomerPortalProps> = () => {
     // Check for URL parameters that might need processing
     const urlParams = new URLSearchParams(location.search);
     // Add any parameter handling logic here if needed
+
+    // Update page title
+    document.title = "Customer Portal | Candilingo";
   }, [location]);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-candilingo-purple/5 flex flex-col">
       <Navbar />
       <div className="flex-grow container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
