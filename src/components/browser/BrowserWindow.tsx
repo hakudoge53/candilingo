@@ -15,7 +15,7 @@ const BrowserWindow = ({ loaded }: BrowserWindowProps) => {
       <div className="absolute top-1 left-1 -z-10 w-full h-full bg-candilingo-purple opacity-5 rounded-xl"></div>
       
       {/* Browser chrome */}
-      <div className="bg-white rounded-t-lg border border-gray-200">
+      <div className="bg-white rounded-t-lg border border-gray-200 h-auto">
         <BrowserHeader />
         <BrowserContent loaded={loaded} />
       </div>

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,7 +31,7 @@ const HeroSection = ({ onShowVideo }: { onShowVideo?: () => void }) => {
   return (
     <section className="pt-28 pb-16 md:pt-32 md:pb-24 bg-gradient-to-b from-white to-gray-50 overflow-hidden">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
           <div className="lg:pr-10 animate-fade-in">
             <div className="flex flex-wrap items-center gap-2 mb-4">
               <span className="px-3 py-1 bg-candilingo-pink bg-opacity-20 text-candilingo-pink rounded-full text-sm font-medium">
@@ -77,7 +76,7 @@ const HeroSection = ({ onShowVideo }: { onShowVideo?: () => void }) => {
           </div>
           
           <div className="lg:pl-10 animate-fade-in-slow">
-            <div className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden border border-gray-200 shadow-lg">
+            <div className="relative aspect-auto bg-gray-100 rounded-lg overflow-hidden border border-gray-200 shadow-lg">
               <HeroImageSection />
             </div>
           </div>

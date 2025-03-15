@@ -25,7 +25,7 @@ const HeroImageSection = ({ className }: HeroImageSectionProps) => {
       className
     )}>
       {/* Browser window mockup */}
-      <div className="relative w-full">
+      <div className="relative w-full h-full">
         <BrowserWindow loaded={loaded} />
       </div>
       
