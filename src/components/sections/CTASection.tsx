@@ -42,7 +42,7 @@ const CTASection = () => {
           <div className="absolute -top-12 -right-12 w-24 h-24 bg-candilingo-coral opacity-10 rounded-full blur-2xl"></div>
           <div className="absolute -bottom-16 -left-16 w-32 h-32 bg-candilingo-lightpurple opacity-10 rounded-full blur-3xl"></div>
           
-          <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="relative z-10 grid grid-cols-1 gap-8">
             <div>
               <CTAContent seatsRemaining={seatsRemaining} />
             </div>
