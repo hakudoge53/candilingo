@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { CheckIcon, AlertCircle, MailIcon } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useNavigate } from "react-router-dom";
 
 interface RegistrationSuccessProps {
   onNavigate: () => void;
@@ -15,6 +16,19 @@ const RegistrationSuccess = ({
   autoLoginFailed = false,
   emailConfirmationRequired = false
 }: RegistrationSuccessProps) => {
+  const navigate = useNavigate();
+
+  const handleNavigation = () => {
+    // Use the provided callback if available, otherwise navigate directly
+    if (onNavigate) {
+      onNavigate();
+    } else if (emailConfirmationRequired) {
+      navigate('/customer-portal');
+    } else {
+      navigate('/dashboard');
+    }
+  };
+
   return (
     <div className="text-center space-y-4 py-4">
       <div className="mx-auto w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
@@ -44,7 +58,7 @@ const RegistrationSuccess = ({
         </Alert>
       ) : (
         <p className="text-sm text-gray-500">
-          Your account has been created. Redirecting you to the customer portal...
+          Your account has been created. Redirecting you to the dashboard...
         </p>
       )}
       
@@ -52,10 +66,10 @@ const RegistrationSuccess = ({
         type="button" 
         variant="purple"
         className="mt-4 w-full"
-        onClick={onNavigate}
+        onClick={handleNavigation}
       >
         {emailConfirmationRequired ? "Return to Login" : 
-          autoLoginFailed ? "Log in manually" : "Go to Customer Portal"}
+          autoLoginFailed ? "Log in manually" : "Go to Dashboard"}
       </Button>
     </div>
   );

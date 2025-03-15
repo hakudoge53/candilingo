@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { User } from '@/hooks/useAuth';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { LayoutDashboard } from 'lucide-react';
 
 interface UserProfileProps {
@@ -13,6 +13,12 @@ interface UserProfileProps {
 }
 
 const UserProfile = ({ user, onLogout, isLoading }: UserProfileProps) => {
+  const navigate = useNavigate();
+  
+  const handleDashboardClick = () => {
+    navigate('/dashboard');
+  };
+  
   return (
     <Card>
       <CardHeader>
@@ -39,11 +45,12 @@ const UserProfile = ({ user, onLogout, isLoading }: UserProfileProps) => {
           </ul>
         </div>
         
-        <Link to="/dashboard" className="block w-full">
-          <Button className="w-full bg-candilingo-purple hover:bg-candilingo-lightpurple flex items-center justify-center text-lg py-6 font-bold">
-            <LayoutDashboard className="mr-2 h-5 w-5" /> Go to Dashboard
-          </Button>
-        </Link>
+        <Button 
+          onClick={handleDashboardClick} 
+          className="w-full bg-candilingo-purple hover:bg-candilingo-lightpurple flex items-center justify-center text-lg py-6 font-bold"
+        >
+          <LayoutDashboard className="mr-2 h-5 w-5" /> Go to Dashboard
+        </Button>
       </CardContent>
       <CardFooter>
         <Button onClick={onLogout} variant="outline" className="w-full" disabled={isLoading}>
