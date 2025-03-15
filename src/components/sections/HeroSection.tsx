@@ -42,7 +42,7 @@ const HeroSection = ({ onShowVideo }: { onShowVideo?: () => void }) => {
                 Browser Extension
               </span>
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight bg-gradient-to-r from-candilingo-purple via-candilingo-teal to-candilingo-pink bg-clip-text text-transparent">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-gray-800">
               Keyword scanning and instant definitions for Recruiters
             </h1>
             <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed">

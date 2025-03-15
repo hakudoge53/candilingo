@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<any>(null);
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<Error | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [activeUser, setActiveUser] = useState<User | null>(null);
   const [missingInformation, setMissingInformation] = useState<boolean>(false);
@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         
         if (error) {
           console.error("Session error:", error);
-          setError(error.message);
+          setError(new Error(error.message));
           return;
         }
         
@@ -50,12 +50,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             email: data.session.user.email || '',
             name: data.session.user.user_metadata?.name || '',
             role: data.session.user.user_metadata?.role || 'user',
-            avatarUrl: data.session.user.user_metadata?.avatar_url || null,
+            user_metadata: data.session.user.user_metadata || {},
+            created_at: data.session.user.created_at || '',
           });
         }
       } catch (err) {
         console.error("Session check error:", err);
-        setError('Failed to check authentication status');
+        setError(new Error('Failed to check authentication status'));
       } finally {
         setIsLoading(false);
       }
@@ -79,7 +80,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             email: newSession.user.email || '',
             name: newSession.user.user_metadata?.name || '',
             role: newSession.user.user_metadata?.role || 'user',
-            avatarUrl: newSession.user.user_metadata?.avatar_url || null,
+            user_metadata: newSession.user.user_metadata || {},
+            created_at: newSession.user.created_at || '',
           });
         } else if (event === 'SIGNED_OUT') {
           setSession(null);
