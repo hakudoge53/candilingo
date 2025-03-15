@@ -79,7 +79,6 @@ export const useAuthStateListener = ({
           setIsLoggedIn(false);
           setActiveUser(null);
         } else if (event === 'INITIAL_SESSION') {
-          // Handle each event type individually to avoid TypeScript comparison errors
           console.log(`Auth event: ${event}`);
         } else if (event === 'PASSWORD_RECOVERY') {
           console.log(`Auth event: ${event}`);
