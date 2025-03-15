@@ -35,10 +35,12 @@ const Dashboard = () => {
   const { 
     organizations, 
     activeOrganization,
+    setActiveOrganization,
     members,
     inviteMember,
     updateMemberRole,
     removeMember,
+    createOrganization,
     isLoading: isOrgLoading
   } = useOrganizations();
   
@@ -71,7 +73,11 @@ const Dashboard = () => {
   
   return (
     <div className="space-y-6">
-      <DashboardHeader />
+      <DashboardHeader 
+        activeOrganization={activeOrganization} 
+        organizations={organizations}
+        onOrganizationChange={setActiveOrganization}
+      />
       
       <Tabs 
         value={activeTab} 
@@ -128,9 +134,9 @@ const Dashboard = () => {
       
       {showTour && (
         <DashboardTour
-          onClose={() => setShowTour(false)}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
+          onClose={() => setShowTour(false)}
         />
       )}
     </div>

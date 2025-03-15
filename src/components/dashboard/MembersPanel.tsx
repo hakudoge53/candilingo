@@ -106,6 +106,7 @@ const MembersPanel: React.FC<MembersPanelProps> = ({
         
         {showInviteDialog && (
           <InviteMemberDialog
+            isOpen={showInviteDialog}
             onClose={() => setShowInviteDialog(false)}
             onInvite={handleInvite}
           />

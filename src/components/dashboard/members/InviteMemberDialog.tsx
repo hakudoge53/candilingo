@@ -1,105 +1,107 @@
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { PlusCircle } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { UserRole, ROLE_LABELS, ROLE_DESCRIPTIONS } from '@/types/organization';
 
-interface InviteMemberDialogProps {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  isSubmitting: boolean;
+export interface InviteMemberDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
   onInvite: (name: string, email: string, role: UserRole) => Promise<void>;
 }
 
-const InviteMemberDialog = ({ open, setOpen, isSubmitting, onInvite }: InviteMemberDialogProps) => {
-  const [newMember, setNewMember] = useState({
-    name: '',
-    email: '',
-    role: 'employee' as UserRole
-  });
+const InviteMemberDialog: React.FC<InviteMemberDialogProps> = ({ isOpen, onClose, onInvite }) => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [role, setRole] = useState<UserRole>('member');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleInviteMember = async () => {
-    if (!newMember.email.trim() || !newMember.name.trim()) return;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) return;
     
-    await onInvite(newMember.name, newMember.email, newMember.role);
-    
-    setNewMember({
-      name: '',
-      email: '',
-      role: 'employee' as UserRole
-    });
+    setIsSubmitting(true);
+    try {
+      await onInvite(name, email, role);
+      resetForm();
+    } catch (error) {
+      console.error('Error sending invitation:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const resetForm = () => {
+    setName('');
+    setEmail('');
+    setRole('member');
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button className="bg-candilingo-purple">
-          <PlusCircle className="mr-2 h-4 w-4" /> Invite Member
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Invite Team Member</DialogTitle>
           <DialogDescription>
             Send an invitation to join your organization.
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4 py-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
-            <Input 
-              id="name" 
-              placeholder="Enter member's name" 
-              value={newMember.name} 
-              onChange={(e) => setNewMember({...newMember, name: e.target.value})} 
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter team member's name"
             />
           </div>
-          
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input 
-              id="email" 
+            <Input
+              id="email"
               type="email"
-              placeholder="Enter member's email" 
-              value={newMember.email} 
-              onChange={(e) => setNewMember({...newMember, email: e.target.value})} 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter email address"
+              required
             />
           </div>
-          
           <div className="space-y-2">
             <Label htmlFor="role">Role</Label>
-            <Select 
-              value={newMember.role} 
-              onValueChange={(value: UserRole) => setNewMember({...newMember, role: value})}
-            >
+            <Select value={role} onValueChange={(value) => setRole(value as UserRole)}>
               <SelectTrigger>
-                <SelectValue placeholder="Select role" />
+                <SelectValue placeholder="Select a role" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="owner">{ROLE_LABELS['owner']}</SelectItem>
-                <SelectItem value="manager">{ROLE_LABELS['manager']}</SelectItem>
-                <SelectItem value="team_lead">{ROLE_LABELS['team_lead']}</SelectItem>
-                <SelectItem value="employee">{ROLE_LABELS['employee']}</SelectItem>
+                {Object.entries(ROLE_LABELS).map(([roleKey, label]) => (
+                  <SelectItem key={roleKey} value={roleKey}>
+                    {label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
-            {newMember.role && (
-              <p className="text-sm text-gray-500 mt-2">{ROLE_DESCRIPTIONS[newMember.role]}</p>
+            {role && (
+              <p className="text-sm text-gray-500 mt-1">
+                {ROLE_DESCRIPTIONS[role]}
+              </p>
             )}
           </div>
-        </div>
-        <DialogFooter>
-          <Button 
-            onClick={handleInviteMember} 
-            disabled={isSubmitting || !newMember.email.trim() || !newMember.name.trim()}
-            className="bg-candilingo-purple"
-          >
-            {isSubmitting ? "Sending..." : "Send Invitation"}
-          </Button>
-        </DialogFooter>
+          <DialogFooter className="mt-6">
+            <Button type="button" variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button 
+              type="submit" 
+              disabled={isSubmitting || !email.trim()}
+            >
+              {isSubmitting ? 'Sending...' : 'Send Invitation'}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

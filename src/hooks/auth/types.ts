@@ -24,6 +24,19 @@ export interface User {
     [key: string]: any;
   };
   created_at: string;
+  
+  // Add these missing properties to fix TypeScript errors
+  name?: string;
+  avatar_url?: string;
+  preferred_language?: string;
+  membership_tier?: string;
+  status?: string;
+  extension_settings?: {
+    auto_highlight?: boolean;
+    tooltip_enabled?: boolean;
+    style_preferences?: string;
+    [key: string]: any;
+  };
 }
 
 export interface AuthContextType {
@@ -31,4 +44,6 @@ export interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   error: Error | null;
+  isLoggedIn: boolean;
+  activeUser: User | null;
 }
