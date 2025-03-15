@@ -15,10 +15,9 @@ export function useAuth() {
     id: '',
     email: '',
     name: '',
-    profileId: '',
-    membershipTier: 'Free',
-    preferredLanguage: 'en',
-    extensionSettings: {}
+    membership_tier: 'Free',
+    preferred_language: 'en',
+    extension_settings: {}
   });
   const [missingInformation, setMissingInformation] = useState<string[]>([]);
   const [pendingResetState, setPendingResetState] = useState(false);
@@ -48,7 +47,8 @@ export function useAuth() {
     setIsLoading,
     setActiveUser,
     pendingResetState,
-    setPendingResetState
+    setPendingResetState,
+    setMissingInformation
   });
 
   // Logout handler
@@ -63,10 +63,9 @@ export function useAuth() {
         id: '',
         email: '',
         name: '',
-        profileId: '',
-        membershipTier: 'Free',
-        preferredLanguage: 'en',
-        extensionSettings: {}
+        membership_tier: 'Free',
+        preferred_language: 'en',
+        extension_settings: {}
       });
       
       toast.success('Successfully logged out');

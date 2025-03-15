@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { User } from '@/hooks/auth/types';
 import { supabase } from '@/integrations/supabase/client';
@@ -36,7 +35,6 @@ const ProfileSettingsSection: React.FC<ProfileSettingsSectionProps> = ({ user, s
     }
   });
 
-  // Fetch user's avatar on mount
   useEffect(() => {
     if (user.avatar_url) {
       setImageUrl(user.avatar_url);
@@ -77,14 +75,12 @@ const ProfileSettingsSection: React.FC<ProfileSettingsSectionProps> = ({ user, s
 
     setUploading(true);
     try {
-      // Create avatars bucket if it doesn't exist (this happens on first upload)
       const { data: bucketData, error: bucketError } = await supabase.storage.getBucket('avatars');
       
       if (bucketError && bucketError.message.includes('The resource was not found')) {
-        // Create the bucket
         await supabase.storage.createBucket('avatars', {
           public: true,
-          fileSizeLimit: 1024 * 1024 * 5 // 5MB limit
+          fileSizeLimit: 1024 * 1024 * 5
         });
       }
 
@@ -92,7 +88,6 @@ const ProfileSettingsSection: React.FC<ProfileSettingsSectionProps> = ({ user, s
       const fileName = `${user.id}.${fileExt}`;
       const filePath = `${fileName}`;
 
-      // Upload the image to Supabase storage
       const { data, error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file, {
@@ -104,7 +99,6 @@ const ProfileSettingsSection: React.FC<ProfileSettingsSectionProps> = ({ user, s
         throw uploadError;
       }
 
-      // Get public URL of the uploaded image
       const { data: urlData } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
@@ -115,7 +109,6 @@ const ProfileSettingsSection: React.FC<ProfileSettingsSectionProps> = ({ user, s
 
       setImageUrl(urlData.publicUrl);
 
-      // Update the user's profile with the avatar URL
       const { error: profileError } = await supabase
         .from('profiles')
         .update({ avatar_url: urlData.publicUrl })

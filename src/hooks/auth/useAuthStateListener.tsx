@@ -3,8 +3,9 @@ import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Session } from '@supabase/supabase-js';
 import { User } from './types';
+import { toast } from 'sonner';
 
-export const useAuthStateListener = (authState: {
+interface AuthStateProps {
   isLoggedIn: boolean;
   isLoading: boolean;
   activeUser: User;
@@ -13,9 +14,12 @@ export const useAuthStateListener = (authState: {
   setIsLoggedIn: (isLoggedIn: boolean) => void;
   setIsLoading: (isLoading: boolean) => void;
   setActiveUser: (user: User) => void;
+  setMissingInformation: (missing: string[]) => void;
   pendingResetState: boolean;
   setPendingResetState: (pendingReset: boolean) => void;
-}) => {
+}
+
+export const useAuthStateListener = (authState: AuthStateProps) => {
   const { 
     setIsLoggedIn, 
     setIsLoading, 
@@ -76,10 +80,10 @@ export const useAuthStateListener = (authState: {
           id: userId,
           email: session.user.email || '',
           name: userData?.name || '',
-          profileId: userData?.id || '',
-          membershipTier: userData?.membership_tier || 'Free',
-          preferredLanguage: userData?.preferred_language || 'en',
-          extensionSettings: userData?.extension_settings || {}
+          membership_tier: userData?.membership_tier || 'Free',
+          preferred_language: userData?.preferred_language || 'en',
+          extension_settings: userData?.extension_settings || {},
+          avatar_url: userData?.avatar_url || null
         };
         
         setActiveUser(user);

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { User } from '@/hooks/auth/types';
 import { supabase } from '@/integrations/supabase/client';
@@ -65,12 +64,10 @@ const OrganizationPermissionsSection: React.FC<OrganizationPermissionsSectionPro
     }
   });
 
-  // Fetch organization and members
   useEffect(() => {
     const fetchOrganizationData = async () => {
       setIsLoading(true);
       try {
-        // Get the organization this user belongs to
         const { data: memberships, error: membershipError } = await supabase
           .from('organization_members')
           .select('organization_id')
@@ -86,7 +83,6 @@ const OrganizationPermissionsSection: React.FC<OrganizationPermissionsSectionPro
         
         const organizationId = memberships.organization_id;
         
-        // Fetch organization details
         const { data: orgData, error: orgError } = await supabase
           .from('organizations')
           .select('*')
@@ -96,17 +92,14 @@ const OrganizationPermissionsSection: React.FC<OrganizationPermissionsSectionPro
         if (orgError) throw orgError;
         setOrganization(orgData);
         
-        // Fetch organization members
         const { data: membersData, error: membersError } = await supabase
           .from('organization_members')
-          .select('*, user:profiles(name, email, membership_tier, status)')
+          .select('*, user:profiles(name, email, membership_tier, status, avatar_url)')
           .eq('organization_id', organizationId);
           
         if (membersError) throw membersError;
-        setMembers(membersData || []);
+        setMembers(membersData as OrganizationMember[] || []);
 
-        // Since organization_invitations table doesn't exist in the database schema
-        // we'll use the organization_members table with status='pending' instead
         const { data: invitesData, error: invitesError } = await supabase
           .from('organization_members')
           .select('id, organization_id, invited_email, invited_name, role, status, created_at')
@@ -126,7 +119,6 @@ const OrganizationPermissionsSection: React.FC<OrganizationPermissionsSectionPro
     fetchOrganizationData();
   }, [user.id]);
 
-  // Invite new member
   const handleInviteMember = async (values: InviteFormValues) => {
     setIsLoading(true);
     try {
@@ -157,7 +149,6 @@ const OrganizationPermissionsSection: React.FC<OrganizationPermissionsSectionPro
     }
   };
 
-  // Revoke invitation
   const handleRevokeInvite = async () => {
     if (!inviteToRevoke) return;
     
@@ -182,7 +173,6 @@ const OrganizationPermissionsSection: React.FC<OrganizationPermissionsSectionPro
     }
   };
 
-  // Change member role
   const handleChangeRole = async () => {
     if (!memberToChangeRole) return;
     
@@ -211,7 +201,6 @@ const OrganizationPermissionsSection: React.FC<OrganizationPermissionsSectionPro
     }
   };
 
-  // Remove member
   const handleRemoveMember = async () => {
     if (!memberToRemove) return;
     
@@ -236,13 +225,11 @@ const OrganizationPermissionsSection: React.FC<OrganizationPermissionsSectionPro
     }
   };
 
-  // Delete organization
   const handleDeleteOrganization = async () => {
     if (!organization) return;
     
     setIsDeletingOrg(true);
     try {
-      // Delete all members
       const { error: membersError } = await supabase
         .from('organization_members')
         .delete()
@@ -250,7 +237,6 @@ const OrganizationPermissionsSection: React.FC<OrganizationPermissionsSectionPro
         
       if (membersError) throw membersError;
       
-      // Finally, delete the organization
       const { error: orgError } = await supabase
         .from('organizations')
         .delete()
@@ -261,7 +247,7 @@ const OrganizationPermissionsSection: React.FC<OrganizationPermissionsSectionPro
       toast.success("Organization deleted successfully");
       setOrganization(null);
       setMembers([]);
-      window.location.href = "/"; // Redirect to home page
+      window.location.href = "/";
     } catch (error) {
       console.error("Error deleting organization:", error);
       toast.error("Failed to delete organization");
@@ -410,7 +396,6 @@ const OrganizationPermissionsSection: React.FC<OrganizationPermissionsSectionPro
         </CardContent>
       </Card>
       
-      {/* Delete Organization */}
       <Card>
         <CardHeader>
           <CardTitle>Danger Zone</CardTitle>
@@ -425,7 +410,6 @@ const OrganizationPermissionsSection: React.FC<OrganizationPermissionsSectionPro
         </CardContent>
       </Card>
 
-      {/* Invite Member Dialog */}
       <Dialog open={isInviteDialogOpen} onOpenChange={setIsInviteDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -501,7 +485,6 @@ const OrganizationPermissionsSection: React.FC<OrganizationPermissionsSectionPro
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
       <Dialog open={isDeleteConfirmationOpen} onOpenChange={setIsDeleteConfirmationOpen}>
         <DialogContent>
           <DialogHeader>
@@ -519,7 +502,6 @@ const OrganizationPermissionsSection: React.FC<OrganizationPermissionsSectionPro
         </DialogContent>
       </Dialog>
 
-      {/* Remove Member Confirmation Dialog */}
       <Dialog open={isRemoveConfirmationOpen} onOpenChange={setIsRemoveConfirmationOpen}>
         <DialogContent>
           <DialogHeader>
@@ -537,7 +519,6 @@ const OrganizationPermissionsSection: React.FC<OrganizationPermissionsSectionPro
         </DialogContent>
       </Dialog>
 
-      {/* Change Role Confirmation Dialog */}
       <Dialog open={isRoleChangeConfirmationOpen} onOpenChange={setIsRoleChangeConfirmationOpen}>
         <DialogContent>
           <DialogHeader>
@@ -567,7 +548,6 @@ const OrganizationPermissionsSection: React.FC<OrganizationPermissionsSectionPro
         </DialogContent>
       </Dialog>
 
-      {/* Revoke Invite Confirmation Dialog */}
       <Dialog open={isRevokeConfirmationOpen} onOpenChange={setIsRevokeConfirmationOpen}>
         <DialogContent>
           <DialogHeader>

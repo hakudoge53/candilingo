@@ -37,9 +37,8 @@ const MembersPanel = ({
     setOpen(false);
   };
 
-  const handleRoleChange = (member: OrganizationMember) => {
-    // This will be implemented in a separate dialog component
-    updateMemberRole(member.id, member.role);
+  const handleRoleChange = (memberId: string, role: UserRole) => {
+    updateMemberRole(memberId, role);
   };
 
   const pendingMembers = members.filter(m => m.status === 'pending');
@@ -70,8 +69,8 @@ const MembersPanel = ({
               <ActiveMembersTable 
                 members={activeMembers}
                 currentUserId={currentUserId}
-                onChangeRole={handleRoleChange}
-                onRemoveMember={removeMember}
+                onChangeRole={(member, role) => handleRoleChange(member.id, role)}
+                onRemoveMember={memberId => removeMember(memberId)}
               />
             </>
           )}
