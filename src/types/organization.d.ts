@@ -30,4 +30,3 @@ export type MemberStatus =
   | 'pending'
   | 'active'
   | 'inactive';
-

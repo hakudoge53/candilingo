@@ -1,11 +1,10 @@
-
 import React from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import GlossarySearchFilter from "@/components/glossary/GlossarySearchFilter";
 import GlossaryCategoryGroup from "@/components/glossary/GlossaryCategoryGroup";
 import { useGlossary } from "@/hooks/useGlossary";
-import { glossaryTerms } from "@/data/glossaryTerms";
+import { glossaryTerms as publicGlossaryTerms } from "@/data/publicGlossaryTerms";
 
 const Glossary = () => {
   const {
@@ -20,7 +19,7 @@ const Glossary = () => {
     highlightKeywordsInDefinition,
     jumpToTerm,
     resetFilters
-  } = useGlossary(glossaryTerms);
+  } = useGlossary(publicGlossaryTerms);
 
   return (
     <div className="min-h-screen bg-gray-50">

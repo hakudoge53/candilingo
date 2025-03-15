@@ -5,25 +5,6 @@ import { toast } from "sonner";
 import { OrganizationMember, MemberStatus, UserRole } from '@/types/organization';
 import { useAuth } from '../../useAuth';
 
-interface MemberResponse {
-  id: string;
-  organization_id: string;
-  user_id: string;
-  role: UserRole;
-  status: string;
-  created_at: string;
-  updated_at: string;
-  invited_email: string | null;
-  invited_name: string | null;
-  invitation_token: string | null;
-  user: {
-    name: string;
-    email: string;
-    membership_tier?: string;
-    status?: string;
-  } | null;
-}
-
 export interface UseMembersFetchReturn {
   members: OrganizationMember[];
   isLoading: boolean;
@@ -54,7 +35,8 @@ export const useMembersFetch = (organizationId: string | undefined): UseMembersF
             name,
             email,
             membership_tier,
-            status
+            status,
+            avatar_url
           )
         `)
         .eq('organization_id', organizationId)

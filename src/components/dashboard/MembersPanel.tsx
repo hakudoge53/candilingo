@@ -70,7 +70,7 @@ const MembersPanel = ({
                 members={activeMembers}
                 currentUserId={currentUserId}
                 onChangeRole={(member, role) => handleRoleChange(member.id, role)}
-                onRemoveMember={memberId => removeMember(memberId)}
+                onRemoveMember={(member) => removeMember(member.id)}
               />
             </>
           )}
