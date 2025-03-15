@@ -1,3 +1,6 @@
 
-export { useAuth } from './auth/useAuth';
-export type { User } from './auth/types';
+import { useAuth, AuthProvider } from './auth/useAuth';
+import type { User } from './auth/types';
+
+export { useAuth, AuthProvider };
+export type { User };

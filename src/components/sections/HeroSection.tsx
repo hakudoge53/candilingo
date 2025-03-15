@@ -30,7 +30,7 @@ const HeroSection = ({ onShowVideo }: { onShowVideo?: () => void }) => {
   };
 
   return (
-    <section className="pt-28 pb-16 md:pt-32 md:pb-24 bg-gradient-to-b from-white to-gray-50 overflow-hidden">
+    <section className="pt-28 pb-16 md:pt-32 md:pb-24 bg-gradient-to-br from-indigo-50 via-cyan-50 to-purple-50 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
           <div className="lg:pr-10 animate-fade-in">
@@ -42,10 +42,8 @@ const HeroSection = ({ onShowVideo }: { onShowVideo?: () => void }) => {
                 Browser Extension
               </span>
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-              <span className="text-candilingo-purple">Keyword scanning and </span>
-              <span className="text-candilingo-pink">instant definitions</span>
-              <span className="text-candilingo-purple"> for Recruiters</span>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight bg-gradient-to-r from-candilingo-purple via-candilingo-teal to-candilingo-pink bg-clip-text text-transparent">
+              Keyword scanning and instant definitions for Recruiters
             </h1>
             <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed">
               Instantly highlight key terms on LinkedIn, ATS-systems & PDFs to <span className="underline decoration-candilingo-pink decoration-2 font-semibold">improve the candidate experience</span>.
@@ -68,7 +66,7 @@ const HeroSection = ({ onShowVideo }: { onShowVideo?: () => void }) => {
                 See It in Action
               </Button>
             </div>
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+            <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-4 mb-6 shadow-sm">
               <p className="text-amber-700 text-sm">
                 <strong>Early Access Campaign:</strong> First 200 seats will get 50% discount on their first year! 
                 Currently {confirmedLicenses} license confirmed, only {seatsRemaining} seats remaining with discount!
@@ -77,7 +75,8 @@ const HeroSection = ({ onShowVideo }: { onShowVideo?: () => void }) => {
           </div>
           
           <div className="lg:pl-10 animate-fade-in-slow">
-            <div className="relative aspect-auto bg-gray-100 rounded-lg overflow-hidden border border-gray-200 shadow-lg">
+            <div className="relative aspect-auto bg-gradient-to-br from-white to-gray-100 rounded-lg overflow-hidden border border-gray-200 shadow-lg">
+              <div className="absolute inset-0 bg-gradient-to-br from-candilingo-purple/5 via-candilingo-teal/5 to-candilingo-pink/5 mix-blend-overlay"></div>
               <HeroImageSection />
             </div>
           </div>
