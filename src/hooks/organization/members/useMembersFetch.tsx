@@ -71,10 +71,17 @@ export const useMembersFetch = (organizationId: string | undefined): UseMembersF
         }
         
         return {
-          ...member,
-          user: userObject,
+          id: member.id,
+          organization_id: member.organization_id,
+          user_id: member.user_id,
+          invited_email: member.invited_email,
+          invited_name: member.invited_name,
           role: member.role as UserRole,
-          status: member.status as MemberStatus
+          status: member.status as MemberStatus,
+          created_at: member.created_at,
+          updated_at: member.updated_at,
+          invitation_token: member.invitation_token,
+          user: userObject
         };
       });
       
