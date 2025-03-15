@@ -38,10 +38,13 @@ export const useAuthStateListener = ({
               
               if (profileError) {
                 console.error("Profile fetch error:", profileError);
+                toast.error("Could not load your profile information.");
                 setMissingInformation(['profile']);
+                return;
               }
               
               if (profileData) {
+                console.log("Profile data loaded successfully:", profileData.id);
                 setActiveUser({
                   id: session.user.id,
                   name: profileData.name || session.user.email?.split('@')[0] || 'User',
@@ -52,15 +55,18 @@ export const useAuthStateListener = ({
                   extension_settings: profileData.extension_settings as Record<string, any> || {},
                 });
               } else {
+                console.warn("No profile data found for user:", session.user.id);
                 // Fallback if profile not found
                 setActiveUser({
                   id: session.user.id,
                   name: session.user.email?.split('@')[0] || 'User',
                   email: session.user.email || '',
                 });
+                toast.warning("Your profile information is incomplete.");
               }
             } catch (error) {
               console.error("Profile processing error:", error);
+              toast.error("Error processing your profile information.");
               setActiveUser({
                 id: session.user.id,
                 name: session.user.email?.split('@')[0] || 'User',
@@ -80,6 +86,9 @@ export const useAuthStateListener = ({
           setActiveUser(null);
         } else if (event === 'INITIAL_SESSION') {
           console.log(`Auth event: ${event}`);
+          if (session) {
+            handleUserSession(session);
+          }
         } else if (event === 'PASSWORD_RECOVERY') {
           console.log(`Auth event: ${event}`);
         } else if (event === 'MFA_CHALLENGE_VERIFIED') {
@@ -91,19 +100,77 @@ export const useAuthStateListener = ({
       }
     );
 
+    // Handle a user session (re-used for initial check and INITIAL_SESSION event)
+    const handleUserSession = async (session) => {
+      if (!session) return;
+      
+      console.log("Processing user session:", session.user.id);
+      setIsLoggedIn(true);
+      
+      try {
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .maybeSingle();
+        
+        if (profileError) {
+          console.error("Profile fetch error:", profileError);
+          toast.error("Could not load your profile information.");
+          return;
+        }
+        
+        if (profileData) {
+          console.log("Profile data loaded successfully:", profileData.id);
+          setActiveUser({
+            id: session.user.id,
+            name: profileData.name || session.user.email?.split('@')[0] || 'User',
+            email: profileData.email || session.user.email || '',
+            membership_tier: profileData.membership_tier,
+            status: profileData.status,
+            preferred_language: profileData.preferred_language,
+            extension_settings: profileData.extension_settings as Record<string, any> || {},
+          });
+        } else {
+          console.warn("No profile data found for initial session user:", session.user.id);
+          // Fallback if profile not found
+          setActiveUser({
+            id: session.user.id,
+            name: session.user.email?.split('@')[0] || 'User',
+            email: session.user.email || '',
+          });
+          toast.warning("Your profile information is incomplete.");
+        }
+      } catch (error) {
+        console.error("Initial session profile processing error:", error);
+        toast.error("Error loading your profile.");
+        setActiveUser({
+          id: session.user.id,
+          name: session.user.email?.split('@')[0] || 'User',
+          email: session.user.email || '',
+        });
+      }
+    };
+
     // Check initial session on component mount
     const checkInitialSession = async () => {
-      const { data, error } = await supabase.auth.getSession();
-      console.log("Initial session check:", data?.session ? "Session exists" : "No session", error);
-      
-      if (error) {
-        console.error("Initial session error:", error);
-        return;
-      }
-      
-      if (data.session) {
-        console.log("Initial session user:", data.session.user.id);
-        setIsLoggedIn(true);
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        console.log("Initial session check:", data?.session ? "Session exists" : "No session", error);
+        
+        if (error) {
+          console.error("Initial session error:", error);
+          toast.error("Error checking your login status.");
+          return;
+        }
+        
+        if (data.session) {
+          console.log("Initial session user:", data.session.user.id);
+          handleUserSession(data.session);
+        }
+      } catch (err) {
+        console.error("Error in initial session check:", err);
+        toast.error("Error connecting to authentication service.");
       }
     };
     

@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import AuthContainer from '@/components/auth/AuthContainer';
 import UserProfile from '@/components/profile/UserProfile';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -27,6 +27,8 @@ const CustomerPortalContent: React.FC<CustomerPortalContentProps> = ({
 }) => {
   // Combined loading state for both auth operations and local form submissions
   const showLoading = isLoading || localLoading;
+  const [loadingDuration, setLoadingDuration] = useState<number>(0);
+  const [showLoadingError, setShowLoadingError] = useState<boolean>(false);
 
   useEffect(() => {
     // Log component state for debugging
@@ -37,21 +39,60 @@ const CustomerPortalContent: React.FC<CustomerPortalContentProps> = ({
       localLoading
     });
     
-    // Add a timeout to notify the user if loading takes too long
+    let timerInterval: NodeJS.Timeout;
     let timeoutId: NodeJS.Timeout;
     
     if (showLoading) {
+      // Start a timer to track how long loading is taking
+      const startTime = Date.now();
+      timerInterval = setInterval(() => {
+        const duration = Math.floor((Date.now() - startTime) / 1000);
+        setLoadingDuration(duration);
+        
+        // If loading takes more than 15 seconds, show error state
+        if (duration > 15 && isLoggedIn && !activeUser) {
+          setShowLoadingError(true);
+          clearInterval(timerInterval);
+        }
+      }, 1000);
+      
+      // Add a timeout to notify the user if loading takes too long
       timeoutId = setTimeout(() => {
-        toast.info("Still loading... This may take a moment.");
+        if (isLoggedIn && !activeUser) {
+          toast.info("Still trying to load your profile...");
+        } else {
+          toast.info("Still loading... This may take a moment.");
+        }
       }, 5000);
+    } else {
+      setLoadingDuration(0);
+      setShowLoadingError(false);
     }
     
     return () => {
+      if (timerInterval) clearInterval(timerInterval);
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [isLoggedIn, isLoading, activeUser, localLoading]);
+  }, [isLoggedIn, isLoading, activeUser, localLoading, showLoading]);
+
+  const handlePageRefresh = () => {
+    window.location.reload();
+  };
 
   if (showLoading) {
+    // Show loading state
+    if (showLoadingError) {
+      return (
+        <div className="flex items-center justify-center pt-10">
+          <LoadingSpinner 
+            message="There was an issue loading your profile." 
+            errorOccurred={true}
+            onRetry={handlePageRefresh}
+          />
+        </div>
+      );
+    }
+    
     return (
       <div className="flex items-center justify-center pt-10">
         <LoadingSpinner message={
@@ -73,13 +114,11 @@ const CustomerPortalContent: React.FC<CustomerPortalContentProps> = ({
   if (!activeUser) {
     return (
       <div className="text-center py-8">
-        <p className="text-red-500 mb-4">There was an issue loading your profile.</p>
-        <button 
-          onClick={() => window.location.reload()}
-          className="px-4 py-2 bg-candilingo-purple text-white rounded hover:bg-candilingo-lightpurple"
-        >
-          Refresh Page
-        </button>
+        <LoadingSpinner 
+          message="There was an issue loading your profile." 
+          errorOccurred={true}
+          onRetry={handlePageRefresh}
+        />
       </div>
     );
   }
