@@ -27,7 +27,7 @@ const DashboardHeader = ({
           <img 
             src="/lovable-uploads/3ba829c2-54b7-4152-b767-9eb28429dbd7.png" 
             alt="Candilingo" 
-            className="h-8 w-auto mr-3" 
+            className="h-14 w-auto mr-3" 
           />
           <h2 className="text-2xl font-bold text-candilingo-purple">Dashboard</h2>
         </div>
@@ -41,7 +41,7 @@ const DashboardHeader = ({
         <img 
           src="/lovable-uploads/3ba829c2-54b7-4152-b767-9eb28429dbd7.png" 
           alt="Candilingo" 
-          className="h-8 w-auto mr-3" 
+          className="h-14 w-auto mr-3" 
         />
         <h2 className="text-2xl font-bold text-candilingo-purple">Dashboard</h2>
       </div>

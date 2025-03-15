@@ -30,7 +30,7 @@ const Navbar = () => {
           <img 
             src="/lovable-uploads/c4cf5eba-6c4b-4b24-9ef1-840fd66a9bd6.png" 
             alt="Candilingo" 
-            className="h-12 w-auto" 
+            className="h-16 w-auto" 
           />
         </Link>
 

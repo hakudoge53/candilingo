@@ -17,7 +17,7 @@ const BrowserHeader = () => {
           <img 
             src="/lovable-uploads/c4cf5eba-6c4b-4b24-9ef1-840fd66a9bd6.png" 
             alt="Candilingo" 
-            className="w-4 h-4 ml-auto" 
+            className="w-6 h-6 ml-auto" 
           />
         </div>
       </div>

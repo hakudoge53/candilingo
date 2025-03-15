@@ -21,7 +21,7 @@ const GlossaryHeader: React.FC<GlossaryHeaderProps> = ({
           <img 
             src="/lovable-uploads/3ba829c2-54b7-4152-b767-9eb28429dbd7.png" 
             alt="Candilingo" 
-            className="h-6 w-auto mr-2" 
+            className="h-10 w-auto mr-2" 
           />
           <h2 className="text-xl font-semibold">
             {activeGlossary ? activeGlossary.name : 'Custom Glossaries'}
