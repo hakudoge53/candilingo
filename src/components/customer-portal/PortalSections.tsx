@@ -2,7 +2,6 @@
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User } from '@/hooks/auth/types';
-import { Button } from '@/components/ui/button';
 import { CreditCard, Book, Lock, Settings, Users, Palette } from 'lucide-react';
 import TutorialGuide from './TutorialGuide';
 
