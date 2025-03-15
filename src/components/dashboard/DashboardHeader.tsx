@@ -23,14 +23,14 @@ const DashboardHeader = ({
   if (!activeOrganization || organizations.length === 0) {
     return (
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-candilingo-purple">Dashboard</h2>
+        <h2 className="text-2xl font-bold text-techlex-blue">Dashboard</h2>
       </div>
     );
   }
 
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-      <h2 className="text-2xl font-bold text-candilingo-purple">Dashboard</h2>
+      <h2 className="text-2xl font-bold text-techlex-blue">Dashboard</h2>
       
       <div className="flex items-center space-x-2">
         <span className="text-sm text-gray-500">Organization:</span>

@@ -7,7 +7,7 @@ import GlossarySearchFilter from "@/components/glossary/GlossarySearchFilter";
 import GlossaryCategoryGroup from "@/components/glossary/GlossaryCategoryGroup";
 
 interface GlossarySectionProps {
-  user: User | null;
+  user: User;
   setLocalLoading: (loading: boolean) => void;
 }
 
@@ -28,13 +28,6 @@ const GlossarySection: React.FC<GlossarySectionProps> = ({ user, setLocalLoading
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-center mb-4">
-        <img 
-          src="/public/lovable-uploads/cbe6d14b-3d9f-4814-af61-b96347790cb1.png" 
-          alt="Candilingo" 
-          className="h-10"
-        />
-      </div>
       <div>
         <h2 className="text-2xl font-bold mb-4">Candilingo Glossary</h2>
         <p className="text-gray-600 mb-6">

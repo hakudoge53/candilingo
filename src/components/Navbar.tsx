@@ -26,12 +26,8 @@ const Navbar = () => {
     <div className="bg-candilingo-pink py-4">
       <div className="container mx-auto px-4 flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center">
-          <img 
-            src="/public/lovable-uploads/dd4d9cc8-eaa4-43df-bc05-3b8a88297f00.png" 
-            alt="Candilingo Logo" 
-            className="h-10"
-          />
+        <Link to="/" className="text-2xl font-bold text-white">
+          Candilingo
         </Link>
 
         {/* Navigation Links */}
@@ -71,15 +67,7 @@ const Navbar = () => {
           </SheetTrigger>
           <SheetContent side="left" className="bg-white">
             <SheetHeader>
-              <SheetTitle>
-                <div className="flex justify-center">
-                  <img 
-                    src="/public/lovable-uploads/cbe6d14b-3d9f-4814-af61-b96347790cb1.png" 
-                    alt="Candilingo" 
-                    className="h-8"
-                  />
-                </div>
-              </SheetTitle>
+              <SheetTitle>Candilingo</SheetTitle>
               <SheetDescription>
                 Decoding technical jargon to help recruiters make better technical hiring decisions.
               </SheetDescription>

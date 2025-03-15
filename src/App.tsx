@@ -3,8 +3,10 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Index from './pages/Index';
 import Dashboard from './pages/Dashboard';
 import CustomerPortal from './pages/CustomerPortal';
+import Glossary from './pages/Glossary';
 import NotFound from './pages/NotFound';
 import Portal from './pages/Portal';
+import TechLingoWiki from './pages/TechLingoWiki';
 import { Toaster as SonnerToaster } from 'sonner';
 import { Toaster } from './components/ui/toaster';
 import PaymentSuccess from './pages/PaymentSuccess';
