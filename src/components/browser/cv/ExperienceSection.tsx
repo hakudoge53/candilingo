@@ -2,11 +2,16 @@
 import React from 'react';
 import TermBadge from "@/components/TermBadge";
 import JobEntry from './JobEntry';
+import { Briefcase } from 'lucide-react';
 
 const ExperienceSection = () => {
   return (
     <div>
-      <h4 className="font-medium">Experience</h4>
+      <div className="flex items-center gap-2 mb-3">
+        <Briefcase className="w-4 h-4 text-candilingo-purple" />
+        <h4 className="font-medium">Professional Experience</h4>
+      </div>
+      
       <JobEntry 
         title="Senior Developer"
         company="TechCorp"

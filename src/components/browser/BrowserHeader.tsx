@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Search, BookOpen } from 'lucide-react';
+import { Search, Globe, Chrome, Puzzle } from 'lucide-react';
 
 const BrowserHeader = () => {
   return (
@@ -12,13 +12,16 @@ const BrowserHeader = () => {
       </div>
       <div className="flex-1 bg-white rounded-md px-3 py-1 text-xs text-gray-500 flex items-center">
         <div className="flex items-center w-full">
-          <Search className="w-3.5 h-3.5 mr-2 text-gray-400" />
+          <Globe className="w-3.5 h-3.5 mr-2 text-gray-400" />
           <span className="truncate">resume-review.candilingo.com</span>
-          <img 
-            src="/lovable-uploads/c4cf5eba-6c4b-4b24-9ef1-840fd66a9bd6.png" 
-            alt="Candilingo" 
-            className="w-6 h-6 ml-auto" 
-          />
+          <div className="flex items-center gap-2 ml-auto">
+            <Puzzle className="w-4 h-4 text-candilingo-pink" />
+            <img 
+              src="/lovable-uploads/30c70ee7-a470-4d43-b8f7-c4209c3a51bb.png" 
+              alt="Candilingo Extension" 
+              className="w-5 h-5" 
+            />
+          </div>
         </div>
       </div>
     </div>

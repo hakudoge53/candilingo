@@ -1,12 +1,17 @@
 
 import React from 'react';
 import TermBadge from "@/components/TermBadge";
+import { Code, Database, Server } from 'lucide-react';
 
 const SkillsSection = () => {
   return (
     <div>
-      <h4 className="font-medium">Skills</h4>
-      <div className="flex flex-wrap gap-3 mt-3">
+      <div className="flex items-center gap-2 mb-3">
+        <Code className="w-4 h-4 text-candilingo-purple" />
+        <h4 className="font-medium">Technical Skills</h4>
+      </div>
+      
+      <div className="flex flex-wrap gap-2 mt-2">
         <TermBadge definition="JavaScript is a programming language used to create interactive effects within web browsers">JavaScript</TermBadge>
         <TermBadge definition="TypeScript is a strict syntactical superset of JavaScript that adds static typing">TypeScript</TermBadge>
         <TermBadge definition="Java Enterprise Edition - A platform for server-side application development">Java EE</TermBadge>
