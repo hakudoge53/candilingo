@@ -13,7 +13,9 @@ const ROICalculator = ({ className }: ROICalculatorProps) => {
   const [cvCostPerUnit, setCvCostPerUnit] = useState<number>(0);
   const [interviewCostPerUnit, setInterviewCostPerUnit] = useState<number>(0);
 
-  // Base monthly subscription cost (in €) - updated to reflect 50% reduction
+  // Regular monthly subscription cost (in €)
+  const regularSubscriptionCost = 79;
+  // Discounted monthly subscription cost (50% off)
   const baseSubscriptionCost = 39.50;
   // Average time spent per CV (in minutes)
   const timePerCv = 15;
@@ -52,7 +54,23 @@ const ROICalculator = ({ className }: ROICalculatorProps) => {
 
   return (
     <div className={`bg-white p-6 rounded-xl shadow-md ${className}`}>
-      <h3 className="text-xl font-semibold mb-4">Check the cost</h3>
+      {/* Monthly subscription at the top */}
+      <div className="mb-6 p-4 bg-gradient-to-r from-candilingo-purple/10 to-candilingo-pink/10 rounded-lg border border-candilingo-purple/20">
+        <div className="flex flex-col space-y-1">
+          <div className="flex justify-between items-center">
+            <p className="font-medium text-gray-700">Regular price:</p>
+            <p className="text-gray-500 line-through">€{regularSubscriptionCost.toFixed(2)}</p>
+          </div>
+          <div className="flex justify-between items-center">
+            <p className="font-bold text-candilingo-purple">Early access price:</p>
+            <p className="font-bold text-candilingo-purple">€{baseSubscriptionCost.toFixed(2)}</p>
+          </div>
+          <div className="flex justify-between items-center">
+            <p className="text-sm text-green-600">Your savings:</p>
+            <p className="text-sm text-green-600 font-medium">€{(regularSubscriptionCost - baseSubscriptionCost).toFixed(2)} (50% off)</p>
+          </div>
+        </div>
+      </div>
       
       <div className="mb-8">
         <div className="flex justify-between items-center mb-2">
@@ -75,7 +93,7 @@ const ROICalculator = ({ className }: ROICalculatorProps) => {
           className="my-4"
         />
         <div className="bg-gray-50 p-4 rounded-lg mt-2">
-          <p className="text-sm text-gray-600">Investment with TechLex: <span className="font-semibold">€{cvCostPerUnit.toFixed(2)}</span> per CV</p>
+          <p className="text-sm text-gray-600">Investment with Candilingo: <span className="font-semibold">€{cvCostPerUnit.toFixed(2)}</span> per CV</p>
         </div>
       </div>
 
@@ -100,14 +118,8 @@ const ROICalculator = ({ className }: ROICalculatorProps) => {
           className="my-4"
         />
         <div className="bg-gray-50 p-4 rounded-lg mt-2">
-          <p className="text-sm text-gray-600">Investment with TechLex: <span className="font-semibold">€{interviewCostPerUnit.toFixed(2)}</span> per interview</p>
+          <p className="text-sm text-gray-600">Investment with Candilingo: <span className="font-semibold">€{interviewCostPerUnit.toFixed(2)}</span> per interview</p>
         </div>
-      </div>
-
-      <div className="mt-8 p-4 bg-techlex-blue bg-opacity-10 rounded-lg">
-        <p className="font-medium text-techlex-blue">
-          Monthly subscription: <span className="font-bold">€{baseSubscriptionCost}</span>
-        </p>
       </div>
     </div>
   );
