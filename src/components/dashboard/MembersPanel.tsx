@@ -64,13 +64,13 @@ const MembersPanel = ({
             <>
               <PendingInvitationsTable 
                 pendingMembers={pendingMembers} 
-                onRemoveMember={removeMember} 
+                onRemoveMember={memberId => removeMember(memberId)} 
               />
               <ActiveMembersTable 
                 members={activeMembers}
                 currentUserId={currentUserId}
-                onChangeRole={(member, role) => handleRoleChange(member.id, role)}
-                onRemoveMember={(member) => removeMember(member.id)}
+                onChangeRole={handleRoleChange}
+                onRemoveMember={member => removeMember(member.id)}
               />
             </>
           )}

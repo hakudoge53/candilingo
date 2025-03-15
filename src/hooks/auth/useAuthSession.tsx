@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -17,7 +16,19 @@ export const useAuthSession = (): AuthSession => {
   const [activeUser, setActiveUser] = useState<User | null>(null);
   const [missingInformation, setMissingInformation] = useState<string[]>([]);
 
-  // Check if user is already logged in
+  const handleUserData = (userId: string, profileData: any) => {
+    setActiveUser({
+      id: userId,
+      name: profileData?.name || '',
+      email: profileData?.email || '',
+      membership_tier: profileData?.membership_tier || 'Free',
+      preferred_language: profileData?.preferred_language || 'en',
+      extension_settings: profileData?.extension_settings || {},
+      avatar_url: profileData?.avatar_url || null,
+      status: profileData?.status || 'Active'
+    });
+  };
+
   useEffect(() => {
     let isMounted = true;
     
@@ -62,19 +73,11 @@ export const useAuthSession = (): AuthSession => {
             
             if (profileData && isMounted) {
               console.log("Profile data found:", profileData.id);
-              setActiveUser({
-                id: data.session.user.id,
-                name: profileData.name || data.session.user.email?.split('@')[0] || 'User',
-                email: profileData.email || data.session.user.email || '',
-                membership_tier: profileData.membership_tier,
-                status: profileData.status,
-                preferred_language: profileData.preferred_language,
-                extension_settings: profileData.extension_settings as Record<string, any> || {},
-              });
+              handleUserData(data.session.user.id, profileData);
             } else if (isMounted) {
               // Fallback if profile not found
               console.log("No profile data, using fallback user info");
-              setActiveUser({
+              handleUserData(data.session.user.id, {
                 id: data.session.user.id,
                 name: data.session.user.email?.split('@')[0] || 'User',
                 email: data.session.user.email || '',
@@ -84,7 +87,7 @@ export const useAuthSession = (): AuthSession => {
             console.error("Profile processing error:", profileError);
             if (isMounted) {
               // Set basic user info even if profile fetching fails
-              setActiveUser({
+              handleUserData(data.session.user.id, {
                 id: data.session.user.id,
                 name: data.session.user.email?.split('@')[0] || 'User',
                 email: data.session.user.email || '',

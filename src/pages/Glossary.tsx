@@ -1,10 +1,11 @@
+
 import React from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import GlossarySearchFilter from "@/components/glossary/GlossarySearchFilter";
 import GlossaryCategoryGroup from "@/components/glossary/GlossaryCategoryGroup";
 import { useGlossary } from "@/hooks/useGlossary";
-import { glossaryTerms as publicGlossaryTerms } from "@/data/publicGlossaryTerms";
+import { publicGlossaryTerms } from "@/data/publicGlossaryTerms";
 
 const Glossary = () => {
   const {

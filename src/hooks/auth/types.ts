@@ -7,4 +7,5 @@ export interface User {
   preferred_language: string;
   extension_settings: Record<string, any>;
   avatar_url?: string | null;
+  status?: string;
 }
