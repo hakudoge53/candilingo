@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Search, Globe, Chrome } from 'lucide-react';
+import { Globe } from 'lucide-react';
 
 const BrowserHeader = () => {
   return (
@@ -18,7 +18,7 @@ const BrowserHeader = () => {
             <img 
               src="/lovable-uploads/30c70ee7-a470-4d43-b8f7-c4209c3a51bb.png" 
               alt="Candilingo Extension" 
-              className="w-6 h-6" 
+              className="w-8 h-8" 
             />
           </div>
         </div>

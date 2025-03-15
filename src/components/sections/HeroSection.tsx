@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,12 +43,12 @@ const HeroSection = ({ onShowVideo }: { onShowVideo?: () => void }) => {
               </span>
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-              <span className="text-candilingo-purple">AI-Powered Keyword </span>
-              <span className="text-candilingo-pink">Highlighter</span>
+              <span className="text-candilingo-purple">Keyword scanning and </span>
+              <span className="text-candilingo-pink">instant definitions</span>
               <span className="text-candilingo-purple"> for Recruiters</span>
             </h1>
             <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed">
-              Instantly highlight key terms on LinkedIn, Teamtailor & PDFs to improve hiring speed and quality.
+              Instantly highlight key terms on LinkedIn, ATS-systems & PDFs to <span className="underline decoration-candilingo-pink decoration-2 font-semibold">improve the candidate experience</span>.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
               <Link to="/portal">

@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -116,6 +117,32 @@
   .browser-content {
     @apply p-6;
   }
+  
+  /* Added new shiny effects for UI elements */
+  .shiny-card {
+    @apply bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-xl shadow-md hover:shadow-lg transition-all duration-300;
+  }
+  
+  .gradient-border {
+    @apply relative rounded-lg p-0.5 bg-gradient-to-br from-candilingo-purple via-candilingo-pink to-candilingo-coral;
+  }
+  
+  .gradient-border > * {
+    @apply relative bg-white rounded-md z-10;
+  }
+  
+  .glow-effect {
+    @apply relative;
+  }
+  
+  .glow-effect::after {
+    content: "";
+    @apply absolute inset-0 -z-10 bg-gradient-to-r from-candilingo-purple to-candilingo-pink opacity-0 blur-xl transition-opacity duration-500;
+  }
+  
+  .glow-effect:hover::after {
+    @apply opacity-20;
+  }
 }
 
 ::-webkit-scrollbar {
@@ -154,3 +181,45 @@
 .glossary-fade-in > *:nth-child(4) { animation-delay: 0.4s; }
 .glossary-fade-in > *:nth-child(5) { animation-delay: 0.5s; }
 .glossary-fade-in > *:nth-child(6) { animation-delay: 0.6s; }
+
+/* Added new animations for more visual appeal */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes shine {
+  0% { background-position: -100% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.float-animation {
+  animation: float 6s ease-in-out infinite;
+}
+
+.shine-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.shine-effect::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  background-size: 200% 100%;
+  animation: shine 3s infinite;
+}
+
+.card-gradient {
+  background: linear-gradient(120deg, #ffffff 0%, #f8f9ff 100%);
+}
+
+/* Add a nice animation to buttons on hover */
+button:hover {
+  transform: translateY(-2px);
+  transition: transform 0.3s ease;
+}
