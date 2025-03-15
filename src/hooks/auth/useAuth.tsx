@@ -26,8 +26,8 @@ export const useAuth = () => {
   // Get auth actions
   const { isLoading: isActionLoading, handleLogout } = useAuthActions();
   
+  // Log auth status for debugging
   useEffect(() => {
-    // Log auth status for debugging
     console.log("Auth state:", { 
       isLoggedIn, 
       activeUser: activeUser ? `${activeUser.id} (${activeUser.email})` : null,
