@@ -2,13 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { User } from '@/hooks/auth/types';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Plus, Bookmark } from 'lucide-react';
+import { Search, Bookmark } from 'lucide-react';
 import { GlossaryTerm } from '@/types/glossary';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { toast } from 'sonner';
+import { publicGlossaries, publicGlossaryTerms } from '@/data/publicGlossaryTerms';
 
 interface PublicDictionariesSectionProps {
   user: User;
@@ -16,28 +17,22 @@ interface PublicDictionariesSectionProps {
 }
 
 const PublicDictionariesSection: React.FC<PublicDictionariesSectionProps> = ({ user, setLocalLoading }) => {
-  const [publicGlossaries, setPublicGlossaries] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [selectedGlossary, setSelectedGlossary] = useState<string | null>(null);
   const [glossaryTerms, setGlossaryTerms] = useState<GlossaryTerm[]>([]);
 
-  // Fetch public glossaries
+  // Simulate fetching glossaries from Supabase
   useEffect(() => {
     const fetchPublicGlossaries = async () => {
       setIsLoading(true);
       try {
-        const { data, error } = await supabase
-          .from('glossaries')
-          .select('id, name, description')
-          .eq('is_public', true);
-          
-        if (error) throw error;
-        setPublicGlossaries(data || []);
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 800));
         
         // Select the first glossary by default if available
-        if (data && data.length > 0 && !selectedGlossary) {
-          setSelectedGlossary(data[0].id);
+        if (publicGlossaries.length > 0 && !selectedGlossary) {
+          setSelectedGlossary(publicGlossaries[0].id);
         }
       } catch (error) {
         console.error("Error fetching public glossaries:", error);
@@ -57,13 +52,12 @@ const PublicDictionariesSection: React.FC<PublicDictionariesSectionProps> = ({ u
     const fetchGlossaryTerms = async () => {
       setIsLoading(true);
       try {
-        const { data, error } = await supabase
-          .from('glossary_terms')
-          .select('*')
-          .eq('glossary_id', selectedGlossary);
-          
-        if (error) throw error;
-        setGlossaryTerms(data || []);
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        // Filter terms for the selected glossary
+        const filteredTerms = publicGlossaryTerms.filter(term => term.glossary_id === selectedGlossary);
+        setGlossaryTerms(filteredTerms);
       } catch (error) {
         console.error("Error fetching glossary terms:", error);
         toast.error("Failed to load glossary terms");

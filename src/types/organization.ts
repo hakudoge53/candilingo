@@ -1,5 +1,6 @@
 
 import { User } from '@/hooks/useAuth';
+import { GlossaryTerm } from '@/types/glossary';
 
 // Use the same UserRole and MemberStatus types as defined in organization.d.ts
 export type UserRole = 
@@ -47,17 +48,10 @@ export interface Glossary {
   description?: string;
   created_at: string;
   updated_at: string;
+  is_public?: boolean;
 }
 
-export interface GlossaryTerm {
-  id: string;
-  glossary_id: string;
-  term: string;
-  definition: string;
-  category?: string;
-  created_at: string;
-  updated_at: string;
-}
+export { GlossaryTerm };
 
 export const ROLE_LABELS: Record<UserRole, string> = {
   'owner': 'Owner',

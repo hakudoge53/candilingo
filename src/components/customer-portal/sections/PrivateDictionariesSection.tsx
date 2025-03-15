@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, Plus, Lock, Edit, Trash2, Save, X } from 'lucide-react';
 import { GlossaryTerm } from '@/types/glossary';
+import { Glossary } from '@/types/organization';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -31,7 +32,7 @@ interface TermFormValues {
 }
 
 const PrivateDictionariesSection: React.FC<PrivateDictionariesSectionProps> = ({ user, setLocalLoading }) => {
-  const [privateGlossaries, setPrivateGlossaries] = useState<any[]>([]);
+  const [privateGlossaries, setPrivateGlossaries] = useState<Glossary[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [selectedGlossary, setSelectedGlossary] = useState<string | null>(null);
