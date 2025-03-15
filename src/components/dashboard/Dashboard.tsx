@@ -35,12 +35,12 @@ const Dashboard = () => {
   const { 
     organizations, 
     activeOrganization,
-    organizationMembers,
+    members,
     inviteMember,
     updateMemberRole,
     removeMember,
     isLoading: isOrgLoading
-  } = useOrganizations(activeUser.id);
+  } = useOrganizations();
   
   const organizationId = activeOrganization?.id;
   
@@ -71,10 +71,7 @@ const Dashboard = () => {
   
   return (
     <div className="space-y-6">
-      <DashboardHeader 
-        user={activeUser}
-        organization={activeOrganization}
-      />
+      <DashboardHeader />
       
       <Tabs 
         value={activeTab} 
@@ -107,16 +104,20 @@ const Dashboard = () => {
         <TabsContent value="organization" className="space-y-4">
           <OrganizationPanel
             organizations={organizations}
-            activeOrganization={activeOrganization}
+            createOrganization={createOrganization}
             isLoading={isOrgLoading}
-            userId={activeUser.id}
           />
         </TabsContent>
         
         <TabsContent value="members" className="space-y-4">
           <MembersPanel
-            members={organizationMembers}
-            inviteMember={(name, email, role) => inviteMember(organizationId || '', email, name, role)}
+            members={members}
+            inviteMember={(name, email, role) => {
+              if (organizationId) {
+                return inviteMember(organizationId, email, name, role);
+              }
+              return Promise.resolve(null);
+            }}
             updateMemberRole={updateMemberRole}
             removeMember={removeMember}
             organizationId={organizationId || ''}

@@ -20,15 +20,26 @@ const TechLingoWikiSection: React.FC<TechLingoWikiSectionProps> = ({ user, setLo
   const [showAddTermDialog, setShowAddTermDialog] = useState(false);
   const [termToEdit, setTermToEdit] = useState<any | null>(null);
   
-  const { terms, categories, isLoading, addTerm, updateTerm, deleteTerm } = useTechLingoWiki();
+  const { 
+    terms, 
+    isLoading, 
+    addTerm, 
+    updateTerm, 
+    deleteTerm,
+    getCategories,
+    searchTerms
+  } = useTechLingoWiki();
+  
+  // Get all available categories
+  const categories = getCategories ? getCategories() : [];
   
   // Check if user is admin (for adding/editing terms)
-  const isAdmin = user.role === 'admin' || user.role === 'super_admin';
+  const isAdmin = user.app_metadata?.role === 'admin' || user.app_metadata?.role === 'super_admin';
   
   const handleAddTerm = async (termData: any) => {
     setLocalLoading(true);
     try {
-      await addTerm(termData);
+      await addTerm(termData.term, termData.definition, termData.category);
       toast.success("Term added successfully!");
       setShowAddTermDialog(false);
     } catch (error) {
@@ -41,7 +52,7 @@ const TechLingoWikiSection: React.FC<TechLingoWikiSectionProps> = ({ user, setLo
   const handleUpdateTerm = async (id: string, termData: any) => {
     setLocalLoading(true);
     try {
-      await updateTerm(id, termData);
+      await updateTerm(id, termData.term, termData.definition, termData.category);
       toast.success("Term updated successfully!");
       setTermToEdit(null);
     } catch (error) {
@@ -92,8 +103,6 @@ const TechLingoWikiSection: React.FC<TechLingoWikiSectionProps> = ({ user, setLo
       
       <CategoryTabs 
         categories={categories}
-        activeCategory={activeCategory}
-        setActiveCategory={setActiveCategory}
       />
       
       {isLoading ? (
@@ -117,17 +126,17 @@ const TechLingoWikiSection: React.FC<TechLingoWikiSectionProps> = ({ user, setLo
       )}
       
       {/* Add Term Dialog */}
-      <AddTermDialog
-        open={showAddTermDialog}
-        onClose={() => setShowAddTermDialog(false)}
-        onAdd={handleAddTerm}
-        categories={categories}
-      />
+      {showAddTermDialog && (
+        <AddTermDialog
+          onClose={() => setShowAddTermDialog(false)}
+          onAdd={handleAddTerm}
+          categories={categories}
+        />
+      )}
       
       {/* Edit Term Dialog */}
       {termToEdit && (
         <EditTermDialog
-          open={!!termToEdit}
           onClose={() => setTermToEdit(null)}
           onUpdate={(data) => handleUpdateTerm(termToEdit.id, data)}
           term={termToEdit}

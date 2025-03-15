@@ -12,7 +12,7 @@ import { UserPlus } from "lucide-react";
 
 interface MembersPanelProps {
   members: OrganizationMember[];
-  inviteMember: (name: string, email: string, role: UserRole) => Promise<void>;
+  inviteMember: (name: string, email: string, role: UserRole) => Promise<OrganizationMember | null>;
   updateMemberRole: (memberId: string, role: UserRole) => Promise<void>;
   removeMember: (memberId: string) => Promise<void>;
   organizationId: string;
@@ -104,11 +104,12 @@ const MembersPanel: React.FC<MembersPanelProps> = ({
           </Tabs>
         )}
         
-        <InviteMemberDialog
-          open={showInviteDialog}
-          onClose={() => setShowInviteDialog(false)}
-          onInvite={handleInvite}
-        />
+        {showInviteDialog && (
+          <InviteMemberDialog
+            onClose={() => setShowInviteDialog(false)}
+            onInvite={handleInvite}
+          />
+        )}
       </CardContent>
     </Card>
   );
