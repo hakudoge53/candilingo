@@ -58,8 +58,7 @@ const HeroSection = ({ onShowVideo }: { onShowVideo?: () => void }) => {
                 </Button>
               </Link>
               <Button 
-                variant="outline-pink" 
-                className="flex items-center gap-2 text-lg py-6 px-8 font-semibold"
+                className="flex items-center gap-2 text-lg py-6 px-8 font-semibold bg-white text-candilingo-pink border border-candilingo-pink hover:bg-candilingo-pink/10 transition-colors"
                 onClick={onShowVideo}
               >
                 <Play className="h-5 w-5" />

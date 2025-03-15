@@ -13,10 +13,13 @@ const ROICalculator = ({ className }: ROICalculatorProps) => {
   const [cvCostPerUnit, setCvCostPerUnit] = useState<number>(0);
   const [interviewCostPerUnit, setInterviewCostPerUnit] = useState<number>(0);
 
-  // Regular monthly subscription cost (in €)
-  const regularSubscriptionCost = 79;
-  // Discounted monthly subscription cost (50% off)
-  const baseSubscriptionCost = 39.50;
+  // Pricing tiers
+  const starterPrice = 7.25; // €7.25 per month (discounted from €14.50)
+  const proPrice = 19.75; // €19.75 per month (discounted from €39.50)
+  
+  // We'll use Pro price as the default for calculations
+  const selectedPrice = proPrice;
+  
   // Average time spent per CV (in minutes)
   const timePerCv = 15;
   // Average time spent per interview (in minutes)
@@ -26,11 +29,11 @@ const ROICalculator = ({ className }: ROICalculatorProps) => {
 
   useEffect(() => {
     // Calculate cost per CV
-    const cvCost = cvCount > 0 ? baseSubscriptionCost / cvCount : 0;
+    const cvCost = cvCount > 0 ? selectedPrice / cvCount : 0;
     setCvCostPerUnit(cvCost);
 
     // Calculate cost per interview
-    const interviewCost = interviewCount > 0 ? baseSubscriptionCost / interviewCount : 0;
+    const interviewCost = interviewCount > 0 ? selectedPrice / interviewCount : 0;
     setInterviewCostPerUnit(interviewCost);
   }, [cvCount, interviewCount]);
 
@@ -58,16 +61,22 @@ const ROICalculator = ({ className }: ROICalculatorProps) => {
       <div className="mb-6 p-4 bg-gradient-to-r from-candilingo-purple/10 to-candilingo-pink/10 rounded-lg border border-candilingo-purple/20">
         <div className="flex flex-col space-y-1">
           <div className="flex justify-between items-center">
-            <p className="font-medium text-gray-700">Regular price:</p>
-            <p className="text-gray-500 line-through">€{regularSubscriptionCost.toFixed(2)}</p>
+            <p className="font-medium text-gray-700">Starter Plan:</p>
+            <div>
+              <span className="text-gray-500 line-through mr-2">€14.50</span>
+              <span className="font-semibold text-candilingo-purple">€7.25</span>
+            </div>
           </div>
           <div className="flex justify-between items-center">
-            <p className="font-bold text-candilingo-purple">Early access price:</p>
-            <p className="font-bold text-candilingo-purple">€{baseSubscriptionCost.toFixed(2)}</p>
+            <p className="font-medium text-gray-700">Pro Plan:</p>
+            <div>
+              <span className="text-gray-500 line-through mr-2">€39.50</span>
+              <span className="font-semibold text-candilingo-purple">€19.75</span>
+            </div>
           </div>
           <div className="flex justify-between items-center">
-            <p className="text-sm text-green-600">Your savings:</p>
-            <p className="text-sm text-green-600 font-medium">€{(regularSubscriptionCost - baseSubscriptionCost).toFixed(2)} (50% off)</p>
+            <p className="text-sm text-green-600">Early Access Savings:</p>
+            <p className="text-sm text-green-600 font-medium">50% off for first year</p>
           </div>
         </div>
       </div>
