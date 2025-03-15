@@ -1,4 +1,3 @@
-
 import { AuthSession } from '@supabase/supabase-js';
 
 export interface AuthSessionData {
@@ -57,4 +56,9 @@ export interface AuthContextType {
   activeUser: User | null;
   handleLogout: () => Promise<void>;
   missingInformation?: boolean;
+}
+
+export interface UseAuthActionsProps {
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setPendingResetState?: React.Dispatch<React.SetStateAction<boolean>>;
 }

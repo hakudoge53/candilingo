@@ -1,12 +1,10 @@
 
 import React, { useState } from 'react';
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/auth/useAuth";
 import LoginFormFields from './LoginFormFields';
 import ResetPasswordForm from './ResetPasswordForm';
 import LoginSuccess from './LoginSuccess';
 import { useAuthHandlers } from './useAuthHandlers';
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 interface LoginFormProps {
   setIsLoading: (loading: boolean) => void;
