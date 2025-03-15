@@ -78,12 +78,9 @@ export const useAuthStateListener = ({
           console.log("User deleted");
           setIsLoggedIn(false);
           setActiveUser(null);
-        } else if (event === 'INITIAL_SESSION') {
-          console.log("Initial session event");
-        } else if (event === 'PASSWORD_RECOVERY') {
-          console.log("Password recovery event");
-        } else if (event === 'MFA_CHALLENGE_VERIFIED') {
-          console.log("MFA challenge verified event");
+        } else if (event === 'INITIAL_SESSION' || event === 'PASSWORD_RECOVERY' || event === 'MFA_CHALLENGE_VERIFIED') {
+          // Handle specific event types individually to avoid TypeScript comparison errors
+          console.log(`Auth event: ${event}`);
         } else {
           // Handle any other events not explicitly covered
           console.log(`Unhandled auth event: ${event}`);

@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { GlossaryTerm } from '@/types/glossary';
+import { GlossaryTerm } from '@/types/organization';
 import { useAuth } from '../useAuth';
 import { UseGlossaryTermsReturn } from './types';
 
@@ -28,7 +28,7 @@ export const useGlossaryTerms = (glossaryId?: string): UseGlossaryTermsReturn =>
       
       if (error) throw error;
       
-      setTerms(data as GlossaryTerm[]);
+      setTerms(data);
     } catch (error: any) {
       console.error("Error fetching terms:", error);
       setError(error.message);
@@ -58,10 +58,10 @@ export const useGlossaryTerms = (glossaryId?: string): UseGlossaryTermsReturn =>
       
       if (error) throw error;
       
-      setTerms(prev => [...prev, data as GlossaryTerm]);
+      setTerms(prev => [...prev, data]);
       
       toast.success("Term added successfully");
-      return data as GlossaryTerm;
+      return data;
     } catch (error: any) {
       console.error("Error adding term:", error);
       toast.error("Failed to add term");
@@ -89,12 +89,12 @@ export const useGlossaryTerms = (glossaryId?: string): UseGlossaryTermsReturn =>
       
       setTerms(prev => 
         prev.map(term => 
-          term.id === termId ? (data as GlossaryTerm) : term
+          term.id === termId ? data : term
         )
       );
       
       toast.success("Term updated successfully");
-      return data as GlossaryTerm;
+      return data;
     } catch (error: any) {
       console.error("Error updating term:", error);
       toast.error("Failed to update term");
