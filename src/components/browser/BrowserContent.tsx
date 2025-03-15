@@ -25,7 +25,7 @@ const BrowserContent = ({ loaded }: BrowserContentProps) => {
   };
 
   return (
-    <div className="bg-white p-6 relative border-t border-gray-200 border-b-2 shadow-sm">
+    <div className="bg-white p-6 relative border-t border-gray-200">
       <div className={cn(
         "transition-opacity duration-1000",
         loaded ? "opacity-100" : "opacity-0"
