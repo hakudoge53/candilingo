@@ -22,6 +22,7 @@ export const useAuthSession = (): AuthSession => {
     const checkSession = async () => {
       try {
         setIsLoading(true);
+        console.log("Checking session...");
         const { data, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -30,7 +31,10 @@ export const useAuthSession = (): AuthSession => {
           return;
         }
         
+        console.log("Session check result:", data.session ? "Session exists" : "No session");
+        
         if (data.session) {
+          console.log("Session user:", data.session.user.id);
           // Check if the user has all required information before setting isLoggedIn to true
           const missingInfo: string[] = [];
           
@@ -48,13 +52,14 @@ export const useAuthSession = (): AuthSession => {
             }
             
             if (missingInfo.length > 0) {
+              console.log("Missing information:", missingInfo);
               setMissingInformation(missingInfo);
-              // Don't show organization warnings anymore
             }
             
             setIsLoggedIn(true);
             
             if (profileData) {
+              console.log("Profile data found:", profileData.id);
               setActiveUser({
                 id: data.session.user.id,
                 name: profileData.name || data.session.user.email?.split('@')[0] || 'User',
@@ -63,15 +68,14 @@ export const useAuthSession = (): AuthSession => {
                 status: profileData.status,
                 preferred_language: profileData.preferred_language,
                 extension_settings: profileData.extension_settings as Record<string, any> || {},
-                // Remove hasOrganization field
               });
             } else {
               // Fallback if profile not found
+              console.log("No profile data, using fallback user info");
               setActiveUser({
                 id: data.session.user.id,
                 name: data.session.user.email?.split('@')[0] || 'User',
                 email: data.session.user.email || '',
-                // Remove hasOrganization field
               });
             }
           } catch (profileError) {
@@ -81,9 +85,10 @@ export const useAuthSession = (): AuthSession => {
               id: data.session.user.id,
               name: data.session.user.email?.split('@')[0] || 'User',
               email: data.session.user.email || '',
-              // Remove hasOrganization field
             });
           }
+        } else {
+          console.log("No active session found");
         }
       } catch (error) {
         console.error("Session check error:", error);

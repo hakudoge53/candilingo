@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { User } from './types';
+import { toast } from "sonner";
 
 interface AuthStateProps {
   setIsLoggedIn: (isLoggedIn: boolean) => void;
@@ -15,11 +16,16 @@ export const useAuthStateListener = ({
   setMissingInformation
 }: AuthStateProps) => {
   useEffect(() => {
+    console.log("Setting up auth state listener");
+    
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log("Auth state changed:", event, session ? "Session exists" : "No session");
+        
         if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
           if (session) {
+            console.log("User signed in:", session.user.id);
             setIsLoggedIn(true);
             
             try {
@@ -63,14 +69,40 @@ export const useAuthStateListener = ({
             }
           }
         } else if (event === 'SIGNED_OUT') {
+          console.log("User signed out");
+          setIsLoggedIn(false);
+          setActiveUser(null);
+        } else if (event === 'TOKEN_REFRESHED') {
+          console.log("Token refreshed");
+        } else if (event === 'USER_DELETED') {
+          console.log("User deleted");
           setIsLoggedIn(false);
           setActiveUser(null);
         }
       }
     );
 
+    // Check initial session on component mount
+    const checkInitialSession = async () => {
+      const { data, error } = await supabase.auth.getSession();
+      console.log("Initial session check:", data?.session ? "Session exists" : "No session", error);
+      
+      if (error) {
+        console.error("Initial session error:", error);
+        return;
+      }
+      
+      if (data.session) {
+        console.log("Initial session user:", data.session.user.id);
+        setIsLoggedIn(true);
+      }
+    };
+    
+    checkInitialSession();
+
     // Clean up subscription
     return () => {
+      console.log("Cleaning up auth state listener");
       subscription.unsubscribe();
     };
   }, [setIsLoggedIn, setActiveUser, setMissingInformation]);

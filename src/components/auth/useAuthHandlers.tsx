@@ -16,17 +16,21 @@ export const useAuthHandlers = (
   const onLoginSubmit = useCallback(async (values: LoginFormValues) => {
     try {
       setIsLoading(true);
+      console.log("Attempting login with email:", values.email);
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
       });
       
       if (error) {
+        console.error("Login error:", error);
         toast.error(error.message);
         setIsLoading(false);
         return;
       }
       
+      console.log("Login successful:", data.user?.id);
       setLoginSuccess(true);
       toast.success("Login successful!");
     } catch (error) {
@@ -40,17 +44,21 @@ export const useAuthHandlers = (
   const handleTestLogin = useCallback(async () => {
     try {
       setIsLoading(true);
+      console.log("Attempting test login");
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email: "test@candilingo.com",
         password: "password123",
       });
       
       if (error) {
+        console.error("Test login error:", error);
         toast.error(error.message);
         setIsLoading(false);
         return;
       }
       
+      console.log("Test login successful:", data.user?.id);
       setLoginSuccess(true);
       toast.success("Logged in with test account!");
     } catch (error) {
@@ -65,10 +73,10 @@ export const useAuthHandlers = (
     try {
       setIsLoading(true);
       
-      // Use the full path to customer-portal instead of just the origin
+      // Use the configured site URL for redirects
       const redirectUrl = `${window.location.origin}/customer-portal`;
       
-      console.log("Social login redirect URL:", redirectUrl);
+      console.log(`Starting ${provider} login with redirect to:`, redirectUrl);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
@@ -78,13 +86,14 @@ export const useAuthHandlers = (
       });
       
       if (error) {
+        console.error(`${provider} login error:`, error);
         toast.error(error.message);
         setIsLoading(false);
         return;
       }
       
-      // OAuth will redirect to the authentication provider
-      // User will be logged in automatically when redirected back
+      console.log(`${provider} OAuth initiated, redirecting to provider`);
+      // User will be redirected to the authentication provider
     } catch (error) {
       console.error(`${provider} login error:`, error);
       toast.error(`An error occurred during ${provider} login. Please try again.`);
@@ -104,16 +113,17 @@ export const useAuthHandlers = (
     try {
       setIsLoading(true);
       
-      // Use the full path to customer-portal for the redirect URL
+      // Use the configured site URL for redirects
       const redirectUrl = `${window.location.origin}/customer-portal`;
       
-      console.log("Password reset redirect URL:", redirectUrl);
+      console.log("Password reset email for:", values.email, "with redirect to:", redirectUrl);
       
       const { error } = await supabase.auth.resetPasswordForEmail(values.email, {
         redirectTo: redirectUrl,
       });
       
       if (error) {
+        console.error("Password reset error:", error);
         toast.error(error.message);
         return;
       }

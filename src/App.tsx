@@ -16,20 +16,26 @@ import { supabase } from "@/integrations/supabase/client";
 function App() {
   // Handle URL parameters and errors
   useEffect(() => {
+    console.log("App mounted, checking for auth redirects and errors");
+    
     // Check for canceled payment
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('canceled') === 'true') {
+      console.log("Payment canceled redirect");
       window.location.href = '/customer-portal';
     }
 
     // Check for email confirmation success
     const confirmationSuccess = urlParams.get('confirmed') === 'true';
     if (confirmationSuccess) {
+      console.log("Email confirmation success");
       toast.success("Email confirmed successfully! You can now log in.");
     }
 
     // Check for hash errors (typically auth related)
     const hash = window.location.hash;
+    console.log("Current URL hash:", hash);
+    
     if (hash.includes('error=')) {
       const hashParams = new URLSearchParams(hash.substring(1));
       const error = hashParams.get('error');
@@ -60,8 +66,14 @@ function App() {
     
     // Check for signup success via hash type parameter
     if (hash.includes('type=signup')) {
+      console.log("Signup success detected");
       toast.success("Email confirmation successful! You are now logged in.");
       window.history.replaceState(null, '', window.location.pathname);
+      
+      // Redirect to dashboard after signup
+      setTimeout(() => {
+        window.location.href = '/dashboard';
+      }, 1000);
     }
     
     // Check for successful auth callback via 'access_token' in hash
@@ -77,6 +89,24 @@ function App() {
       // Clean up the URL by removing the hash
       window.history.replaceState(null, '', window.location.pathname);
     }
+    
+    // Check for recovery token (password reset)
+    if (hash.includes('type=recovery')) {
+      console.log("Password recovery flow detected");
+      toast.info("Please enter a new password");
+      // The recovery flow will be handled by Supabase's built-in mechanisms
+    }
+    
+    // Initial session check
+    const checkSession = async () => {
+      const { data, error } = await supabase.auth.getSession();
+      console.log("Initial App session check:", data?.session ? "Session exists" : "No session");
+      if (error) {
+        console.error("Session check error:", error);
+      }
+    };
+    
+    checkSession();
   }, []);
 
   return (
