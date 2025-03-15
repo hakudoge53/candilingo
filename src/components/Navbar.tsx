@@ -1,132 +1,117 @@
-
-import { useState, useEffect } from 'react';
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen } from 'lucide-react';
+import { useAuth } from "@/hooks/auth/useAuth";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
+import { Menu } from "lucide-react";
+import ThemeToggle from './ThemeToggle';
 
 const Navbar = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
+  const { isLoggedIn, handleLogout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      setIsScrolled(scrollPosition > 10);
-    };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
   return (
-    <header
-      className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        isScrolled 
-          ? "bg-white shadow-md py-2" 
-          : "bg-transparent py-4"
-      )}
-    >
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center">
-              <div className="flex items-center gap-2">
-                <BookOpen className="h-8 w-8 text-candilingo-pink" />
-                <span className="font-bold text-xl text-candilingo-purple">Candilingo</span>
-              </div>
+    <div className="bg-techlex-blue py-4">
+      <div className="container mx-auto px-4 flex items-center justify-between">
+        {/* Logo */}
+        <Link to="/" className="text-2xl font-bold text-white">
+          TechLex
+        </Link>
+
+        {/* Navigation Links */}
+        <nav className="flex gap-8 items-center">
+          <Link to="/" className="text-white hover:text-gray-300 font-medium hidden md:block">
+            Home
+          </Link>
+          <Link to="/glossary" className="text-white hover:text-gray-300 font-medium hidden md:block">
+            Glossary
+          </Link>
+          <Link to="/techlingo" className="text-white hover:text-gray-300 font-medium hidden md:block">
+            TechLingo Wiki
+          </Link>
+          {isLoggedIn && (
+            <Link to="/dashboard" className="text-white hover:text-gray-300 font-medium hidden md:block">
+              Dashboard
             </Link>
-          </div>
+          )}
           
-          {/* Desktop menu */}
-          <div className="hidden md:flex items-center space-x-8">
-            <a href="#features" className="font-medium text-gray-700 hover:text-candilingo-pink transition-colors">Features</a>
-            <a href="#how-it-works" className="font-medium text-gray-700 hover:text-candilingo-pink transition-colors">How It Works</a>
-            <a href="#pricing" className="font-medium text-gray-700 hover:text-candilingo-pink transition-colors">Pricing</a>
-            <a href="#contact" className="font-medium text-gray-700 hover:text-candilingo-pink transition-colors">Contact</a>
-            <Link to="/customer-portal">
-              <Button className="btn-primary">
-                Customer Login
-              </Button>
-            </Link>
-          </div>
-          
-          {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-gray-700 focus:outline-none"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                {isMobileMenuOpen ? (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                ) : (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16m-7 6h7"
-                  />
-                )}
-              </svg>
-            </button>
-          </div>
-        </div>
-        
-        {/* Mobile menu */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden mt-4 py-4 px-2 rounded-lg bg-white shadow-lg animate-fade-in">
-            <div className="flex flex-col space-y-4">
-              <a 
-                href="#features" 
-                className="font-medium text-gray-700 hover:text-candilingo-pink transition-colors px-2 py-1.5"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Features
-              </a>
-              <a 
-                href="#how-it-works" 
-                className="font-medium text-gray-700 hover:text-candilingo-pink transition-colors px-2 py-1.5"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                How It Works
-              </a>
-              <a 
-                href="#pricing" 
-                className="font-medium text-gray-700 hover:text-candilingo-pink transition-colors px-2 py-1.5"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Pricing
-              </a>
-              <a 
-                href="#contact" 
-                className="font-medium text-gray-700 hover:text-candilingo-pink transition-colors px-2 py-1.5"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Contact
-              </a>
-              <Link to="/customer-portal" onClick={() => setIsMobileMenuOpen(false)}>
-                <Button className="btn-primary">
-                  Customer Login
-                </Button>
+          {/* Authentication Buttons */}
+          {isLoggedIn ? (
+            <Button variant="outline" size="sm" className="hidden md:block" onClick={handleLogout}>
+              Logout
+            </Button>
+          ) : (
+            <>
+              <Link to="/portal" className="text-white hover:text-gray-300 font-medium hidden md:block">
+                Login
               </Link>
+              <Link to="/portal" className="text-white hover:text-gray-300 font-medium hidden md:block">
+                Sign Up
+              </Link>
+            </>
+          )}
+
+          <ThemeToggle />
+        </nav>
+
+        {/* Mobile Menu Button */}
+        <Sheet>
+          <SheetTrigger className="md:hidden">
+            <Menu className="h-6 w-6 text-white cursor-pointer" />
+          </SheetTrigger>
+          <SheetContent side="left" className="bg-white">
+            <SheetHeader>
+              <SheetTitle>TechLex</SheetTitle>
+              <SheetDescription>
+                Navigate technical terms and explanations to better understand the language of technology.
+              </SheetDescription>
+            </SheetHeader>
+            <div className="mt-4">
+              <Link to="/" className="block py-2 text-gray-800 hover:bg-gray-100">
+                Home
+              </Link>
+              <Link to="/glossary" className="block py-2 text-gray-800 hover:bg-gray-100">
+                Glossary
+              </Link>
+              <Link to="/techlingo" className="block py-2 text-gray-800 hover:bg-gray-100">
+                TechLingo Wiki
+              </Link>
+              {isLoggedIn && (
+                <Link to="/dashboard" className="block py-2 text-gray-800 hover:bg-gray-100">
+                  Dashboard
+                </Link>
+              )}
+              {isLoggedIn ? (
+                <Button variant="outline" size="sm" className="w-full mt-2" onClick={handleLogout}>
+                  Logout
+                </Button>
+              ) : (
+                <>
+                  <Link to="/portal" className="block py-2 text-gray-800 hover:bg-gray-100">
+                    Login
+                  </Link>
+                  <Link to="/portal" className="block py-2 text-gray-800 hover:bg-gray-100">
+                    Sign Up
+                  </Link>
+                </>
+              )}
             </div>
-          </div>
-        )}
+            <ThemeToggle />
+          </SheetContent>
+        </Sheet>
       </div>
-    </header>
+    </div>
   );
 };
 

@@ -293,6 +293,36 @@ export type Database = {
           },
         ]
       }
+      techlingo_terms: {
+        Row: {
+          category: string | null
+          created_at: string
+          definition: string
+          difficulty: string | null
+          id: string
+          term: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          definition: string
+          difficulty?: string | null
+          id?: string
+          term: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          definition?: string
+          difficulty?: string | null
+          id?: string
+          term?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
