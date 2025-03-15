@@ -37,7 +37,7 @@ const HeroSection = ({ onShowVideo }: { onShowVideo?: () => void }) => {
               <img 
                 src="/public/lovable-uploads/dd4d9cc8-eaa4-43df-bc05-3b8a88297f00.png" 
                 alt="Candilingo Logo" 
-                className="h-14"
+                className="h-16"
               />
             </div>
             <div className="flex flex-wrap items-center gap-2 mb-4">

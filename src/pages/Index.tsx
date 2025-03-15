@@ -20,7 +20,7 @@ const Index = () => {
 
   useEffect(() => {
     setIsLoaded(true);
-    // Update page title to reflect the new product name
+    // Update page title to reflect the product name
     document.title = "Candilingo - AI-Powered Keyword Highlighter for Recruiters";
   }, []);
 

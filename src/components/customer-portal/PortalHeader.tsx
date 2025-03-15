@@ -6,9 +6,9 @@ const PortalHeader = () => {
     <div className="text-center mb-8">
       <div className="flex items-center justify-center mb-4">
         <img 
-          src="/public/lovable-uploads/cbe6d14b-3d9f-4814-af61-b96347790cb1.png" 
+          src="/public/lovable-uploads/dd4d9cc8-eaa4-43df-bc05-3b8a88297f00.png" 
           alt="Candilingo" 
-          className="h-10"
+          className="h-12"
         />
       </div>
       <h1 className="text-3xl font-bold text-candilingo-purple">Customer <span className="text-candilingo-pink">Portal</span></h1>
