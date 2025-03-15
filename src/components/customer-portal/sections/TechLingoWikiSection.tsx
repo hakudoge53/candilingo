@@ -8,6 +8,7 @@ import TermCard from '@/components/techlingo/TermCard';
 import AddTermDialog from '@/components/techlingo/AddTermDialog';
 import EditTermDialog from '@/components/techlingo/EditTermDialog';
 import { toast } from 'sonner';
+import { TechLingoTerm } from '@/hooks/useTechLingoWiki';
 
 interface TechLingoWikiSectionProps {
   user: User;
@@ -18,28 +19,42 @@ const TechLingoWikiSection: React.FC<TechLingoWikiSectionProps> = ({ user, setLo
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [showAddTermDialog, setShowAddTermDialog] = useState(false);
-  const [termToEdit, setTermToEdit] = useState<any | null>(null);
+  const [termToEdit, setTermToEdit] = useState<TechLingoTerm | null>(null);
   
   const { 
     terms, 
-    isLoading, 
+    isLoading,
+    error,
     addTerm, 
     updateTerm, 
     deleteTerm,
+    getTermsByCategory,
+    searchTerms,
     getCategories,
-    searchTerms
+    isAdding,
+    isUpdating,
+    isDeleting
   } = useTechLingoWiki();
   
   // Get all available categories
   const categories = getCategories ? getCategories() : [];
   
+  // Group terms by category
+  const groupedTerms: Record<string, TechLingoTerm[]> = getTermsByCategory ? getTermsByCategory() : {};
+  
   // Check if user is admin (for adding/editing terms)
-  const isAdmin = user.app_metadata?.role === 'admin' || user.app_metadata?.role === 'super_admin';
+  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+  
+  useEffect(() => {
+    if (error) {
+      toast.error(`Error: ${error.message}`);
+    }
+  }, [error]);
   
   const handleAddTerm = async (termData: any) => {
     setLocalLoading(true);
     try {
-      await addTerm(termData.term, termData.definition, termData.category);
+      await addTerm(termData.term, termData.definition, termData.category, termData.difficulty);
       toast.success("Term added successfully!");
       setShowAddTermDialog(false);
     } catch (error) {
@@ -52,7 +67,7 @@ const TechLingoWikiSection: React.FC<TechLingoWikiSectionProps> = ({ user, setLo
   const handleUpdateTerm = async (id: string, termData: any) => {
     setLocalLoading(true);
     try {
-      await updateTerm(id, termData.term, termData.definition, termData.category);
+      await updateTerm(id, termData.term, termData.definition, termData.category, termData.difficulty);
       toast.success("Term updated successfully!");
       setTermToEdit(null);
     } catch (error) {
@@ -102,7 +117,13 @@ const TechLingoWikiSection: React.FC<TechLingoWikiSectionProps> = ({ user, setLo
       />
       
       <CategoryTabs 
+        groupedTerms={groupedTerms}
         categories={categories}
+        searchQuery={searchQuery}
+        isAdmin={isAdmin}
+        onEditTerm={setTermToEdit}
+        onDeleteTerm={handleDeleteTerm}
+        onAddTerm={() => setShowAddTermDialog(true)}
       />
       
       {isLoading ? (
@@ -128,19 +149,21 @@ const TechLingoWikiSection: React.FC<TechLingoWikiSectionProps> = ({ user, setLo
       {/* Add Term Dialog */}
       {showAddTermDialog && (
         <AddTermDialog
-          onClose={() => setShowAddTermDialog(false)}
-          onAdd={handleAddTerm}
-          categories={categories}
+          isOpen={showAddTermDialog}
+          onOpenChange={setShowAddTermDialog}
+          onSubmit={handleAddTerm}
+          isAdding={isAdding}
         />
       )}
       
       {/* Edit Term Dialog */}
       {termToEdit && (
         <EditTermDialog
-          onClose={() => setTermToEdit(null)}
-          onUpdate={(data) => handleUpdateTerm(termToEdit.id, data)}
-          term={termToEdit}
-          categories={categories}
+          isOpen={!!termToEdit}
+          onOpenChange={(open) => !open && setTermToEdit(null)}
+          onSubmit={(data) => handleUpdateTerm(termToEdit.id, data)}
+          isUpdating={isUpdating}
+          selectedTerm={termToEdit}
         />
       )}
     </div>

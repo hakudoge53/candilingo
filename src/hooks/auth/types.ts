@@ -1,36 +1,34 @@
 
+import { AuthSession } from '@supabase/supabase-js';
+
+export interface AuthSessionData {
+  session: AuthSession | null;
+  user: User | null;
+}
+
+export interface UserMetadata {
+  name?: string;
+  avatar_url?: string;
+  organization_id?: string;
+  [key: string]: any;
+}
+
 export interface User {
   id: string;
   email: string;
-  name: string;
-  membership_tier: string;
-  preferred_language: string;
-  extension_settings: Record<string, any>;
-  avatar_url?: string | null;
-  status?: string;
+  email_verified?: boolean;
+  role?: string;
+  user_metadata: UserMetadata;
+  app_metadata?: {
+    role?: string;
+    [key: string]: any;
+  };
+  created_at: string;
 }
 
-export interface AuthSession {
-  isLoggedIn: boolean;
+export interface AuthContextType {
+  session: AuthSession | null;
+  user: User | null;
   isLoading: boolean;
-  activeUser: User | null;
-  missingInformation: string[];
-  session?: any; // Add this to fix the type error
-}
-
-export interface LoginFormValues {
-  email: string;
-  password: string;
-}
-
-export interface ResetPasswordFormValues {
-  email: string;
-}
-
-export interface AuthActions {
-  handleLogin: (values: LoginFormValues) => Promise<void>;
-  handleRegistration: (values: any) => Promise<void>;
-  handleForgotPassword: (values: ResetPasswordFormValues) => Promise<void>;
-  handleResetPassword: (values: { password: string }) => Promise<void>;
-  handleLogout: () => Promise<void>;
+  error: Error | null;
 }

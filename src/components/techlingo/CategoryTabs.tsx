@@ -29,7 +29,7 @@ const CategoryTabs = ({
   // Filter categories based on search
   const filteredCategories = searchQuery 
     ? categories.filter(category => 
-        groupedTerms[category].some(term => 
+        groupedTerms[category]?.some(term => 
           term.term.toLowerCase().includes(searchQuery.toLowerCase()) ||
           term.definition.toLowerCase().includes(searchQuery.toLowerCase())
         ) || category.toLowerCase().includes(searchQuery.toLowerCase())
@@ -68,7 +68,7 @@ const CategoryTabs = ({
       {filteredCategories.map((category) => (
         <TabsContent key={category} value={category} className="space-y-4">
           {groupedTerms[category]
-            .filter(term => 
+            ?.filter(term => 
               !searchQuery || 
               term.term.toLowerCase().includes(searchQuery.toLowerCase()) ||
               term.definition.toLowerCase().includes(searchQuery.toLowerCase())
@@ -78,8 +78,8 @@ const CategoryTabs = ({
                 key={term.id}
                 term={term}
                 isAdmin={isAdmin}
-                onEdit={onEditTerm}
-                onDelete={onDeleteTerm}
+                onEdit={() => onEditTerm(term)}
+                onDelete={() => onDeleteTerm(term.id)}
               />
             ))}
         </TabsContent>
