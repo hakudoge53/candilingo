@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import TermBadge from "@/components/TermBadge";
 import TooltipOverlay from "@/components/browser/TooltipOverlay";
 import HowItWorksSection from "@/components/sections/HowItWorksSection";
+import CTASection from "@/components/sections/CTASection";
 
 const HowItWorks = () => {
   return (
@@ -60,7 +61,7 @@ const HowItWorks = () => {
               When browsing technical profiles or documentation, Candilingo highlights key terms and provides instant definitions:
             </p>
             
-            <div className="relative border border-gray-200 rounded-lg p-4 mb-8">
+            <div className="relative border border-gray-200 rounded-lg p-4 mb-8 overflow-visible">
               <p className="text-sm text-gray-700">
                 The candidate has experience with <span className="bg-candilingo-pink text-white px-2 py-0.5 rounded">Spring Boot</span> and 
                 <span className="bg-candilingo-pink text-white px-2 py-0.5 rounded mx-1">Kubernetes</span> for building and deploying microservices.
@@ -86,6 +87,7 @@ const HowItWorks = () => {
         <FAQSection />
       </div>
       
+      <CTASection />
       <Footer />
     </div>
   );

@@ -14,7 +14,7 @@ import CustomerPortal from './pages/CustomerPortal';
 import PaymentSuccess from './pages/PaymentSuccess';
 import Glossary from './pages/Glossary';
 import TechLingoWiki from './pages/TechLingoWiki';
-import Resources from './pages/Resources';
+import HowItWorks from './pages/HowItWorks';
 
 // Styles
 import './App.css';
@@ -34,7 +34,7 @@ function App() {
             <Route path="/customer-portal/*" element={<CustomerPortal />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
             <Route path="/glossary" element={<Glossary />} />
-            <Route path="/resources" element={<Resources />} />
+            <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/wiki" element={<TechLingoWiki />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

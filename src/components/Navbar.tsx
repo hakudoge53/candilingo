@@ -36,8 +36,8 @@ const Navbar = () => {
           <Link to="/" className="text-gray-700 hover:text-candilingo-purple font-medium hidden md:block">
             Home
           </Link>
-          <Link to="/resources" className="text-gray-700 hover:text-candilingo-purple font-medium hidden md:block">
-            Resources
+          <Link to="/how-it-works" className="text-gray-700 hover:text-candilingo-purple font-medium hidden md:block">
+            How It Works
           </Link>
           {isLoggedIn && (
             <Link to="/dashboard" className="text-gray-700 hover:text-candilingo-purple font-medium hidden md:block">
@@ -83,8 +83,8 @@ const Navbar = () => {
               <Link to="/" className="block py-2 text-gray-800 hover:bg-gray-100">
                 Home
               </Link>
-              <Link to="/resources" className="block py-2 text-gray-800 hover:bg-gray-100">
-                Resources
+              <Link to="/how-it-works" className="block py-2 text-gray-800 hover:bg-gray-100">
+                How It Works
               </Link>
               {isLoggedIn && (
                 <>
