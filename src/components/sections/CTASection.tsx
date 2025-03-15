@@ -41,35 +41,33 @@ const CTASection = () => {
               </div>
             </div>
             
-            <div className="grid grid-cols-2 gap-4 max-w-2xl mx-auto mb-6">
-              <div className="space-y-3">
-                <div className="flex items-start gap-2">
-                  <div className="mt-0.5 bg-green-100 p-1 rounded-full">
-                    <Check className="h-3 w-3 text-green-600" />
-                  </div>
-                  <p className="text-sm text-gray-700">Instant setup - no installation needed</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto mb-6">
+              <div className="flex items-start gap-2">
+                <div className="mt-0.5 bg-green-100 p-1 rounded-full flex-shrink-0">
+                  <Check className="h-3 w-3 text-green-600" />
                 </div>
-                <div className="flex items-start gap-2">
-                  <div className="mt-0.5 bg-green-100 p-1 rounded-full">
-                    <Check className="h-3 w-3 text-green-600" />
-                  </div>
-                  <p className="text-sm text-gray-700">Works with LinkedIn, PDFs, and ATS-systems</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <div className="mt-0.5 bg-green-100 p-1 rounded-full">
-                    <Check className="h-3 w-3 text-green-600" />
-                  </div>
-                  <p className="text-sm text-gray-700">Enterprise customers:<br />Contact us for custom solutions</p>
-                </div>
+                <p className="text-sm text-gray-700">Instant setup - no installation needed</p>
               </div>
               
-              <div className="space-y-3">
-                <div className="flex items-start gap-2">
-                  <div className="mt-0.5 bg-green-100 p-1 rounded-full">
-                    <Check className="h-3 w-3 text-green-600" />
-                  </div>
-                  <p className="text-sm text-gray-700">No credit card required for trial</p>
+              <div className="flex items-start gap-2">
+                <div className="mt-0.5 bg-green-100 p-1 rounded-full flex-shrink-0">
+                  <Check className="h-3 w-3 text-green-600" />
                 </div>
+                <p className="text-sm text-gray-700">No credit card required for trial</p>
+              </div>
+              
+              <div className="flex items-start gap-2">
+                <div className="mt-0.5 bg-green-100 p-1 rounded-full flex-shrink-0">
+                  <Check className="h-3 w-3 text-green-600" />
+                </div>
+                <p className="text-sm text-gray-700">Works with LinkedIn, PDFs, and ATS-systems</p>
+              </div>
+              
+              <div className="flex items-start gap-2">
+                <div className="mt-0.5 bg-green-100 p-1 rounded-full flex-shrink-0">
+                  <Check className="h-3 w-3 text-green-600" />
+                </div>
+                <p className="text-sm text-gray-700">Enterprise customers: Contact us for custom solutions</p>
               </div>
             </div>
             
