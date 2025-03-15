@@ -6,11 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { UserPlus } from 'lucide-react';
 import OrganizationDetailsCard from './OrganizationDetailsCard';
-import MembersList from './MembersList';
-import InvitesList from './InvitesList';
-import InviteMemberForm from './InviteMemberForm';
 import { OrganizationMember, UserRole } from '@/types/organization';
 import { OrganizationInvitation } from './types';
+import InviteMemberForm from './InviteMemberForm';
 
 interface OrganizationCardProps {
   organization: Organization;
@@ -24,7 +22,7 @@ interface OrganizationCardProps {
   isSubmittingInvite: boolean;
 }
 
-const OrganizationCard: React.FC<OrganizationCardProps> = ({
+export const OrganizationCard: React.FC<OrganizationCardProps> = ({
   organization,
   members,
   invites,
@@ -42,6 +40,10 @@ const OrganizationCard: React.FC<OrganizationCardProps> = ({
     setIsInviteDialogOpen(false);
   };
 
+  // Determine if current user is admin or owner
+  const currentMember = members.find(m => m.user_id === currentUserId);
+  const isAdmin = currentMember?.role === 'super_admin' || currentMember?.role === 'owner' || currentMember?.role === 'manager';
+
   return (
     <Card>
       <CardHeader>
@@ -53,35 +55,23 @@ const OrganizationCard: React.FC<OrganizationCardProps> = ({
       <CardContent className="space-y-4">
         <OrganizationDetailsCard organization={organization} />
         
-        <MembersList
-          members={members}
-          currentUserId={currentUserId}
-          onChangeRole={(member) => onChangeRole(member.id, member.role)}
-          onRemoveMember={(member) => onRemoveMember(member.id)}
-        />
-        
-        <InvitesList
-          invites={invites}
-          onRevokeInvite={onRevokeInvite}
-        />
-        
-        <Dialog open={isInviteDialogOpen} onOpenChange={setIsInviteDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => setIsInviteDialogOpen(true)}>
-              <UserPlus className="mr-2 h-4 w-4" />
-              Invite Member
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <InviteMemberForm 
-              onInvite={handleInviteSubmit}
-              isLoading={isSubmittingInvite}
-            />
-          </DialogContent>
-        </Dialog>
+        {isAdmin && (
+          <Dialog open={isInviteDialogOpen} onOpenChange={setIsInviteDialogOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={() => setIsInviteDialogOpen(true)}>
+                <UserPlus className="mr-2 h-4 w-4" />
+                Invite Member
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <InviteMemberForm 
+                onInvite={handleInviteSubmit}
+                isLoading={isSubmittingInvite}
+              />
+            </DialogContent>
+          </Dialog>
+        )}
       </CardContent>
     </Card>
   );
 };
-
-export default OrganizationCard;
