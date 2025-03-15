@@ -3,10 +3,9 @@ import React, { useEffect } from 'react';
 import AuthContainer from '@/components/auth/AuthContainer';
 import UserProfile from '@/components/profile/UserProfile';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import CheckoutManager from './CheckoutManager';
-import ReferralCodeManager from './ReferralCodeManager';
 import { User } from '@/hooks/auth/types';
 import { toast } from 'sonner';
+import PortalSections from './PortalSections';
 
 export interface CustomerPortalContentProps {
   isLoggedIn: boolean;
@@ -94,13 +93,12 @@ const CustomerPortalContent: React.FC<CustomerPortalContentProps> = ({
         />
       )}
 
-      <CheckoutManager setLocalLoading={setLocalLoading} />
-      
-      <ReferralCodeManager 
-        userId={activeUser?.id}
-        isLoading={localLoading}
-        setLocalLoading={setLocalLoading}
-      />
+      {activeUser && (
+        <PortalSections
+          user={activeUser}
+          setLocalLoading={setLocalLoading}
+        />
+      )}
     </div>
   );
 };

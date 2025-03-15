@@ -72,8 +72,6 @@ export const useAuthStateListener = ({
           console.log("User signed out");
           setIsLoggedIn(false);
           setActiveUser(null);
-        } else if (event === 'TOKEN_REFRESHED') {
-          console.log("Token refreshed");
         } else if (event === 'USER_DELETED') {
           console.log("User deleted");
           setIsLoggedIn(false);
