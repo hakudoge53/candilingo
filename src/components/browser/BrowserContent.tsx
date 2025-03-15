@@ -25,12 +25,12 @@ const BrowserContent = ({ loaded }: BrowserContentProps) => {
   };
 
   return (
-    <div className="bg-white p-6 relative border-t border-gray-200">
+    <div className="bg-white p-6 relative border-t border-gray-200 border-b-2 shadow-sm">
       <div className={cn(
         "transition-opacity duration-1000",
         loaded ? "opacity-100" : "opacity-0"
       )}>
-        <ScrollArea className="h-[630px] pr-2">
+        <ScrollArea className="h-[420px] pr-2">
           {/* Slide 1: Developer CV */}
           <div className={`${activeSlide === 0 ? 'block' : 'hidden'}`}>
             <DeveloperCVSlide />
