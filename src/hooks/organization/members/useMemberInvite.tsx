@@ -51,7 +51,6 @@ export const useMemberInvite = ({
       
       const newMember: OrganizationMember = {
         ...data,
-        user: null,
         role: data.role as UserRole,
         status: data.status as MemberStatus
       };

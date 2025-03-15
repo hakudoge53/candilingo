@@ -10,7 +10,7 @@ export interface OrganizationMember {
   created_at: string;
   updated_at: string;
   invitation_token: string | null;
-  user: {
+  user?: {
     name: string;
     email: string;
     membership_tier?: string;
