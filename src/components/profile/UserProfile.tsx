@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { User } from '@/hooks/useAuth';
 import { Link, useNavigate } from 'react-router-dom';
-import { LayoutDashboard } from 'lucide-react';
+import { LayoutDashboard, Database } from 'lucide-react';
 
 interface UserProfileProps {
   user: User;
@@ -17,6 +17,10 @@ const UserProfile = ({ user, onLogout, isLoading }: UserProfileProps) => {
   
   const handleDashboardClick = () => {
     navigate('/dashboard');
+  };
+
+  const handleSupabaseDashboardClick = () => {
+    window.open('https://supabase.com/dashboard/project/dqkemwzltxfsvuykzmfm', '_blank');
   };
   
   return (
@@ -45,12 +49,21 @@ const UserProfile = ({ user, onLogout, isLoading }: UserProfileProps) => {
           </ul>
         </div>
         
-        <Button 
-          onClick={handleDashboardClick} 
-          className="w-full bg-candilingo-purple hover:bg-candilingo-lightpurple flex items-center justify-center text-lg py-6 font-bold"
-        >
-          <LayoutDashboard className="mr-2 h-5 w-5" /> Go to Dashboard
-        </Button>
+        <div className="flex flex-col gap-3">
+          <Button 
+            onClick={handleDashboardClick} 
+            className="w-full bg-candilingo-purple hover:bg-candilingo-lightpurple flex items-center justify-center text-lg py-6 font-bold"
+          >
+            <LayoutDashboard className="mr-2 h-5 w-5" /> Go to Dashboard
+          </Button>
+          
+          <Button 
+            onClick={handleSupabaseDashboardClick} 
+            className="w-full bg-candilingo-teal hover:bg-candilingo-lightteal flex items-center justify-center py-4"
+          >
+            <Database className="mr-2 h-5 w-5" /> Open Supabase Dashboard
+          </Button>
+        </div>
       </CardContent>
       <CardFooter>
         <Button onClick={onLogout} variant="outline" className="w-full" disabled={isLoading}>
