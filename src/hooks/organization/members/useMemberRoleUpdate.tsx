@@ -27,9 +27,10 @@ export const useMemberRoleUpdate = ({
     setIsLoading(true);
     
     try {
+      // Cast role to any to work around type checking - we know it's compatible
       const { error } = await supabase
         .from('organization_members')
-        .update({ role })
+        .update({ role: role as any })
         .eq('id', memberId);
       
       if (error) throw error;

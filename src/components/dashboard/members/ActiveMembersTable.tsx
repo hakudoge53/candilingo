@@ -57,6 +57,10 @@ const ActiveMembersTable = ({
                       <SelectItem value="owner">Owner</SelectItem>
                       <SelectItem value="admin">Admin</SelectItem>
                       <SelectItem value="member">Member</SelectItem>
+                      <SelectItem value="manager">Manager</SelectItem>
+                      <SelectItem value="team_lead">Team Lead</SelectItem>
+                      <SelectItem value="employee">Employee</SelectItem>
+                      <SelectItem value="consultant">Consultant</SelectItem>
                     </SelectContent>
                   </Select>
                 ) : (

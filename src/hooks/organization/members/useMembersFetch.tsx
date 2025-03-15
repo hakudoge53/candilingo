@@ -2,14 +2,14 @@
 import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { OrganizationMember, MemberStatus } from '@/types/organization';
+import { OrganizationMember, MemberStatus, UserRole } from '@/types/organization';
 import { useAuth } from '../../useAuth';
 
 interface MemberResponse {
   id: string;
   organization_id: string;
   user_id: string;
-  role: OrganizationMember['role'];
+  role: UserRole;
   status: string;
   created_at: string;
   updated_at: string;
@@ -73,6 +73,7 @@ export const useMembersFetch = (organizationId: string | undefined): UseMembersF
         return {
           ...member,
           user: userObject,
+          role: member.role as UserRole,
           status: member.status as MemberStatus
         };
       });

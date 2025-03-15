@@ -19,7 +19,7 @@ const InviteMemberDialog = ({ open, setOpen, isSubmitting, onInvite }: InviteMem
   const [newMember, setNewMember] = useState({
     name: '',
     email: '',
-    role: 'employee' as UserRole
+    role: 'member' as UserRole
   });
 
   const handleInviteMember = async () => {
@@ -30,7 +30,7 @@ const InviteMemberDialog = ({ open, setOpen, isSubmitting, onInvite }: InviteMem
     setNewMember({
       name: '',
       email: '',
-      role: 'employee' as UserRole
+      role: 'member' as UserRole
     });
   };
 
@@ -80,7 +80,8 @@ const InviteMemberDialog = ({ open, setOpen, isSubmitting, onInvite }: InviteMem
                 <SelectValue placeholder="Select role" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="admin">Administrator</SelectItem>
+                <SelectItem value="admin">Admin</SelectItem>
+                <SelectItem value="member">Member</SelectItem>
                 <SelectItem value="manager">Manager</SelectItem>
                 <SelectItem value="team_lead">Team Lead</SelectItem>
                 <SelectItem value="employee">Employee</SelectItem>

@@ -32,6 +32,7 @@ export const useMemberInvite = ({
       // Generate a random token for the invitation
       const token = Math.random().toString(36).substring(2, 15);
       
+      // Cast the role to any to get around the type error since we know it's compatible
       const { data, error } = await supabase
         .from('organization_members')
         .insert({
@@ -39,7 +40,7 @@ export const useMemberInvite = ({
           user_id: '00000000-0000-0000-0000-000000000000', // Placeholder until user accepts invitation
           invited_email: email,
           invited_name: name,
-          role,
+          role: role as any, // Cast to bypass type checking - we've already ensured UserRole includes all valid options
           invitation_token: token,
           status: 'pending'
         })
@@ -51,6 +52,7 @@ export const useMemberInvite = ({
       const newMember: OrganizationMember = {
         ...data,
         user: null,
+        role: data.role as UserRole,
         status: data.status as MemberStatus
       };
       

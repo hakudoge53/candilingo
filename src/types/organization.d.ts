@@ -21,7 +21,11 @@ export interface OrganizationMember {
 export type UserRole =
   | 'owner'
   | 'admin'
-  | 'member';
+  | 'member'
+  | 'manager'
+  | 'team_lead'
+  | 'employee'
+  | 'consultant';
 
 export type MemberStatus =
   | 'pending'
