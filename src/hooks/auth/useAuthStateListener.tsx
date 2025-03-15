@@ -25,7 +25,8 @@ export const useAuthStateListener = (authState: AuthStateProps) => {
     setIsLoading, 
     setActiveUser, 
     pendingResetState, 
-    setPendingResetState 
+    setPendingResetState,
+    setMissingInformation
   } = authState;
 
   // Listen for auth state changes

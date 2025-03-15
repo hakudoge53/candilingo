@@ -1,86 +1,132 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
+import { useOrganizationMembers } from '@/hooks/organization/useOrganizationMembers';
 import { OrganizationMember, UserRole } from '@/types/organization';
-import InviteMemberDialog from './members/InviteMemberDialog';
-import PendingInvitationsTable from './members/PendingInvitationsTable';
-import ActiveMembersTable from './members/ActiveMembersTable';
-import EmptyMembersState from './members/EmptyMembersState';
 import { useAuth } from '@/hooks/useAuth';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import ActiveMembersTable from './members/ActiveMembersTable';
+import PendingInvitationsTable from './members/PendingInvitationsTable';
+import InviteMemberDialog from './members/InviteMemberDialog';
+import EmptyMembersState from './members/EmptyMembersState';
 
 interface MembersPanelProps {
-  members: OrganizationMember[];
-  inviteMember: (organizationId: string, email: string, name: string, role: UserRole) => Promise<OrganizationMember | null>;
-  updateMemberRole: (memberId: string, role: UserRole) => Promise<void>;
-  removeMember: (memberId: string) => Promise<void>;
   organizationId: string;
-  isLoading: boolean;
 }
 
-const MembersPanel = ({ 
-  members, 
-  inviteMember, 
-  updateMemberRole, 
-  removeMember, 
-  organizationId,
-  isLoading 
-}: MembersPanelProps) => {
-  const [open, setOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+const MembersPanel: React.FC<MembersPanelProps> = ({ organizationId }) => {
   const { activeUser } = useAuth();
-  const currentUserId = activeUser?.id || '';
+  const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
 
-  const handleInviteMember = async (name: string, email: string, role: UserRole) => {
-    setIsSubmitting(true);
-    await inviteMember(organizationId, email, name, role);
-    setIsSubmitting(false);
-    setOpen(false);
+  const {
+    members,
+    inviteMember,
+    updateMemberRole,
+    removeMember,
+    isLoading,
+    error
+  } = useOrganizationMembers(organizationId);
+
+  // Filter active members and pending invites
+  const activeMembers = members.filter(member => member.status === 'active');
+  const pendingInvites = members.filter(member => member.status === 'pending');
+  
+  // Check if current user is admin
+  const currentMember = members.find(member => member.user_id === activeUser?.id);
+  const isAdmin = currentMember?.role === 'admin' || currentMember?.role === 'owner' || currentMember?.role === 'super_admin';
+
+  // Handle role change
+  const handleRoleChange = (memberId: string, newRole: UserRole) => {
+    updateMemberRole(memberId, newRole);
   };
 
-  const handleRoleChange = (member: OrganizationMember, role: UserRole) => {
-    updateMemberRole(member.id, role);
+  // Handle member removal
+  const handleRemoveMember = (memberId: string) => {
+    removeMember(memberId);
   };
 
-  const handleRemoveMember = (member: OrganizationMember) => {
-    removeMember(member.id);
-  };
+  // Show loading spinner while data is loading
+  if (isLoading) {
+    return (
+      <Card className="shadow-md h-full flex items-center justify-center">
+        <LoadingSpinner message="Loading team members..." />
+      </Card>
+    );
+  }
 
-  const pendingMembers = members.filter(m => m.status === 'pending');
-  const activeMembers = members.filter(m => m.status === 'active');
-
-  return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Team Members</h2>
-        <InviteMemberDialog 
-          open={open} 
-          setOpen={setOpen} 
-          isSubmitting={isSubmitting} 
-          onInvite={handleInviteMember} 
-        />
-      </div>
-
-      <Card>
+  // Show error message if there was an error
+  if (error) {
+    return (
+      <Card className="shadow-md h-full">
         <CardContent className="pt-6">
-          {members.length === 0 ? (
-            <EmptyMembersState />
-          ) : (
-            <>
-              <PendingInvitationsTable 
-                pendingMembers={pendingMembers} 
-                onRemoveMember={member => removeMember(member.id)} 
-              />
-              <ActiveMembersTable 
-                members={activeMembers}
-                currentUserId={currentUserId}
-                onChangeRole={handleRoleChange}
-                onRemoveMember={handleRemoveMember}
-              />
-            </>
-          )}
+          <div className="text-center">
+            <p className="text-red-500">Error loading team members. Please try again later.</p>
+          </div>
         </CardContent>
       </Card>
-    </div>
+    );
+  }
+
+  // Show empty state if there are no members
+  if (activeMembers.length === 0 && pendingInvites.length === 0) {
+    return (
+      <EmptyMembersState 
+        isAdmin={isAdmin} 
+        onInvite={() => setIsInviteDialogOpen(true)} 
+      />
+    );
+  }
+
+  return (
+    <Card className="shadow-md h-full">
+      <CardHeader className="pb-3 flex flex-row items-center justify-between">
+        <CardTitle className="text-xl font-semibold">Team Members</CardTitle>
+        {isAdmin && (
+          <Button 
+            onClick={() => setIsInviteDialogOpen(true)}
+            className="bg-candilingo-blue hover:bg-candilingo-darkblue"
+            size="sm"
+          >
+            <Plus className="mr-1 h-4 w-4" />
+            Invite
+          </Button>
+        )}
+      </CardHeader>
+      <CardContent className="pb-6 space-y-6">
+        {activeMembers.length > 0 && (
+          <div>
+            <h3 className="font-medium mb-3">Active Members</h3>
+            <ActiveMembersTable 
+              members={activeMembers} 
+              currentUserId={activeUser?.id || ''}
+              isAdmin={isAdmin}
+              onRoleChange={handleRoleChange}
+              onRemove={handleRemoveMember}
+            />
+          </div>
+        )}
+        
+        {pendingInvites.length > 0 && (
+          <div>
+            <h3 className="font-medium mb-3">Pending Invitations</h3>
+            <PendingInvitationsTable 
+              invites={pendingInvites}
+              isAdmin={isAdmin}
+              onRemove={handleRemoveMember}
+            />
+          </div>
+        )}
+      </CardContent>
+
+      {/* Invite Member Dialog */}
+      <InviteMemberDialog
+        open={isInviteDialogOpen}
+        onOpenChange={setIsInviteDialogOpen}
+        onInvite={inviteMember}
+      />
+    </Card>
   );
 };
 

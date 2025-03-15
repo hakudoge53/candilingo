@@ -30,7 +30,8 @@ export function useAuth() {
     handleLogin,
     handleRegistration,
     handleForgotPassword,
-    handleResetPassword
+    handleResetPassword,
+    handleLogout
   } = useAuthActions({
     setIsLoading,
     setPendingResetState
@@ -50,32 +51,6 @@ export function useAuth() {
     setPendingResetState,
     setMissingInformation
   });
-
-  // Logout handler
-  async function handleLogout() {
-    try {
-      setIsLoading(true);
-      await supabase.auth.signOut();
-      
-      // Reset state
-      setIsLoggedIn(false);
-      setActiveUser({
-        id: '',
-        email: '',
-        name: '',
-        membership_tier: 'Free',
-        preferred_language: 'en',
-        extension_settings: {}
-      });
-      
-      toast.success('Successfully logged out');
-    } catch (error) {
-      console.error('Error logging out:', error);
-      toast.error('Failed to log out');
-    } finally {
-      setIsLoading(false);
-    }
-  }
 
   return {
     isLoggedIn,
