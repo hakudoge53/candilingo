@@ -1,77 +1,70 @@
 
 import React from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
 import { OrganizationMember, ROLE_LABELS } from '@/types/organization';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Trash2, Clock } from "lucide-react";
 
 interface PendingInvitationsTableProps {
-  pendingMembers: OrganizationMember[];
-  onRemoveMember: (memberId: string) => Promise<void>;
+  invites: OrganizationMember[];
+  isAdmin: boolean;
+  onRemove: (inviteId: string) => void;
 }
 
-const PendingInvitationsTable = ({ pendingMembers, onRemoveMember }: PendingInvitationsTableProps) => {
-  if (pendingMembers.length === 0) {
-    return null;
-  }
-
+const PendingInvitationsTable: React.FC<PendingInvitationsTableProps> = ({
+  invites,
+  isAdmin,
+  onRemove
+}) => {
   return (
-    <div className="mb-6">
-      <h3 className="text-lg font-medium mb-3">Pending Invitations</h3>
-      <Table>
-        <TableHeader>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Invited Name</TableHead>
+          <TableHead>Email</TableHead>
+          <TableHead>Role</TableHead>
+          <TableHead>Status</TableHead>
+          {isAdmin && <TableHead className="text-right">Actions</TableHead>}
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {invites.length === 0 ? (
           <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Role</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableCell colSpan={isAdmin ? 5 : 4} className="text-center py-6 text-gray-500">
+              No pending invitations
+            </TableCell>
           </TableRow>
-        </TableHeader>
-        <TableBody>
-          {pendingMembers.map((member) => (
-            <TableRow key={member.id}>
-              <TableCell>{member.invited_name}</TableCell>
-              <TableCell>{member.invited_email}</TableCell>
-              <TableCell>{ROLE_LABELS[member.role]}</TableCell>
+        ) : (
+          invites.map(invite => (
+            <TableRow key={invite.id}>
+              <TableCell className="font-medium">
+                {invite.invited_name || 'No name provided'}
+              </TableCell>
+              <TableCell>{invite.invited_email || 'No email'}</TableCell>
+              <TableCell>{ROLE_LABELS[invite.role] || invite.role}</TableCell>
               <TableCell>
-                <Badge variant="outline" className="bg-yellow-50 text-yellow-800 border-yellow-200">
-                  Pending
+                <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 flex w-fit items-center gap-1">
+                  <Clock className="h-3 w-3" /> Pending
                 </Badge>
               </TableCell>
-              <TableCell className="text-right">
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="ghost" size="sm">
-                      <Trash2 className="h-4 w-4 text-red-500" />
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Cancel Invitation</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Are you sure you want to cancel this invitation? This action cannot be undone.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        className="bg-red-500 hover:bg-red-600"
-                        onClick={() => onRemoveMember(member.id)}
-                      >
-                        Delete
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </TableCell>
+              {isAdmin && (
+                <TableCell className="text-right">
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                    onClick={() => onRemove(invite.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </TableCell>
+              )}
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+          ))
+        )}
+      </TableBody>
+    </Table>
   );
 };
 

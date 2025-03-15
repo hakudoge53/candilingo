@@ -1,121 +1,80 @@
 
-import { useEffect } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Session } from '@supabase/supabase-js';
-import { User } from './types';
-import { toast } from 'sonner';
 
-interface AuthStateProps {
-  isLoggedIn: boolean;
-  isLoading: boolean;
-  activeUser: User;
-  missingInformation: string[];
-  handleLogout: () => Promise<void>;
-  setIsLoggedIn: (isLoggedIn: boolean) => void;
-  setIsLoading: (isLoading: boolean) => void;
-  setActiveUser: (user: User) => void;
-  setMissingInformation: (missing: string[]) => void;
-  pendingResetState: boolean;
-  setPendingResetState: (pendingReset: boolean) => void;
-}
+type SessionCallback = (event: 'SIGNED_IN' | 'SIGNED_OUT', session: any) => void;
 
-export const useAuthStateListener = (authState: AuthStateProps) => {
-  const { 
-    setIsLoggedIn, 
-    setIsLoading, 
-    setActiveUser, 
-    pendingResetState, 
-    setPendingResetState,
-    setMissingInformation
-  } = authState;
-
-  // Listen for auth state changes
+export const useAuthStateListener = (callback?: SessionCallback) => {
+  const [initialized, setInitialized] = useState(false);
+  
+  // Handle auth state change from storage events (e.g. for multiple tabs)
+  const handleStorageAuthChange = useCallback(
+    (event: StorageEvent) => {
+      if (event.key === 'supabase.auth.token') {
+        // Parse the auth token data if it exists
+        const authData = event.newValue ? JSON.parse(event.newValue) : null;
+        
+        // Check if user is logged in based on presence of token
+        const eventType = authData?.currentSession ? 'SIGNED_IN' : 'SIGNED_OUT';
+        const session = authData?.currentSession || null;
+        
+        // Call the provided callback with the new auth state
+        if (callback) {
+          callback(eventType, session);
+        }
+      }
+    },
+    [callback]
+  );
+  
   useEffect(() => {
-    setIsLoading(true);
-
-    // Initial session check
-    const checkSession = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          throw error;
-        }
-        
-        if (session) {
-          await handleSessionChange(session);
-        } else {
-          setIsLoggedIn(false);
-        }
-      } catch (error) {
-        console.error('Error checking auth session:', error);
-        setIsLoggedIn(false);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    // Handle authenticated user
-    const handleSessionChange = async (session: Session | null) => {
-      if (!session) {
-        setIsLoggedIn(false);
-        return;
-      }
-
-      try {
-        const userId = session.user.id;
-        
-        // Fetch the user profile data
-        const { data: userData, error: profileError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', userId)
-          .single();
-        
-        if (profileError) {
-          throw profileError;
-        }
-        
-        // Map user data
-        const user: User = {
-          id: userId,
-          email: session.user.email || '',
-          name: userData?.name || '',
-          membership_tier: userData?.membership_tier || 'Free',
-          preferred_language: userData?.preferred_language || 'en',
-          extension_settings: userData?.extension_settings || {},
-          avatar_url: userData?.avatar_url || null
-        };
-        
-        setActiveUser(user);
-        setIsLoggedIn(true);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-        setIsLoggedIn(false);
-      }
-    };
-
-    // Setup auth state change listener
+    // Set up the auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === "USER_UPDATED" && pendingResetState) {
-          // Handle password reset completion
-          setPendingResetState(false);
-          toast.success("Password reset successfully");
-          setIsLoading(false);
-        }
+      (event, session) => {
+        // Convert event string to expected format
+        const formattedEvent = event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' 
+          ? 'SIGNED_IN' 
+          : 'SIGNED_OUT';
         
-        await handleSessionChange(session);
-        setIsLoading(false);
+        // Call the provided callback with the new auth state
+        if (callback) {
+          callback(formattedEvent, session);
+        }
       }
     );
-
-    // Initial session check
-    checkSession();
-
-    // Cleanup subscription on unmount
+    
+    // Check initial session
+    const checkInitialSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      // If session exists, user is logged in
+      if (session) {
+        // Extract user claims if any are available
+        const userClaims = session.user.app_metadata || {};
+        
+        if (callback) {
+          callback('SIGNED_IN', session);
+        }
+      } else if (callback) {
+        callback('SIGNED_OUT', null);
+      }
+      
+      // Mark initialization as complete
+      setInitialized(true);
+    };
+    
+    // Add event listener for storage changes (for multi-tab support)
+    window.addEventListener('storage', handleStorageAuthChange);
+    
+    // Check initial session
+    checkInitialSession();
+    
+    // Clean up subscription and event listener when component unmounts
     return () => {
       subscription.unsubscribe();
+      window.removeEventListener('storage', handleStorageAuthChange);
     };
-  }, []);
+  }, [callback, handleStorageAuthChange]);
+  
+  return { initialized };
 };

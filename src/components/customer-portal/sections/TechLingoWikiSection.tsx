@@ -1,13 +1,13 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User } from '@/hooks/auth/types';
-import { useTechLingoWiki, TechLingoTerm } from "@/hooks/useTechLingoWiki";
-import { Card, CardContent } from "@/components/ui/card";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
-import AddTermDialog from '@/components/techlingo/AddTermDialog';
-import EditTermDialog from '@/components/techlingo/EditTermDialog';
+import { useTechLingoWiki } from '@/hooks/useTechLingoWiki';
 import SearchBar from '@/components/techlingo/SearchBar';
 import CategoryTabs from '@/components/techlingo/CategoryTabs';
+import TermCard from '@/components/techlingo/TermCard';
+import AddTermDialog from '@/components/techlingo/AddTermDialog';
+import EditTermDialog from '@/components/techlingo/EditTermDialog';
+import { toast } from 'sonner';
 
 interface TechLingoWikiSectionProps {
   user: User;
@@ -15,123 +15,125 @@ interface TechLingoWikiSectionProps {
 }
 
 const TechLingoWikiSection: React.FC<TechLingoWikiSectionProps> = ({ user, setLocalLoading }) => {
-  const { terms, isLoading, addTerm, updateTerm, deleteTerm, isAdding, isUpdating, isDeleting } = useTechLingoWiki();
   const [searchQuery, setSearchQuery] = useState('');
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [selectedTerm, setSelectedTerm] = useState<TechLingoTerm | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [showAddTermDialog, setShowAddTermDialog] = useState(false);
+  const [termToEdit, setTermToEdit] = useState<any | null>(null);
   
-  const isAdmin = user?.id && user.membership_tier === 'Admin';
-
-  // Group terms by category
-  const groupedTerms = terms.reduce((groups: Record<string, TechLingoTerm[]>, term) => {
-    const category = term.category || 'General';
-    if (!groups[category]) {
-      groups[category] = [];
-    }
-    groups[category].push(term);
-    return groups;
-  }, {});
-
-  const categories = Object.keys(groupedTerms).sort();
-
-  // Handle adding a term
-  const handleAddTerm = (values: any) => {
+  const { terms, categories, isLoading, addTerm, updateTerm, deleteTerm } = useTechLingoWiki();
+  
+  // Check if user is admin (for adding/editing terms)
+  const isAdmin = user.role === 'admin' || user.role === 'super_admin';
+  
+  const handleAddTerm = async (termData: any) => {
     setLocalLoading(true);
-    addTerm(values.term, values.definition, values.category, values.difficulty)
-      .finally(() => setLocalLoading(false));
-    setIsAddDialogOpen(false);
-  };
-
-  // Handle editing a term
-  const editTerm = (term: TechLingoTerm) => {
-    setSelectedTerm(term);
-    setIsEditDialogOpen(true);
-  };
-
-  // Handle updating a term
-  const handleUpdateTerm = (values: any) => {
-    if (selectedTerm) {
-      setLocalLoading(true);
-      updateTerm(selectedTerm.id, values.term, values.definition, values.category, values.difficulty)
-        .finally(() => setLocalLoading(false));
-      setIsEditDialogOpen(false);
+    try {
+      await addTerm(termData);
+      toast.success("Term added successfully!");
+      setShowAddTermDialog(false);
+    } catch (error) {
+      console.error("Error adding term:", error);
+      toast.error("Failed to add term. Please try again.");
     }
+    setLocalLoading(false);
   };
-
-  // Handle deleting a term
-  const handleDeleteTerm = (id: string) => {
+  
+  const handleUpdateTerm = async (id: string, termData: any) => {
     setLocalLoading(true);
-    deleteTerm(id)
-      .finally(() => setLocalLoading(false));
+    try {
+      await updateTerm(id, termData);
+      toast.success("Term updated successfully!");
+      setTermToEdit(null);
+    } catch (error) {
+      console.error("Error updating term:", error);
+      toast.error("Failed to update term. Please try again.");
+    }
+    setLocalLoading(false);
   };
-
+  
+  const handleDeleteTerm = async (id: string) => {
+    setLocalLoading(true);
+    try {
+      await deleteTerm(id);
+      toast.success("Term deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting term:", error);
+      toast.error("Failed to delete term. Please try again.");
+    }
+    setLocalLoading(false);
+  };
+  
+  // Filter terms based on search query and active category
+  const filteredTerms = terms.filter(term => {
+    const matchesSearch = 
+      term.term.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      term.definition.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesCategory = activeCategory ? term.category === activeCategory : true;
+    
+    return matchesSearch && matchesCategory;
+  });
+  
   return (
-    <div className="space-y-6">
-      <div>
+    <div>
+      <div className="mb-6">
         <h2 className="text-2xl font-bold mb-4">TechLingo Wiki</h2>
-        <p className="text-gray-600 mb-6">
-          Navigate technical terms and explanations to better understand the language of technology.
+        <p className="text-gray-600">
+          Browse and search through technical terms and their definitions.
         </p>
       </div>
-
-      {/* Search Bar and Add Term Button */}
+      
       <SearchBar 
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         isAdmin={isAdmin}
-        onAddTermClick={() => setIsAddDialogOpen(true)}
+        onAddTermClick={() => setShowAddTermDialog(true)}
       />
-
-      {/* Content */}
+      
+      <CategoryTabs 
+        categories={categories}
+        activeCategory={activeCategory}
+        setActiveCategory={setActiveCategory}
+      />
+      
       {isLoading ? (
-        <div className="flex justify-center py-12">
-          <LoadingSpinner message="Loading tech terms..." />
+        <div className="py-10 text-center">Loading terms...</div>
+      ) : filteredTerms.length === 0 ? (
+        <div className="py-10 text-center bg-gray-50 rounded-lg">
+          <p className="text-gray-500">No terms found matching your criteria.</p>
         </div>
-      ) : terms.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-10">
-            <p className="text-center text-gray-500 mb-4">
-              No terms in the database yet.
-            </p>
-            {isAdmin && (
-              <button 
-                className="px-4 py-2 bg-candilingo-pink text-white rounded-md hover:bg-candilingo-pink/90"
-                onClick={() => setIsAddDialogOpen(true)}
-              >
-                Add Your First Term
-              </button>
-            )}
-          </CardContent>
-        </Card>
       ) : (
-        <CategoryTabs 
-          groupedTerms={groupedTerms}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+          {filteredTerms.map(term => (
+            <TermCard
+              key={term.id}
+              term={term}
+              isAdmin={isAdmin}
+              onEdit={() => setTermToEdit(term)}
+              onDelete={() => handleDeleteTerm(term.id)}
+            />
+          ))}
+        </div>
+      )}
+      
+      {/* Add Term Dialog */}
+      <AddTermDialog
+        open={showAddTermDialog}
+        onClose={() => setShowAddTermDialog(false)}
+        onAdd={handleAddTerm}
+        categories={categories}
+      />
+      
+      {/* Edit Term Dialog */}
+      {termToEdit && (
+        <EditTermDialog
+          open={!!termToEdit}
+          onClose={() => setTermToEdit(null)}
+          onUpdate={(data) => handleUpdateTerm(termToEdit.id, data)}
+          term={termToEdit}
           categories={categories}
-          searchQuery={searchQuery}
-          isAdmin={isAdmin}
-          onEditTerm={editTerm}
-          onDeleteTerm={handleDeleteTerm}
-          onAddTerm={() => setIsAddDialogOpen(true)}
         />
       )}
-
-      {/* Add Term Dialog */}
-      <AddTermDialog 
-        isOpen={isAddDialogOpen}
-        onOpenChange={setIsAddDialogOpen}
-        onSubmit={handleAddTerm}
-        isAdding={isAdding}
-      />
-
-      {/* Edit Term Dialog */}
-      <EditTermDialog 
-        isOpen={isEditDialogOpen}
-        onOpenChange={setIsEditDialogOpen}
-        onSubmit={handleUpdateTerm}
-        isUpdating={isUpdating}
-        selectedTerm={selectedTerm}
-      />
     </div>
   );
 };

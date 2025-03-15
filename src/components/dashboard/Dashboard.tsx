@@ -1,31 +1,50 @@
 
 import React, { useState, useEffect } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
-import OrganizationPanel from './OrganizationPanel';
-import GlossaryPanel from './GlossaryPanel';
-import MembersPanel from './MembersPanel';
-import DashboardTour from './DashboardTour';
-import { useOrganizations } from '@/hooks/useOrganizations';
-import { useGlossaries } from '@/hooks/useGlossaries';
+import { useNavigate } from 'react-router-dom';
 import DashboardHeader from './DashboardHeader';
-import { Loader2 } from 'lucide-react';
+import GlossaryPanel from './GlossaryPanel';
+import OrganizationPanel from './OrganizationPanel';
+import MembersPanel from './MembersPanel'; 
+import { useAuth } from '@/hooks/useAuth';
+import { useGlossaries } from '@/hooks/useGlossaries';
+import { useOrganizations } from '@/hooks/useOrganizations';
+import { toast } from 'sonner';
+import DashboardTour from './DashboardTour';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState('organizations');
+  const navigate = useNavigate();
+  const { activeUser, isLoggedIn } = useAuth();
+  const [activeTab, setActiveTab] = useState('glossaries');
   const [showTour, setShowTour] = useState(false);
+  
+  // Check if user is logged in
+  useEffect(() => {
+    if (!isLoggedIn) {
+      toast.error("Please log in to access the dashboard");
+      navigate('/customer-portal');
+    }
+  }, [isLoggedIn, navigate]);
+  
+  // If no active user, show loading state
+  if (!activeUser) {
+    return <div className="text-center py-8">Loading dashboard...</div>;
+  }
+  
+  // Get organization ID if available
   const { 
     organizations, 
-    activeOrganization, 
-    setActiveOrganization, 
-    members, 
-    createOrganization, 
-    inviteMember, 
-    updateMemberRole, 
-    removeMember, 
-    isLoading: isOrgLoading 
-  } = useOrganizations();
+    activeOrganization,
+    organizationMembers,
+    inviteMember,
+    updateMemberRole,
+    removeMember,
+    isLoading: isOrgLoading
+  } = useOrganizations(activeUser.id);
   
+  const organizationId = activeOrganization?.id;
+  
+  // Fetch glossaries for the organization
   const {
     glossaries,
     activeGlossary,
@@ -38,103 +57,81 @@ const Dashboard = () => {
     updateTerm,
     deleteTerm,
     isLoading: isGlossaryLoading
-  } = useGlossaries(activeOrganization?.id);
-
-  const isLoading = isOrgLoading || isGlossaryLoading;
-
-  // Check if this is a new user (first visit to the dashboard)
+  } = useGlossaries(organizationId);
+  
+  // Start the tour if it's the user's first time
   useEffect(() => {
-    const hasSeenTour = localStorage.getItem('hasSeenDashboardTour');
-    if (!hasSeenTour && !isLoading) {
+    // Check if first time visiting dashboard
+    const hasSeenTour = localStorage.getItem('candilingo-dashboard-tour-seen');
+    if (!hasSeenTour && isLoggedIn) {
       setShowTour(true);
-      localStorage.setItem('hasSeenDashboardTour', 'true');
+      localStorage.setItem('candilingo-dashboard-tour-seen', 'true');
     }
-  }, [isLoading]);
-
+  }, [isLoggedIn]);
+  
   return (
-    <div className="w-full">
+    <div className="space-y-6">
       <DashboardHeader 
-        activeOrganization={activeOrganization} 
-        organizations={organizations}
-        onOrganizationChange={setActiveOrganization}
+        user={activeUser}
+        organization={activeOrganization}
       />
       
-      {isLoading && !activeOrganization && (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-techlex-blue" />
-        </div>
-      )}
+      <Tabs 
+        value={activeTab} 
+        onValueChange={setActiveTab}
+        className="space-y-4"
+      >
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="glossaries">Glossaries</TabsTrigger>
+          <TabsTrigger value="organization">Organization</TabsTrigger>
+          <TabsTrigger value="members">Team Members</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="glossaries" className="space-y-4">
+          <GlossaryPanel 
+            glossaries={glossaries}
+            activeGlossary={activeGlossary}
+            setActiveGlossary={setActiveGlossary}
+            terms={terms}
+            createGlossary={createGlossary}
+            updateGlossary={updateGlossary}
+            deleteGlossary={deleteGlossary}
+            addTerm={addTerm}
+            updateTerm={updateTerm}
+            deleteTerm={deleteTerm}
+            isLoading={isGlossaryLoading}
+            organizationId={organizationId}
+          />
+        </TabsContent>
+        
+        <TabsContent value="organization" className="space-y-4">
+          <OrganizationPanel
+            organizations={organizations}
+            activeOrganization={activeOrganization}
+            isLoading={isOrgLoading}
+            userId={activeUser.id}
+          />
+        </TabsContent>
+        
+        <TabsContent value="members" className="space-y-4">
+          <MembersPanel
+            members={organizationMembers}
+            inviteMember={(name, email, role) => inviteMember(organizationId || '', email, name, role)}
+            updateMemberRole={updateMemberRole}
+            removeMember={removeMember}
+            organizationId={organizationId || ''}
+            isLoading={isOrgLoading}
+          />
+        </TabsContent>
+      </Tabs>
       
-      {!isLoading && organizations.length === 0 && (
-        <Card className="mb-6">
-          <CardContent className="pt-6">
-            <div className="text-center p-6">
-              <h3 className="text-lg font-medium mb-2">Welcome to TechLex Dashboard</h3>
-              <p className="text-gray-500 mb-6">
-                Create your first organization to get started with glossaries and team management.
-              </p>
-              <OrganizationPanel 
-                organizations={[]} 
-                createOrganization={createOrganization} 
-                isLoading={isLoading}
-              />
-            </div>
-          </CardContent>
-        </Card>
+      {showTour && (
+        <DashboardTour
+          onClose={() => setShowTour(false)}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+        />
       )}
-      
-      {activeOrganization && (
-        <Tabs 
-          value={activeTab} 
-          onValueChange={setActiveTab}
-          className="w-full"
-        >
-          <TabsList className="grid grid-cols-3 mb-6">
-            <TabsTrigger value="organizations">Organization</TabsTrigger>
-            <TabsTrigger value="glossaries">Glossaries</TabsTrigger>
-            <TabsTrigger value="members">Team Members</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="organizations">
-            <OrganizationPanel 
-              organizations={organizations} 
-              createOrganization={createOrganization} 
-              isLoading={isLoading}
-            />
-          </TabsContent>
-          
-          <TabsContent value="glossaries">
-            <GlossaryPanel 
-              glossaries={glossaries}
-              activeGlossary={activeGlossary}
-              setActiveGlossary={setActiveGlossary}
-              terms={terms}
-              createGlossary={createGlossary}
-              updateGlossary={updateGlossary}
-              deleteGlossary={deleteGlossary}
-              addTerm={addTerm}
-              updateTerm={updateTerm}
-              deleteTerm={deleteTerm}
-              organizationId={activeOrganization.id}
-              isLoading={isLoading}
-            />
-          </TabsContent>
-          
-          <TabsContent value="members">
-            <MembersPanel 
-              members={members}
-              inviteMember={inviteMember}
-              updateMemberRole={updateMemberRole}
-              removeMember={removeMember}
-              organizationId={activeOrganization.id}
-              isLoading={isLoading}
-            />
-          </TabsContent>
-        </Tabs>
-      )}
-      
-      {/* Dashboard Tour for new users */}
-      {showTour && <DashboardTour />}
     </div>
   );
 };
