@@ -39,6 +39,15 @@ export interface User {
   };
 }
 
+export interface LoginFormValues {
+  email: string;
+  password: string;
+}
+
+export interface ResetPasswordFormValues {
+  email: string;
+}
+
 export interface AuthContextType {
   session: AuthSession | null;
   user: User | null;
@@ -46,4 +55,6 @@ export interface AuthContextType {
   error: Error | null;
   isLoggedIn: boolean;
   activeUser: User | null;
+  handleLogout: () => Promise<void>;
+  missingInformation?: boolean;
 }

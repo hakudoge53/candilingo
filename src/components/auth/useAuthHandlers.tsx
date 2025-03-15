@@ -2,15 +2,15 @@
 import { useState, useCallback } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { LoginFormValues } from './LoginFormFields';
-import { useAuth } from "@/hooks/useAuth";
+import { LoginFormValues } from '@/hooks/auth/types';
+import { useAuth } from "@/hooks/auth/useAuth";
 
 export const useAuthHandlers = (
   setIsLoading: (loading: boolean) => void,
   setLoginSuccess: (success: boolean) => void,
   setResetEmailSent: (sent: boolean) => void
 ) => {
-  const { missingInformation, activeUser } = useAuth();
+  const { activeUser } = useAuth();
   const [orgName, setOrgName] = useState("My Organization");
 
   const onLoginSubmit = useCallback(async (values: LoginFormValues) => {

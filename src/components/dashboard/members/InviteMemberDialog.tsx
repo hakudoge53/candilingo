@@ -16,7 +16,7 @@ export interface InviteMemberDialogProps {
 const InviteMemberDialog: React.FC<InviteMemberDialogProps> = ({ isOpen, onClose, onInvite }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState<UserRole>('member');
+  const [role, setRole] = useState<UserRole>('employee');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,7 +37,7 @@ const InviteMemberDialog: React.FC<InviteMemberDialogProps> = ({ isOpen, onClose
   const resetForm = () => {
     setName('');
     setEmail('');
-    setRole('member');
+    setRole('employee');
   };
 
   return (

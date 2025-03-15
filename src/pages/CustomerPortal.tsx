@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth/useAuth';
 import { useLocation } from 'react-router-dom';
 import PortalHeader from '@/components/customer-portal/PortalHeader';
 import CustomerPortalContent from '@/components/customer-portal/CustomerPortalContent';
