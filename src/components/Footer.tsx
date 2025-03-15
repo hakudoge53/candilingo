@@ -8,7 +8,13 @@ const Footer = () => {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-1">
-            <h3 className="text-lg font-semibold mb-3">Candilingo</h3>
+            <div className="mb-3">
+              <img 
+                src="/public/lovable-uploads/cbe6d14b-3d9f-4814-af61-b96347790cb1.png" 
+                alt="Candilingo" 
+                className="h-8"
+              />
+            </div>
             <p className="text-sm text-gray-600">
               Decoding technical jargon to help recruiters make better technical hiring decisions.
             </p>
