@@ -30,7 +30,7 @@ const BrowserContent = ({ loaded }: BrowserContentProps) => {
         "transition-opacity duration-1000",
         loaded ? "opacity-100" : "opacity-0"
       )}>
-        <ScrollArea className="h-[420px] pr-2">
+        <ScrollArea className="h-[550px] pr-2">
           {/* Slide 1: Developer CV */}
           <div className={`${activeSlide === 0 ? 'block' : 'hidden'}`}>
             <DeveloperCVSlide />
