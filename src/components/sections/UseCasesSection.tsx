@@ -1,3 +1,4 @@
+
 import { TabsContent, TabsList, TabsTrigger, Tabs } from "@/components/ui/tabs";
 import TermBadge from "@/components/TermBadge";
 import { BookOpenText, Users } from "lucide-react";
@@ -11,7 +12,7 @@ const UseCasesSection = () => {
             Perfect for Recruitment Professionals
           </h2>
           <p className="text-lg text-gray-600">
-            HighlightHire is designed to meet the specific needs of recruitment agencies.
+            Candilingo is designed to meet the specific needs of recruitment agencies.
           </p>
         </div>
         
@@ -26,27 +27,27 @@ const UseCasesSection = () => {
           
           <TabsContent value="cv-screening" className="animate-fade-in">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-              <div className="lg:order-1 order-2">
-                <h3 className="text-2xl font-semibold mb-4">Efficient CV Screening</h3>
-                <p className="text-gray-600 mb-4">
+              <div className="lg:order-1 order-2 bg-gradient-to-br from-candilingo-lightteal/30 to-candilingo-lightpurple/20 p-6 rounded-xl shadow-md border border-candilingo-teal/20">
+                <h3 className="text-2xl font-semibold mb-4 text-candilingo-purple">Efficient CV Screening</h3>
+                <p className="text-gray-700 mb-4">
                   Quickly understand technical qualifications without specialized knowledge. TechLex EU helps you:
                 </p>
                 <ul className="space-y-3">
                   <li className="flex items-start">
-                    <CheckCircleIcon className="w-5 h-5 text-techlex-blue mt-0.5 flex-shrink-0" />
-                    <span className="ml-2">Identify key technical skills and experience</span>
+                    <CheckCircleIcon className="w-5 h-5 text-candilingo-teal mt-0.5 flex-shrink-0" />
+                    <span className="ml-2 text-gray-800">Identify key technical skills and experience</span>
                   </li>
                   <li className="flex items-start">
-                    <CheckCircleIcon className="w-5 h-5 text-techlex-blue mt-0.5 flex-shrink-0" />
-                    <span className="ml-2">Understand technical acronyms and specialized terminology</span>
+                    <CheckCircleIcon className="w-5 h-5 text-candilingo-coral mt-0.5 flex-shrink-0" />
+                    <span className="ml-2 text-gray-800">Understand technical acronyms and specialized terminology</span>
                   </li>
                   <li className="flex items-start">
-                    <CheckCircleIcon className="w-5 h-5 text-techlex-blue mt-0.5 flex-shrink-0" />
-                    <span className="ml-2">Compare candidates' qualifications accurately</span>
+                    <CheckCircleIcon className="w-5 h-5 text-candilingo-pink mt-0.5 flex-shrink-0" />
+                    <span className="ml-2 text-gray-800">Compare candidates' qualifications accurately</span>
                   </li>
                   <li className="flex items-start">
-                    <CheckCircleIcon className="w-5 h-5 text-techlex-blue mt-0.5 flex-shrink-0" />
-                    <span className="ml-2">Save time on manual research of technical terms</span>
+                    <CheckCircleIcon className="w-5 h-5 text-candilingo-purple mt-0.5 flex-shrink-0" />
+                    <span className="ml-2 text-gray-800">Save time on manual research of technical terms</span>
                   </li>
                 </ul>
               </div>
@@ -54,7 +55,7 @@ const UseCasesSection = () => {
                 <div className="relative w-full max-w-md hero-glass rounded-xl overflow-hidden shadow-lg">
                   <div className="p-6">
                     <div className="mb-4 flex items-center">
-                      <FileIcon className="w-5 h-5 text-techlex-blue mr-2" />
+                      <FileIcon className="w-5 h-5 text-candilingo-teal mr-2" />
                       <h4 className="font-medium">Resume_JaneDoe_Frontend.pdf</h4>
                     </div>
                     <p className="text-gray-700 leading-relaxed">
@@ -68,23 +69,23 @@ const UseCasesSection = () => {
           
           <TabsContent value="interviews" className="animate-fade-in">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-              <div>
-                <h3 className="text-2xl font-semibold mb-4">Confident Technical Interviews</h3>
-                <p className="text-gray-600 mb-4">
+              <div className="bg-gradient-to-br from-candilingo-lightpink/30 to-candilingo-purple/20 p-6 rounded-xl shadow-md border border-candilingo-pink/20">
+                <h3 className="text-2xl font-semibold mb-4 text-candilingo-pink">Confident Technical Interviews</h3>
+                <p className="text-gray-700 mb-4">
                   Conduct more effective technical interviews, even without specialized knowledge:
                 </p>
                 <ul className="space-y-3">
                   <li className="flex items-start">
-                    <CheckCircleIcon className="w-5 h-5 text-techlex-blue mt-0.5 flex-shrink-0" />
-                    <span className="ml-2">Prepare intelligent questions based on candidate's technical background</span>
+                    <CheckCircleIcon className="w-5 h-5 text-candilingo-pink mt-0.5 flex-shrink-0" />
+                    <span className="ml-2 text-gray-800">Prepare intelligent questions based on candidate's technical background</span>
                   </li>
                   <li className="flex items-start">
-                    <CheckCircleIcon className="w-5 h-5 text-techlex-blue mt-0.5 flex-shrink-0" />
-                    <span className="ml-2">Understand candidate responses during technical discussions</span>
+                    <CheckCircleIcon className="w-5 h-5 text-candilingo-purple mt-0.5 flex-shrink-0" />
+                    <span className="ml-2 text-gray-800">Understand candidate responses during technical discussions</span>
                   </li>
                   <li className="flex items-start">
-                    <CheckCircleIcon className="w-5 h-5 text-techlex-blue mt-0.5 flex-shrink-0" />
-                    <span className="ml-2">Assess technical competencies more accurately</span>
+                    <CheckCircleIcon className="w-5 h-5 text-candilingo-teal mt-0.5 flex-shrink-0" />
+                    <span className="ml-2 text-gray-800">Assess technical competencies more accurately</span>
                   </li>
                 </ul>
               </div>
@@ -92,7 +93,7 @@ const UseCasesSection = () => {
                 <div className="relative w-full max-w-md hero-glass rounded-xl overflow-hidden shadow-lg">
                   <div className="p-6">
                     <div className="mb-4 flex items-center">
-                      <Users className="w-5 h-5 text-techlex-blue mr-2" />
+                      <Users className="w-5 h-5 text-candilingo-pink mr-2" />
                       <h4 className="font-medium">Interview Notes</h4>
                     </div>
                     <p className="text-gray-700 leading-relaxed">
@@ -106,23 +107,23 @@ const UseCasesSection = () => {
           
           <TabsContent value="onboarding" className="animate-fade-in">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-              <div className="lg:order-1 order-2">
-                <h3 className="text-2xl font-semibold mb-4">Streamlined Team Onboarding</h3>
-                <p className="text-gray-600 mb-4">
+              <div className="lg:order-1 order-2 bg-gradient-to-br from-candilingo-coral/30 to-candilingo-teal/20 p-6 rounded-xl shadow-md border border-candilingo-coral/20">
+                <h3 className="text-2xl font-semibold mb-4 text-candilingo-coral">Streamlined Team Onboarding</h3>
+                <p className="text-gray-700 mb-4">
                   Help new recruiters get up to speed quickly with technology sectors:
                 </p>
                 <ul className="space-y-3">
                   <li className="flex items-start">
-                    <CheckCircleIcon className="w-5 h-5 text-techlex-blue mt-0.5 flex-shrink-0" />
-                    <span className="ml-2">Create custom glossaries specific to your recruitment focus</span>
+                    <CheckCircleIcon className="w-5 h-5 text-candilingo-coral mt-0.5 flex-shrink-0" />
+                    <span className="ml-2 text-gray-800">Create custom glossaries specific to your recruitment focus</span>
                   </li>
                   <li className="flex items-start">
-                    <CheckCircleIcon className="w-5 h-5 text-techlex-blue mt-0.5 flex-shrink-0" />
-                    <span className="ml-2">Build a knowledge base of industry-specific terminology</span>
+                    <CheckCircleIcon className="w-5 h-5 text-candilingo-teal mt-0.5 flex-shrink-0" />
+                    <span className="ml-2 text-gray-800">Build a knowledge base of industry-specific terminology</span>
                   </li>
                   <li className="flex items-start">
-                    <CheckCircleIcon className="w-5 h-5 text-techlex-blue mt-0.5 flex-shrink-0" />
-                    <span className="ml-2">Reduce training time for new technical recruiters</span>
+                    <CheckCircleIcon className="w-5 h-5 text-candilingo-purple mt-0.5 flex-shrink-0" />
+                    <span className="ml-2 text-gray-800">Reduce training time for new technical recruiters</span>
                   </li>
                 </ul>
               </div>
@@ -130,7 +131,7 @@ const UseCasesSection = () => {
                 <div className="relative w-full max-w-md hero-glass rounded-xl overflow-hidden shadow-lg">
                   <div className="p-6">
                     <div className="mb-4 flex items-center">
-                      <BookOpenText className="w-5 h-5 text-techlex-blue mr-2" />
+                      <BookOpenText className="w-5 h-5 text-candilingo-coral mr-2" />
                       <h4 className="font-medium">Company Wiki</h4>
                     </div>
                     <p className="text-gray-700 leading-relaxed">
