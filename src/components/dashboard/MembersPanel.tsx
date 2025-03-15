@@ -37,8 +37,12 @@ const MembersPanel = ({
     setOpen(false);
   };
 
-  const handleRoleChange = (memberId: string, role: UserRole) => {
-    updateMemberRole(memberId, role);
+  const handleRoleChange = (member: OrganizationMember, role: UserRole) => {
+    updateMemberRole(member.id, role);
+  };
+
+  const handleRemoveMember = (member: OrganizationMember) => {
+    removeMember(member.id);
   };
 
   const pendingMembers = members.filter(m => m.status === 'pending');
@@ -64,13 +68,13 @@ const MembersPanel = ({
             <>
               <PendingInvitationsTable 
                 pendingMembers={pendingMembers} 
-                onRemoveMember={memberId => removeMember(memberId)} 
+                onRemoveMember={member => removeMember(member.id)} 
               />
               <ActiveMembersTable 
                 members={activeMembers}
                 currentUserId={currentUserId}
                 onChangeRole={handleRoleChange}
-                onRemoveMember={member => removeMember(member.id)}
+                onRemoveMember={handleRemoveMember}
               />
             </>
           )}

@@ -33,7 +33,10 @@ export const useTechLingoWiki = (searchTerm?: string) => {
         const { data, error: fetchError } = await query;
 
         if (fetchError) throw fetchError;
-        setTerms(data || []);
+        
+        // Cast the data to the correct type
+        const typedData = data as unknown as TechLingoWikiTerm[];
+        setTerms(typedData || []);
       } catch (err: any) {
         console.error('Error fetching TechLingo terms:', err);
         setError(err.message);
