@@ -51,7 +51,7 @@ const TermBadge = ({ children, definition, className, term }: TermBadgeProps) =>
           <TooltipContent 
             side="top" 
             align="start"
-            className="max-w-[300px] text-sm bg-white border border-gray-200 shadow-lg rounded-lg p-3"
+            className="max-w-[300px] text-sm bg-white border border-gray-200 shadow-lg rounded-lg p-3 z-50"
             sideOffset={5}
             alignOffset={5}
           >
