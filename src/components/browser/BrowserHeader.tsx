@@ -14,7 +14,11 @@ const BrowserHeader = () => {
         <div className="flex items-center w-full">
           <Search className="w-3.5 h-3.5 mr-2 text-gray-400" />
           <span className="truncate">resume-review.candilingo.com</span>
-          <BookOpen className="w-4 h-4 ml-auto text-candilingo-pink" />
+          <img 
+            src="/lovable-uploads/c4cf5eba-6c4b-4b24-9ef1-840fd66a9bd6.png" 
+            alt="Candilingo" 
+            className="w-4 h-4 ml-auto" 
+          />
         </div>
       </div>
     </div>

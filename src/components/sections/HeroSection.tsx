@@ -1,9 +1,10 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from 'sonner';
 import HeroImageSection from "@/components/HeroImageSection";
-import { MailIcon, Play, BookOpen } from "lucide-react";
+import { MailIcon, Play } from "lucide-react";
 
 const HeroSection = ({ onShowVideo }: { onShowVideo?: () => void }) => {
   const [email, setEmail] = useState('');
@@ -32,11 +33,12 @@ const HeroSection = ({ onShowVideo }: { onShowVideo?: () => void }) => {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <div className="lg:pr-10 animate-fade-in">
-            <div className="mb-8 flex items-center">
-              <div className="flex items-center gap-3">
-                <BookOpen className="h-12 w-12 text-candilingo-pink" />
-                <span className="font-bold text-3xl text-candilingo-purple">Candilingo</span>
-              </div>
+            <div className="mb-8">
+              <img 
+                src="/lovable-uploads/c4cf5eba-6c4b-4b24-9ef1-840fd66a9bd6.png" 
+                alt="Candilingo" 
+                className="h-16 w-auto" 
+              />
             </div>
             <div className="flex flex-wrap items-center gap-2 mb-4">
               <span className="px-3 py-1 bg-candilingo-pink bg-opacity-20 text-candilingo-pink rounded-full text-sm font-medium">

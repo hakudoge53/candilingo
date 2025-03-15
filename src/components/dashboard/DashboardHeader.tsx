@@ -23,14 +23,28 @@ const DashboardHeader = ({
   if (!activeOrganization || organizations.length === 0) {
     return (
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-techlex-blue">Dashboard</h2>
+        <div className="flex items-center">
+          <img 
+            src="/lovable-uploads/3ba829c2-54b7-4152-b767-9eb28429dbd7.png" 
+            alt="Candilingo" 
+            className="h-8 w-auto mr-3" 
+          />
+          <h2 className="text-2xl font-bold text-candilingo-purple">Dashboard</h2>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-      <h2 className="text-2xl font-bold text-techlex-blue">Dashboard</h2>
+      <div className="flex items-center">
+        <img 
+          src="/lovable-uploads/3ba829c2-54b7-4152-b767-9eb28429dbd7.png" 
+          alt="Candilingo" 
+          className="h-8 w-auto mr-3" 
+        />
+        <h2 className="text-2xl font-bold text-candilingo-purple">Dashboard</h2>
+      </div>
       
       <div className="flex items-center space-x-2">
         <span className="text-sm text-gray-500">Organization:</span>

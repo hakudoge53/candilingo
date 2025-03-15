@@ -27,7 +27,11 @@ const Navbar = () => {
       <div className="container mx-auto px-4 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="text-2xl font-bold text-white">
-          Candilingo
+          <img 
+            src="/lovable-uploads/c4cf5eba-6c4b-4b24-9ef1-840fd66a9bd6.png" 
+            alt="Candilingo" 
+            className="h-12 w-auto" 
+          />
         </Link>
 
         {/* Navigation Links */}
@@ -67,7 +71,13 @@ const Navbar = () => {
           </SheetTrigger>
           <SheetContent side="left" className="bg-white">
             <SheetHeader>
-              <SheetTitle>Candilingo</SheetTitle>
+              <SheetTitle>
+                <img 
+                  src="/lovable-uploads/3ba829c2-54b7-4152-b767-9eb28429dbd7.png" 
+                  alt="Candilingo" 
+                  className="h-10 w-auto" 
+                />
+              </SheetTitle>
               <SheetDescription>
                 Decoding technical jargon to help recruiters make better technical hiring decisions.
               </SheetDescription>
