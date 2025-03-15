@@ -10,7 +10,7 @@ interface JobEntryProps {
 
 const JobEntry = ({ title, company, period, description }: JobEntryProps) => {
   return (
-    <div className="ml-1 mb-4 bg-gray-50 p-3 rounded-md border-l-2 border-candilingo-purple">
+    <div className="ml-1 mb-4 bg-gray-50 p-3 rounded-md border-l-2 border-candilingo-purple shadow-sm">
       <div className="flex justify-between items-start mb-1">
         <p className="font-medium text-candilingo-purple">{title}, {company}</p>
         <p className="text-xs text-gray-500 bg-white px-2 py-0.5 rounded border border-gray-100">{period}</p>

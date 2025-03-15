@@ -16,12 +16,12 @@ const DeveloperCVSlide = () => {
         </div>
       </div>
       
-      <div className="space-y-6 text-gray-700 text-sm border border-gray-100 rounded-lg p-4 shadow-sm">
+      <div className="space-y-6 text-gray-700 text-sm border-2 border-gray-200 rounded-lg p-5 shadow-sm">
         <DeveloperProfile />
-        <div className="border-t border-gray-100 pt-4">
+        <div className="border-t-2 border-gray-200 pt-5">
           <SkillsSection />
         </div>
-        <div className="border-t border-gray-100 pt-4">
+        <div className="border-t-2 border-gray-200 pt-5">
           <ExperienceSection />
         </div>
       </div>
