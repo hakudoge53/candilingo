@@ -9,6 +9,7 @@ import TermBadge from "@/components/TermBadge";
 import TooltipOverlay from "@/components/browser/TooltipOverlay";
 import HowItWorksSection from "@/components/sections/HowItWorksSection";
 import CTASection from "@/components/sections/CTASection";
+import IndustryGlossaries from "@/components/glossary/IndustryGlossaries";
 
 const HowItWorks = () => {
   return (
@@ -56,8 +57,8 @@ const HowItWorks = () => {
           </div>
           
           <div className="relative mb-12 border border-gray-200 p-6 rounded-lg bg-white">
-            <h2 className="text-2xl font-bold mb-6 text-candilingo-purple">See It In Action</h2>
-            <p className="mb-4">
+            <h2 className="text-2xl font-bold mb-6 text-candilingo-purple text-center">See It In Action</h2>
+            <p className="mb-8 text-center">
               When browsing technical profiles or documentation, Candilingo highlights key terms and provides instant definitions:
             </p>
             
@@ -77,10 +78,12 @@ const HowItWorks = () => {
               />
             </div>
             
-            <p className="text-gray-600 italic text-sm">
+            <p className="text-gray-600 italic text-sm text-center">
               This example shows how Candilingo makes it easy to understand technical terms in context.
             </p>
           </div>
+          
+          <IndustryGlossaries />
         </div>
         
         <HowItWorksSection />

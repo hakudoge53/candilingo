@@ -2,6 +2,7 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface InstallationGuideProps {
   handleWebExtensionCheckout: (browser: string) => Promise<void>;
@@ -17,7 +18,9 @@ const InstallationGuide = ({ handleWebExtensionCheckout }: InstallationGuideProp
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-gray-50 p-4 rounded-lg border">
-            <h3 className="text-lg font-semibold mb-2 text-candilingo-purple">Chrome Installation</h3>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-lg font-semibold text-candilingo-purple">Chrome Installation</h3>
+            </div>
             <ol className="list-decimal list-inside space-y-2 text-sm">
               <li>Complete the purchase process</li>
               <li>Download the extension from the Chrome Web Store</li>
@@ -35,7 +38,12 @@ const InstallationGuide = ({ handleWebExtensionCheckout }: InstallationGuideProp
           </div>
           
           <div className="bg-gray-50 p-4 rounded-lg border">
-            <h3 className="text-lg font-semibold mb-2 text-candilingo-purple">Firefox Installation</h3>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-lg font-semibold text-candilingo-purple">Firefox Installation</h3>
+              <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-200">
+                Coming Soon
+              </Badge>
+            </div>
             <ol className="list-decimal list-inside space-y-2 text-sm">
               <li>Complete the purchase process</li>
               <li>Visit the Firefox Add-ons page for Candilingo</li>
@@ -47,13 +55,19 @@ const InstallationGuide = ({ handleWebExtensionCheckout }: InstallationGuideProp
               size="sm" 
               className="mt-3 w-full"
               onClick={() => handleWebExtensionCheckout('firefox')}
+              disabled
             >
-              Get Firefox Add-on
+              Coming Soon
             </Button>
           </div>
           
           <div className="bg-gray-50 p-4 rounded-lg border">
-            <h3 className="text-lg font-semibold mb-2 text-candilingo-purple">Edge Installation</h3>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-lg font-semibold text-candilingo-purple">Edge Installation</h3>
+              <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-200">
+                Coming Soon
+              </Badge>
+            </div>
             <ol className="list-decimal list-inside space-y-2 text-sm">
               <li>Complete the purchase process</li>
               <li>Open the Edge Add-ons page for Candilingo</li>
@@ -65,13 +79,19 @@ const InstallationGuide = ({ handleWebExtensionCheckout }: InstallationGuideProp
               size="sm" 
               className="mt-3 w-full"
               onClick={() => handleWebExtensionCheckout('edge')}
+              disabled
             >
-              Get Edge Add-on
+              Coming Soon
             </Button>
           </div>
           
           <div className="bg-gray-50 p-4 rounded-lg border">
-            <h3 className="text-lg font-semibold mb-2 text-candilingo-purple">Safari Installation</h3>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-lg font-semibold text-candilingo-purple">Safari Installation</h3>
+              <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-200">
+                Coming Soon
+              </Badge>
+            </div>
             <ol className="list-decimal list-inside space-y-2 text-sm">
               <li>Complete the purchase process</li>
               <li>Open Safari and go to Preferences</li>
@@ -83,8 +103,9 @@ const InstallationGuide = ({ handleWebExtensionCheckout }: InstallationGuideProp
               size="sm" 
               className="mt-3 w-full"
               onClick={() => handleWebExtensionCheckout('safari')}
+              disabled
             >
-              Get Safari Extension
+              Coming Soon
             </Button>
           </div>
         </div>
