@@ -68,13 +68,16 @@ serve(async (req) => {
       
       if (customPrice) {
         // For a custom price, we need to use price_data
+        // Update the enterprise price to reflect 50% off
+        const enterprisePrice = productName === "Enterprise Plan" ? 99.50 : customPrice;
+        
         Object.assign(lineItem, {
           price_data: {
             currency: 'eur',
             product_data: {
               name: productName || 'Candilingo Subscription',
             },
-            unit_amount: customPrice * 100, // Convert to cents
+            unit_amount: enterprisePrice * 100, // Convert to cents
             recurring: {
               interval: 'month',
             },

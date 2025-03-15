@@ -19,7 +19,6 @@ const Footer = () => {
             <ul className="space-y-2 text-sm">
               <li><a href="#" className="text-gray-600 hover:text-candilingo-pink">About Us</a></li>
               <li><a href="#" className="text-gray-600 hover:text-candilingo-pink">Team</a></li>
-              <li><a href="#" className="text-gray-600 hover:text-candilingo-pink">Careers</a></li>
               <li><a href="#" className="text-gray-600 hover:text-candilingo-pink">Contact</a></li>
             </ul>
           </div>
@@ -46,7 +45,7 @@ const Footer = () => {
         
         <div className="border-t border-gray-200 mt-8 pt-6 flex flex-col md:flex-row justify-between">
           <p className="text-sm text-gray-600 mb-4 md:mb-0">
-            © 2023 Candilingo. All rights reserved.
+            © 2025 Candilingo. All rights reserved.
           </p>
           <div className="space-x-6">
             <a href="#" className="text-sm text-gray-600 hover:text-candilingo-pink">Privacy Policy</a>

@@ -23,8 +23,8 @@ const PricingSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           <PricingCard
             name="Starter"
-            originalPrice="€29"
-            price="€14.50"
+            originalPrice="€14.50"
+            price="€7.25"
             description="Perfect for individual recruiters"
             features={[
               { text: "Unlimited term definitions", included: true },
@@ -45,8 +45,8 @@ const PricingSection = () => {
           />
           <PricingCard
             name="Pro"
-            originalPrice="€79"
-            price="€39.50"
+            originalPrice="€39.50"
+            price="€19.75"
             description="Ideal for growing agencies"
             features={[
               { text: "Unlimited term definitions", included: true },

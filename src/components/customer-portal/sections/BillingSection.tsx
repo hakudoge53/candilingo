@@ -22,6 +22,7 @@ const BillingSection: React.FC<BillingSectionProps> = ({ user, setLocalLoading }
       await redirectToCheckout({
         priceId: 'price_1R15yGLRETKD7zlDSrCkpFFt', // Pro plan price ID
         productName: 'Candilingo Premium Subscription',
+        couponId: '50_PERCENT_OFF', // Apply 50% discount
         cancelUrl: window.location.origin + '/customer-portal'
       });
     } catch (error) {

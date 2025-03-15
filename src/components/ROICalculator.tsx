@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
@@ -12,8 +13,8 @@ const ROICalculator = ({ className }: ROICalculatorProps) => {
   const [cvCostPerUnit, setCvCostPerUnit] = useState<number>(0);
   const [interviewCostPerUnit, setInterviewCostPerUnit] = useState<number>(0);
 
-  // Base monthly subscription cost (in €)
-  const baseSubscriptionCost = 79;
+  // Base monthly subscription cost (in €) - updated to reflect 50% reduction
+  const baseSubscriptionCost = 39.50;
   // Average time spent per CV (in minutes)
   const timePerCv = 15;
   // Average time spent per interview (in minutes)
