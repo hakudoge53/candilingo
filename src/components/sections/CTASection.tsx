@@ -48,27 +48,6 @@ const CTASection = () => {
             </div>
             
             <div className="flex flex-col justify-center">
-              <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
-                <h3 className="text-xl font-bold mb-4 text-candilingo-purple">Check the Cost</h3>
-                <p className="text-gray-600 mb-4">
-                  Our transparent pricing helps you understand exactly what you'll pay based on your team size and needs.
-                </p>
-                <div className="space-y-4">
-                  <div className="flex justify-between text-sm">
-                    <span>Base price:</span>
-                    <span className="font-medium">$15/month per user</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span>Early access discount:</span>
-                    <span className="font-medium text-green-600">-50%</span>
-                  </div>
-                  <div className="flex justify-between text-sm font-bold border-t border-gray-200 pt-2">
-                    <span>Your price:</span>
-                    <span className="text-candilingo-purple">$7.50/month per user</span>
-                  </div>
-                </div>
-              </div>
-            
               <div className="mt-6 flex flex-wrap gap-4">
                 <Button 
                   variant="purple"
