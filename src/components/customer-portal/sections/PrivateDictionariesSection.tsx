@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 import { useGlossaryList } from '@/hooks/glossary/useGlossaryList';
 import { useGlossaryTerms } from '@/hooks/glossary/useGlossaryTerms';
 
-// Import the new components
+// Import the components
 import GlossaryList from './dictionaries/GlossaryList';
 import TermList from './dictionaries/TermList';
 import TermEditor from './dictionaries/TermEditor';
@@ -35,8 +35,10 @@ interface TermFormValues {
 const PrivateDictionariesSection: React.FC<PrivateDictionariesSectionProps> = ({ user, setLocalLoading }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isNewGlossaryDialogOpen, setIsNewGlossaryDialogOpen] = useState(false);
-  const [isNewTermDialogOpen, setIsNewTermDialogOpen] = useState(false);
+  const [isGlossaryDialogOpen, setIsGlossaryDialogOpen] = useState(false);
+  const [editingGlossary, setEditingGlossary] = useState<Glossary | null>(null);
+  const [isTermDialogOpen, setIsTermDialogOpen] = useState(false);
+  const [editingTerm, setEditingTerm] = useState<GlossaryTerm | null>(null);
   const [organizationId, setOrganizationId] = useState<string | undefined>();
 
   // Get user's organization
@@ -72,12 +74,16 @@ const PrivateDictionariesSection: React.FC<PrivateDictionariesSectionProps> = ({
     activeGlossary, 
     setActiveGlossary, 
     createGlossary,
+    updateGlossary,
+    deleteGlossary,
     isLoading: isGlossaryLoading
   } = useGlossaryList(organizationId);
 
   const {
     terms,
     addTerm,
+    updateTerm,
+    deleteTerm,
     isLoading: isTermsLoading
   } = useGlossaryTerms(activeGlossary?.id);
 
@@ -89,18 +95,66 @@ const PrivateDictionariesSection: React.FC<PrivateDictionariesSectionProps> = ({
     }
   };
 
+  // Handle new glossary dialog
+  const handleNewGlossaryClick = () => {
+    setEditingGlossary(null);
+    setIsGlossaryDialogOpen(true);
+  };
+
+  // Handle edit glossary
+  const handleEditGlossaryClick = (glossary: Glossary) => {
+    setEditingGlossary(glossary);
+    setIsGlossaryDialogOpen(true);
+  };
+
   // Create new glossary
   const handleCreateGlossary = async (values: GlossaryFormValues) => {
     setIsLoading(true);
     try {
       const newGlossary = await createGlossary(values.name, values.description);
       if (newGlossary) {
-        setIsNewGlossaryDialogOpen(false);
-        toast.success("Glossary created successfully");
+        setIsGlossaryDialogOpen(false);
+        toast.success("Dictionary created successfully");
       }
     } catch (error) {
       console.error("Error creating glossary:", error);
-      toast.error("Failed to create glossary");
+      toast.error("Failed to create dictionary");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Update existing glossary
+  const handleUpdateGlossary = async (glossaryId: string, values: GlossaryFormValues) => {
+    setIsLoading(true);
+    try {
+      const updated = await updateGlossary(glossaryId, {
+        name: values.name,
+        description: values.description
+      });
+      
+      if (updated) {
+        setIsGlossaryDialogOpen(false);
+        setEditingGlossary(null);
+        toast.success("Dictionary updated successfully");
+      }
+    } catch (error) {
+      console.error("Error updating glossary:", error);
+      toast.error("Failed to update dictionary");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle delete glossary
+  const handleDeleteGlossary = async (glossaryId: string) => {
+    setIsLoading(true);
+    try {
+      await deleteGlossary(glossaryId);
+      toast.success("Dictionary deleted successfully");
+    } catch (error) {
+      console.error("Error deleting glossary:", error);
+      toast.error("Failed to delete dictionary");
     } finally {
       setIsLoading(false);
     }
@@ -109,7 +163,7 @@ const PrivateDictionariesSection: React.FC<PrivateDictionariesSectionProps> = ({
   // Add new term to glossary
   const handleAddTerm = async (values: TermFormValues) => {
     if (!activeGlossary?.id) {
-      toast.error("No glossary selected");
+      toast.error("No dictionary selected");
       return;
     }
     
@@ -123,7 +177,7 @@ const PrivateDictionariesSection: React.FC<PrivateDictionariesSectionProps> = ({
       );
       
       if (newTerm) {
-        setIsNewTermDialogOpen(false);
+        setIsTermDialogOpen(false);
         toast.success("Term added successfully");
       }
     } catch (error) {
@@ -132,6 +186,55 @@ const PrivateDictionariesSection: React.FC<PrivateDictionariesSectionProps> = ({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Update an existing term
+  const handleUpdateTerm = async (termId: string, values: TermFormValues) => {
+    setIsLoading(true);
+    try {
+      const updated = await updateTerm(termId, {
+        term: values.term,
+        definition: values.definition,
+        category: values.category || undefined
+      });
+      
+      if (updated) {
+        setIsTermDialogOpen(false);
+        setEditingTerm(null);
+        toast.success("Term updated successfully");
+      }
+    } catch (error) {
+      console.error("Error updating term:", error);
+      toast.error("Failed to update term");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle edit term button click
+  const handleEditTermClick = (term: GlossaryTerm) => {
+    setEditingTerm(term);
+    setIsTermDialogOpen(true);
+  };
+
+  // Handle delete term
+  const handleDeleteTerm = async (termId: string) => {
+    setIsLoading(true);
+    try {
+      await deleteTerm(termId);
+      toast.success("Term deleted successfully");
+    } catch (error) {
+      console.error("Error deleting term:", error);
+      toast.error("Failed to delete term");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle add new term button click
+  const handleAddTermClick = () => {
+    setEditingTerm(null);
+    setIsTermDialogOpen(true);
   };
 
   const totalLoading = isLoading || isGlossaryLoading || isTermsLoading;
@@ -146,16 +249,18 @@ const PrivateDictionariesSection: React.FC<PrivateDictionariesSectionProps> = ({
           </p>
         </div>
         
-        <Button onClick={() => setIsNewGlossaryDialogOpen(true)}>
+        <Button onClick={handleNewGlossaryClick}>
           <Plus className="mr-2 h-4 w-4" />
           New Dictionary
         </Button>
         
         <GlossaryCreator
-          isOpen={isNewGlossaryDialogOpen}
+          isOpen={isGlossaryDialogOpen}
           isLoading={totalLoading}
-          onOpenChange={setIsNewGlossaryDialogOpen}
+          editingGlossary={editingGlossary}
+          onOpenChange={setIsGlossaryDialogOpen}
           onCreateGlossary={handleCreateGlossary}
+          onUpdateGlossary={handleUpdateGlossary}
         />
       </div>
 
@@ -166,7 +271,9 @@ const PrivateDictionariesSection: React.FC<PrivateDictionariesSectionProps> = ({
             selectedGlossaryId={activeGlossary?.id || null}
             isLoading={totalLoading}
             onSelectGlossary={handleSelectGlossary}
-            onCreateGlossary={() => setIsNewGlossaryDialogOpen(true)}
+            onCreateGlossary={handleNewGlossaryClick}
+            onEditGlossary={handleEditGlossaryClick}
+            onDeleteGlossary={handleDeleteGlossary}
           />
         </div>
 
@@ -177,15 +284,19 @@ const PrivateDictionariesSection: React.FC<PrivateDictionariesSectionProps> = ({
             searchTerm={searchTerm}
             isLoading={totalLoading}
             onSearchChange={setSearchTerm}
-            onAddTermClick={() => setIsNewTermDialogOpen(true)}
+            onEditTerm={handleEditTermClick}
+            onDeleteTerm={handleDeleteTerm}
+            onAddTermClick={handleAddTermClick}
           />
           
           {activeGlossary && (
             <TermEditor
-              isOpen={isNewTermDialogOpen}
+              isOpen={isTermDialogOpen}
               isLoading={totalLoading}
-              onOpenChange={setIsNewTermDialogOpen}
+              editingTerm={editingTerm}
+              onOpenChange={setIsTermDialogOpen}
               onAddTerm={handleAddTerm}
+              onUpdateTerm={handleUpdateTerm}
             />
           )}
         </div>

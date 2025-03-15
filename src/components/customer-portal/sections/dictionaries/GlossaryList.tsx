@@ -2,9 +2,11 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Lock, Plus } from 'lucide-react';
+import { Lock, Plus, Trash2, Edit } from 'lucide-react';
 import { Glossary } from '@/types/organization';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 interface GlossaryListProps {
   glossaries: Glossary[];
@@ -12,6 +14,8 @@ interface GlossaryListProps {
   isLoading: boolean;
   onSelectGlossary: (glossaryId: string) => void;
   onCreateGlossary: () => void;
+  onEditGlossary?: (glossary: Glossary) => void;
+  onDeleteGlossary?: (glossaryId: string) => void;
 }
 
 const GlossaryList: React.FC<GlossaryListProps> = ({
@@ -19,7 +23,9 @@ const GlossaryList: React.FC<GlossaryListProps> = ({
   selectedGlossaryId,
   isLoading,
   onSelectGlossary,
-  onCreateGlossary
+  onCreateGlossary,
+  onEditGlossary,
+  onDeleteGlossary
 }) => {
   return (
     <Card>
@@ -32,15 +38,60 @@ const GlossaryList: React.FC<GlossaryListProps> = ({
           <LoadingSpinner message="Loading dictionaries..." />
         ) : (
           glossaries.map(glossary => (
-            <Button 
-              key={glossary.id}
-              variant={selectedGlossaryId === glossary.id ? "default" : "ghost"}
-              className="w-full justify-start"
-              onClick={() => onSelectGlossary(glossary.id)}
-            >
-              <Lock className="mr-2 h-4 w-4" />
-              {glossary.name}
-            </Button>
+            <div key={glossary.id} className="flex items-center justify-between">
+              <Button 
+                variant={selectedGlossaryId === glossary.id ? "default" : "ghost"}
+                className="w-full justify-start text-left"
+                onClick={() => onSelectGlossary(glossary.id)}
+              >
+                <Lock className="mr-2 h-4 w-4" />
+                {glossary.name}
+              </Button>
+              
+              {(onEditGlossary || onDeleteGlossary) && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 ml-1">
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    {onEditGlossary && (
+                      <DropdownMenuItem onClick={() => onEditGlossary(glossary)}>
+                        <Edit className="mr-2 h-4 w-4" /> Edit Dictionary
+                      </DropdownMenuItem>
+                    )}
+                    {onDeleteGlossary && (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-500">
+                            <Trash2 className="mr-2 h-4 w-4" /> Delete Dictionary
+                          </DropdownMenuItem>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Dictionary</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete "{glossary.name}"? This will permanently delete 
+                              all terms in this dictionary. This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction 
+                              className="bg-red-500 hover:bg-red-600"
+                              onClick={() => onDeleteGlossary(glossary.id)}
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </div>
           ))
         )}
         

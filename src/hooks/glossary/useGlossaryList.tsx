@@ -13,7 +13,7 @@ export const useGlossaryList = (organizationId?: string): UseGlossaryListReturn 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch glossaries for organization
+  // Fetch all glossaries for an organization
   const fetchGlossaries = async () => {
     if (!isLoggedIn || !organizationId) return;
     
@@ -25,15 +25,23 @@ export const useGlossaryList = (organizationId?: string): UseGlossaryListReturn 
         .from('glossaries')
         .select('*')
         .eq('organization_id', organizationId)
-        .order('created_at', { ascending: false });
+        .order('name', { ascending: true });
       
       if (error) throw error;
       
-      setGlossaries(data);
+      setGlossaries(data || []);
       
-      // Set active glossary to first one by default if none is selected
+      // Set the first glossary as active if we don't have an active one
       if (data.length > 0 && !activeGlossary) {
         setActiveGlossary(data[0]);
+      } else if (activeGlossary) {
+        // Make sure the active glossary is still in the list
+        const stillExists = data.some(g => g.id === activeGlossary.id);
+        if (!stillExists && data.length > 0) {
+          setActiveGlossary(data[0]);
+        } else if (!stillExists) {
+          setActiveGlossary(null);
+        }
       }
     } catch (error: any) {
       console.error("Error fetching glossaries:", error);
@@ -45,7 +53,7 @@ export const useGlossaryList = (organizationId?: string): UseGlossaryListReturn 
   };
 
   // Create a new glossary
-  const createGlossary = async (name: string, description?: string) => {
+  const createGlossary = async (name: string, description?: string): Promise<Glossary | null> => {
     if (!isLoggedIn || !organizationId) return null;
     
     setIsLoading(true);
@@ -63,8 +71,12 @@ export const useGlossaryList = (organizationId?: string): UseGlossaryListReturn 
       
       if (error) throw error;
       
-      setGlossaries(prev => [data, ...prev]);
-      setActiveGlossary(data);
+      setGlossaries(prev => [...prev, data]);
+      
+      // If this is the first glossary, set it as active
+      if (glossaries.length === 0) {
+        setActiveGlossary(data);
+      }
       
       toast.success("Glossary created successfully");
       return data;
@@ -77,8 +89,8 @@ export const useGlossaryList = (organizationId?: string): UseGlossaryListReturn 
     }
   };
 
-  // Update a glossary
-  const updateGlossary = async (glossaryId: string, updates: Partial<Glossary>) => {
+  // Update an existing glossary
+  const updateGlossary = async (glossaryId: string, updates: Partial<Glossary>): Promise<Glossary | null> => {
     if (!isLoggedIn) return null;
     
     setIsLoading(true);
@@ -99,6 +111,7 @@ export const useGlossaryList = (organizationId?: string): UseGlossaryListReturn 
         )
       );
       
+      // Update active glossary if it's the one being edited
       if (activeGlossary?.id === glossaryId) {
         setActiveGlossary(data);
       }
@@ -115,7 +128,7 @@ export const useGlossaryList = (organizationId?: string): UseGlossaryListReturn 
   };
 
   // Delete a glossary
-  const deleteGlossary = async (glossaryId: string) => {
+  const deleteGlossary = async (glossaryId: string): Promise<void> => {
     if (!isLoggedIn) return;
     
     setIsLoading(true);
@@ -128,11 +141,13 @@ export const useGlossaryList = (organizationId?: string): UseGlossaryListReturn 
       
       if (error) throw error;
       
+      // Remove from the state
       setGlossaries(prev => prev.filter(glossary => glossary.id !== glossaryId));
       
+      // If the active glossary is deleted, set the first available one as active
       if (activeGlossary?.id === glossaryId) {
-        setActiveGlossary(glossaries.length > 1 ? 
-          glossaries.find(g => g.id !== glossaryId) || null : null);
+        const remaining = glossaries.filter(g => g.id !== glossaryId);
+        setActiveGlossary(remaining.length > 0 ? remaining[0] : null);
       }
       
       toast.success("Glossary deleted successfully");

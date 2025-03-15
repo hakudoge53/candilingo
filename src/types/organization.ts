@@ -42,6 +42,9 @@ export interface OrganizationInvitation {
   status: 'pending' | 'accepted' | 'rejected' | 'expired';
 }
 
+export type UserRole = 'owner' | 'admin' | 'employee';
+export type MemberStatus = 'pending' | 'active' | 'inactive';
+
 export const ROLE_LABELS: Record<string, string> = {
   'owner': 'Owner',
   'admin': 'Administrator',

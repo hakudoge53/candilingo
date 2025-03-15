@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { GlossaryTerm } from '@/types/glossary';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { Glossary } from '@/types/organization';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 interface TermListProps {
   activeGlossary: Glossary | null;
@@ -103,14 +104,34 @@ const TermList: React.FC<TermListProps> = ({
                           </Button>
                         )}
                         {onDeleteTerm && (
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-6 w-6 text-red-500"
-                            onClick={() => onDeleteTerm(term.id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-6 w-6 text-red-500"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Delete Term</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Are you sure you want to delete "{term.term}"? This action cannot be undone.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction 
+                                  className="bg-red-500 hover:bg-red-600"
+                                  onClick={() => onDeleteTerm(term.id)}
+                                >
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         )}
                       </div>
                     </div>
