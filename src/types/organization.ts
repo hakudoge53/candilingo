@@ -1,10 +1,9 @@
 
 import { User } from '@/hooks/useAuth';
 
-export type UserRole = 'admin' | 'manager' | 'team_lead' | 'employee' | 'consultant';
-
-// Define literal types for member statuses
-export type MemberStatus = 'active' | 'pending' | 'invited';
+// Use the same UserRole and MemberStatus types as defined in organization.d.ts
+export type UserRole = 'owner' | 'admin' | 'member';
+export type MemberStatus = 'pending' | 'active' | 'inactive';
 
 export interface Organization {
   id: string;
@@ -53,17 +52,13 @@ export interface GlossaryTerm {
 }
 
 export const ROLE_LABELS: Record<UserRole, string> = {
+  'owner': 'Owner',
   'admin': 'Admin',
-  'manager': 'Manager',
-  'team_lead': 'Team Lead',
-  'employee': 'Employee',
-  'consultant': 'Consultant'
+  'member': 'Member'
 };
 
 export const ROLE_DESCRIPTIONS: Record<UserRole, string> = {
-  'admin': 'Full access to manage organizations, members, and all glossaries.',
-  'manager': 'Can manage glossaries and invite members, but cannot delete the organization.',
-  'team_lead': 'Can manage team glossary terms and view all organizational data.',
-  'employee': 'Can view and use all glossaries within the organization.',
-  'consultant': 'Limited access to specific glossaries for temporary collaboration.'
+  'owner': 'Full access to manage organizations, members, and all glossaries.',
+  'admin': 'Can manage glossaries and invite members, but cannot delete the organization.',
+  'member': 'Can view and use all glossaries within the organization.'
 };
