@@ -12,6 +12,7 @@ import { Check } from "lucide-react";
 const CTASection = () => {
   const [seatsRemaining, setSeatsRemaining] = useState(200);
   const [confirmedLicenses, setConfirmedLicenses] = useState(1);
+  const [open, setOpen] = useState(false);
   
   useEffect(() => {
     setSeatsRemaining(200 - confirmedLicenses);
@@ -82,20 +83,17 @@ const CTASection = () => {
                   Start Your Free Trial
                 </Button>
                 
-                <Button 
-                  variant="pink" 
-                  className="w-40 text-sm py-2 px-4 shadow-md hover:shadow-lg transition-all duration-300"
-                  onClick={() => document.getElementById('contact-dialog')?.click()}
-                >
-                  Contact
-                </Button>
-                
-                <span className="hidden">
+                <Dialog open={open} onOpenChange={setOpen}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      variant="pink" 
+                      className="w-40 text-sm py-2 px-4 shadow-md hover:shadow-lg transition-all duration-300"
+                    >
+                      Contact
+                    </Button>
+                  </DialogTrigger>
                   <ContactDialog />
-                </span>
-                <span id="contact-dialog" className="hidden">
-                  <DialogTrigger>Contact</DialogTrigger>
-                </span>
+                </Dialog>
               </div>
             </div>
           </div>
