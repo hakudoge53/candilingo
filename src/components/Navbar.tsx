@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from "@/hooks/auth/useAuth";
@@ -22,23 +23,17 @@ const Navbar = () => {
   };
 
   return (
-    <div className="bg-techlex-blue py-4">
+    <div className="bg-candilingo-pink py-4">
       <div className="container mx-auto px-4 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="text-2xl font-bold text-white">
-          TechLex
+          Candilingo
         </Link>
 
         {/* Navigation Links */}
         <nav className="flex gap-8 items-center">
           <Link to="/" className="text-white hover:text-gray-300 font-medium hidden md:block">
             Home
-          </Link>
-          <Link to="/glossary" className="text-white hover:text-gray-300 font-medium hidden md:block">
-            Glossary
-          </Link>
-          <Link to="/techlingo" className="text-white hover:text-gray-300 font-medium hidden md:block">
-            TechLingo Wiki
           </Link>
           {isLoggedIn && (
             <Link to="/dashboard" className="text-white hover:text-gray-300 font-medium hidden md:block">
@@ -72,20 +67,14 @@ const Navbar = () => {
           </SheetTrigger>
           <SheetContent side="left" className="bg-white">
             <SheetHeader>
-              <SheetTitle>TechLex</SheetTitle>
+              <SheetTitle>Candilingo</SheetTitle>
               <SheetDescription>
-                Navigate technical terms and explanations to better understand the language of technology.
+                Decoding technical jargon to help recruiters make better technical hiring decisions.
               </SheetDescription>
             </SheetHeader>
             <div className="mt-4">
               <Link to="/" className="block py-2 text-gray-800 hover:bg-gray-100">
                 Home
-              </Link>
-              <Link to="/glossary" className="block py-2 text-gray-800 hover:bg-gray-100">
-                Glossary
-              </Link>
-              <Link to="/techlingo" className="block py-2 text-gray-800 hover:bg-gray-100">
-                TechLingo Wiki
               </Link>
               {isLoggedIn && (
                 <Link to="/dashboard" className="block py-2 text-gray-800 hover:bg-gray-100">

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -44,7 +45,7 @@ const Index = () => {
           {showVideo && (
             <section id="video-section" className="py-16">
               <div className="max-w-4xl mx-auto">
-                <h2 className="text-2xl font-bold text-center mb-6 text-techlex-blue">See Candilingo in Action</h2>
+                <h2 className="text-2xl font-bold text-center mb-6 text-candilingo-pink">See Candilingo in Action</h2>
                 <div className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden border border-gray-200 shadow-lg mb-6">
                   <div className="absolute inset-0 flex items-center justify-center">
                     {/* This is a placeholder for the actual video embed */}

@@ -63,7 +63,7 @@ const TechLingoWiki = () => {
       <Navbar />
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4 text-techlex-blue">TechLingo Wiki</h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-4 text-candilingo-pink">TechLingo Wiki</h1>
           <p className="text-gray-600 mb-8 text-lg">
             Navigate technical terms and explanations to better understand the language of technology.
           </p>
@@ -89,7 +89,7 @@ const TechLingoWiki = () => {
                 </p>
                 {isAdmin && (
                   <button 
-                    className="px-4 py-2 bg-techlex-blue text-white rounded-md hover:bg-techlex-blue-dark"
+                    className="px-4 py-2 bg-candilingo-pink text-white rounded-md hover:bg-candilingo-pink/90"
                     onClick={() => setIsAddDialogOpen(true)}
                   >
                     Add Your First Term

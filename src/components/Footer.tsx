@@ -17,30 +17,31 @@ const Footer = () => {
           <div className="md:col-span-1">
             <h3 className="text-lg font-semibold mb-3">Company</h3>
             <ul className="space-y-2 text-sm">
-              <li><a href="#" className="text-gray-600 hover:text-techlex-blue">About Us</a></li>
-              <li><a href="#" className="text-gray-600 hover:text-techlex-blue">Team</a></li>
-              <li><a href="#" className="text-gray-600 hover:text-techlex-blue">Careers</a></li>
-              <li><a href="#" className="text-gray-600 hover:text-techlex-blue">Contact</a></li>
+              <li><a href="#" className="text-gray-600 hover:text-candilingo-pink">About Us</a></li>
+              <li><a href="#" className="text-gray-600 hover:text-candilingo-pink">Team</a></li>
+              <li><a href="#" className="text-gray-600 hover:text-candilingo-pink">Careers</a></li>
+              <li><a href="#" className="text-gray-600 hover:text-candilingo-pink">Contact</a></li>
             </ul>
           </div>
           
           <div className="md:col-span-1">
             <h3 className="text-lg font-semibold mb-3">Products</h3>
             <ul className="space-y-2 text-sm">
-              <li><a href="#" className="text-gray-600 hover:text-techlex-blue">AI Assistant</a></li>
-              <li><a href="#" className="text-gray-600 hover:text-techlex-blue">Browser Extension</a></li>
-              <li><a href="#" className="text-gray-600 hover:text-techlex-blue">Job Analysis</a></li>
-              <li><a href="#" className="text-gray-600 hover:text-techlex-blue">Tech Dictionary</a></li>
+              <li><a href="#" className="text-gray-600 hover:text-candilingo-pink">AI Assistant</a></li>
+              <li><a href="#" className="text-gray-600 hover:text-candilingo-pink">Browser Extension</a></li>
+              <li><a href="#" className="text-gray-600 hover:text-candilingo-pink">Job Analysis</a></li>
+              <li><a href="#" className="text-gray-600 hover:text-candilingo-pink">Tech Dictionary</a></li>
             </ul>
           </div>
           
           <div className="md:col-span-1">
             <h3 className="text-lg font-semibold mb-3">Resources</h3>
             <ul className="space-y-2 text-sm">
-              <li><a href="#" className="text-gray-600 hover:text-techlex-blue">Blog</a></li>
-              <li><a href="#" className="text-gray-600 hover:text-techlex-blue">Documentation</a></li>
-              <li><Link to="/glossary" className="text-gray-600 hover:text-techlex-blue">Glossary</Link></li>
-              <li><Link to="/portal" className="text-gray-600 hover:text-techlex-blue">Customer Portal</Link></li>
+              <li><a href="#" className="text-gray-600 hover:text-candilingo-pink">Blog</a></li>
+              <li><a href="#" className="text-gray-600 hover:text-candilingo-pink">Documentation</a></li>
+              <li><Link to="/glossary" className="text-gray-600 hover:text-candilingo-pink">Glossary</Link></li>
+              <li><Link to="/techlingo" className="text-gray-600 hover:text-candilingo-pink">TechLingo Wiki</Link></li>
+              <li><Link to="/portal" className="text-gray-600 hover:text-candilingo-pink">Customer Portal</Link></li>
             </ul>
           </div>
         </div>
@@ -50,8 +51,8 @@ const Footer = () => {
             © 2023 Candilingo. All rights reserved.
           </p>
           <div className="space-x-6">
-            <a href="#" className="text-sm text-gray-600 hover:text-techlex-blue">Privacy Policy</a>
-            <a href="#" className="text-sm text-gray-600 hover:text-techlex-blue">Terms of Service</a>
+            <a href="#" className="text-sm text-gray-600 hover:text-candilingo-pink">Privacy Policy</a>
+            <a href="#" className="text-sm text-gray-600 hover:text-candilingo-pink">Terms of Service</a>
           </div>
         </div>
       </div>

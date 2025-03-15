@@ -33,7 +33,7 @@ const SearchBar = ({
       {isAdmin && (
         <Dialog>
           <DialogTrigger asChild>
-            <Button className="ml-4" onClick={onAddTermClick}>
+            <Button className="ml-4 bg-candilingo-pink hover:bg-candilingo-pink/90" onClick={onAddTermClick}>
               <Plus className="mr-2 h-4 w-4" /> Add Term
             </Button>
           </DialogTrigger>

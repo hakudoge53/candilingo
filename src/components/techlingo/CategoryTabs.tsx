@@ -44,7 +44,7 @@ const CategoryTabs = ({
             {searchQuery ? `No terms found matching "${searchQuery}"` : "No terms in the database yet."}
           </p>
           {isAdmin && !searchQuery && (
-            <Button onClick={onAddTerm}>
+            <Button onClick={onAddTerm} className="bg-candilingo-pink hover:bg-candilingo-pink/90">
               <Plus className="mr-2 h-4 w-4" /> Add Your First Term
             </Button>
           )}
