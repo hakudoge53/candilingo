@@ -78,6 +78,12 @@ export const useAuthStateListener = ({
           console.log("User deleted");
           setIsLoggedIn(false);
           setActiveUser(null);
+        } else if (['INITIAL_SESSION', 'PASSWORD_RECOVERY', 'MFA_CHALLENGE_VERIFIED'].includes(event)) {
+          // Handle other specific event types
+          console.log(`Auth event: ${event}`);
+        } else {
+          // Handle any other events not explicitly covered
+          console.log(`Unhandled auth event: ${event}`);
         }
       }
     );
