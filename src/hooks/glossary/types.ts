@@ -1,8 +1,11 @@
 
 import { Glossary, GlossaryTerm } from '@/types/organization';
+import { GlossaryFormValues } from '../dictionaries/useGlossaryOperations';
+import { TermFormValues } from '../dictionaries/useTermOperations';
 
 // Re-export the types with proper 'export type' syntax to fix the TS1205 error
 export type { Glossary, GlossaryTerm } from '@/types/organization';
+export type { GlossaryFormValues, TermFormValues };
 
 // Common interfaces for the glossary hooks
 export interface UseGlossaryListReturn {
