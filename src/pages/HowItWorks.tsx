@@ -62,7 +62,7 @@ const HowItWorks = () => {
               When browsing technical profiles or documentation, Candilingo highlights key terms and provides instant definitions:
             </p>
             
-            <div className="relative border border-gray-200 rounded-lg p-4 mb-8 overflow-visible">
+            <div className="relative border border-gray-200 rounded-lg p-4 mb-8">
               <p className="text-sm text-gray-700">
                 The candidate has experience with <span className="bg-candilingo-pink text-white px-2 py-0.5 rounded">Spring Boot</span> and 
                 <span className="bg-candilingo-pink text-white px-2 py-0.5 rounded mx-1">Kubernetes</span> for building and deploying microservices.
@@ -70,12 +70,15 @@ const HowItWorks = () => {
                 <span className="bg-candilingo-pink text-white px-2 py-0.5 rounded mx-1">RESTful APIs</span>.
               </p>
               
-              <TooltipOverlay 
-                title="Spring Boot" 
-                description="An open source Java-based framework used to create microservices and web applications"
-                position="right"
-                className="top-2 right-12"
-              />
+              {/* Contained within this page */}
+              <div className="z-50">
+                <TooltipOverlay 
+                  title="Spring Boot" 
+                  description="An open source Java-based framework used to create microservices and web applications"
+                  position="right"
+                  className="top-2 right-12"
+                />
+              </div>
             </div>
             
             <p className="text-gray-600 italic text-sm text-center">
