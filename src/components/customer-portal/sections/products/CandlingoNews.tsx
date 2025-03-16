@@ -14,27 +14,27 @@ const CandlingoNews: React.FC = () => {
   const newsItems: NewsItem[] = [
     {
       id: '1',
-      date: '2024-07-15',
+      date: '2023-09-15',
       content: '500 new IT terms added to Public Dictionary'
     },
     {
       id: '2',
-      date: '2024-07-10',
+      date: '2023-09-10',
       content: 'Updates to Personal Dictionaries'
     },
     {
       id: '3',
-      date: '2024-07-05',
+      date: '2023-09-05',
       content: 'This week your recruiters consolidated 100 new terms to the glossary'
     },
     {
       id: '4',
-      date: '2024-07-01',
+      date: '2023-09-01',
       content: 'New Web Extension features released'
     },
     {
       id: '5',
-      date: '2024-06-28',
+      date: '2023-08-28',
       content: 'Improved search functionality for all glossaries'
     }
   ];
@@ -50,7 +50,7 @@ const CandlingoNews: React.FC = () => {
         </div>
       </CardHeader>
       <CardContent className="p-0">
-        <ScrollArea className="h-[500px]">
+        <ScrollArea className="h-[300px]">
           <div className="divide-y">
             {newsItems.map((item) => (
               <div key={item.id} className="p-4 hover:bg-gray-50 transition-colors">

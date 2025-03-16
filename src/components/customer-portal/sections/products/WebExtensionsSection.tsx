@@ -53,7 +53,7 @@ const WebExtensionsSection: React.FC = () => {
 
         <Card className="border-gray-200">
           <CardHeader className="pb-2 border-b bg-gray-50">
-            <CardTitle className="text-lg font-semibold text-candilingo-purple">Step 3 - Log in to Extension</CardTitle>
+            <CardTitle className="text-lg font-semibold text-candilingo-purple">Step 3 - Log in & Resume work</CardTitle>
           </CardHeader>
           <CardContent className="p-4">
             <p className="text-gray-600 mb-4">Log in to the extension with your Candilingo account to access your dictionaries and settings.</p>

@@ -46,7 +46,7 @@ const ProductsSidebar: React.FC<ProductsSidebarProps> = ({
     { id: 'team', name: 'Team', icon: Users },
     { id: 'users', name: 'Users', icon: User },
     { id: 'billing', name: 'Billing', icon: CreditCard },
-    { id: 'settings', name: 'Settings', icon: Settings, badge: true }
+    { id: 'settings', name: 'Settings', icon: Settings }
   ];
   
   const resourceSections = [
@@ -137,12 +137,6 @@ const ProductsSidebar: React.FC<ProductsSidebarProps> = ({
             >
               <section.icon className="mr-2 h-4 w-4" />
               {section.name}
-              {section.badge && (
-                <span className="ml-auto bg-blue-500/10 text-blue-500 text-xs py-1 px-2 rounded-md">
-                  Info
-                </span>
-              )}
-              <ChevronRight className="ml-auto h-4 w-4 opacity-50" />
             </Button>
           ))}
         </div>
@@ -174,7 +168,6 @@ const ProductsSidebar: React.FC<ProductsSidebarProps> = ({
                   {section.id === 'faq' ? '8' : '1'}
                 </span>
               )}
-              <ChevronRight className="ml-auto h-4 w-4 opacity-50" />
             </Button>
           ))}
         </div>

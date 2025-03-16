@@ -44,7 +44,7 @@ const ProductsPage: React.FC<ProductsPageProps> = ({ organizationId }) => {
             />
           </div>
           <Button size="sm" className="bg-candilingo-pink hover:bg-candilingo-lightpink">
-            <Plus className="mr-2 h-4 w-4" /> Add New
+            <Plus className="mr-2 h-4 w-4" /> Add New Glossary
           </Button>
         </div>
       </div>

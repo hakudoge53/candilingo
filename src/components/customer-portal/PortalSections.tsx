@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User } from '@/hooks/auth/types';
-import { CreditCard, Book, Lock, Settings, Users, Palette, BookOpen, Package, Building, FileText } from 'lucide-react';
+import { CreditCard, Book, Lock, Settings, Users, Palette, BookOpen, Package, Building, FileText, HelpCircle } from 'lucide-react';
 import TutorialGuide from './TutorialGuide';
 import { useLocation } from 'react-router-dom';
 
@@ -43,7 +43,7 @@ const PortalSections: React.FC<PortalSectionsProps> = ({ user, setLocalLoading }
       </div>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-10 w-full rounded-none bg-gray-50 p-1 gap-1 overflow-x-auto flex-nowrap">
+        <TabsList className="flex w-full rounded-none bg-gray-50 p-1 gap-1 overflow-x-auto border-b">
           <TabsTrigger 
             value="billing" 
             className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-candilingo-purple data-[state=active]:to-candilingo-purple/80 data-[state=active]:text-white"

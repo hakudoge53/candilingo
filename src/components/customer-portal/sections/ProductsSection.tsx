@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User } from '@/hooks/auth/types';
 import { supabase } from '@/integrations/supabase/client';
 import ProductsPage from './products/ProductsPage';
@@ -17,7 +17,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
   const [organizationId, setOrganizationId] = useState<string | undefined>();
 
   // Get user's organization
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchUserOrganization = async () => {
       setIsLoading(true);
       setLocalLoading(true);
