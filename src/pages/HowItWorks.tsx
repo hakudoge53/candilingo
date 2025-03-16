@@ -75,7 +75,6 @@ const HowItWorks = () => {
                 description="An open source Java-based framework used to create microservices and web applications"
                 position="right"
                 className="top-2 right-12"
-                showOnPage="how-it-works"
               />
             </div>
             
