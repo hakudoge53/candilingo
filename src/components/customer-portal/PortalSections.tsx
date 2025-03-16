@@ -53,7 +53,7 @@ const PortalSections: React.FC<PortalSectionsProps> = ({ user, setLocalLoading }
           </TabsTrigger>
           <TabsTrigger 
             value="products" 
-            className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-candilingo-teal data-[state=active]:to-candilingo-teal/80 data-[state=active]:text-white"
+            className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-candilingo-pink data-[state=active]:to-candilingo-pink/80 data-[state=active]:text-white"
           >
             <Package className="h-4 w-4" />
             <span className="hidden sm:inline">Products</span>
@@ -120,7 +120,7 @@ const PortalSections: React.FC<PortalSectionsProps> = ({ user, setLocalLoading }
           <BillingSection user={user} setLocalLoading={setLocalLoading} />
         </TabsContent>
         
-        <TabsContent value="products" className="p-6 bg-gradient-to-br from-white to-candilingo-teal/5">
+        <TabsContent value="products" className="p-6 bg-gradient-to-br from-white to-candilingo-pink/5">
           <ProductsSection user={user} setLocalLoading={setLocalLoading} />
         </TabsContent>
         

@@ -12,7 +12,8 @@ import {
   MessageCircle,
   FileText,
   Building,
-  Package
+  Package,
+  ChevronRight
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { cn } from '@/lib/utils';
@@ -55,51 +56,56 @@ const ProductsSidebar: React.FC<ProductsSidebarProps> = ({
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="divide-y">
       {/* Products */}
-      <div>
+      <div className="p-4">
         <h3 className="text-xl font-bold text-candilingo-purple mb-4 flex items-center">
           <Package className="mr-2 h-5 w-5" />
           Products
         </h3>
-        <div className="space-y-1 pl-2">
+        <div className="space-y-1">
           {productSections.map((section) => (
             <Button
               key={section.id}
               variant="ghost"
               className={cn(
-                "w-full justify-start text-left font-normal",
-                activeSection === section.id && "bg-candilingo-purple/10 text-candilingo-purple font-medium"
+                "w-full justify-start text-left font-normal rounded-md",
+                activeSection === section.id 
+                  ? "bg-candilingo-purple/10 text-candilingo-purple font-medium"
+                  : "text-gray-600 hover:text-candilingo-purple hover:bg-candilingo-purple/5"
               )}
               onClick={() => onSectionChange(section.id)}
             >
               <section.icon className="mr-2 h-4 w-4" />
               {section.name}
               {section.badge && (
-                <span className="ml-auto bg-candilingo-purple text-white text-xs py-0.5 px-1.5 rounded-md">
-                  ⭐
+                <span className="ml-auto bg-candilingo-pink/10 text-candilingo-pink text-xs py-1 px-2 rounded-md">
+                  New
                 </span>
               )}
+              <ChevronRight className="ml-auto h-4 w-4 opacity-50" />
             </Button>
           ))}
         </div>
       </div>
 
       {/* Glossary */}
-      <div>
-        <h3 className="text-md font-medium text-gray-500 mb-2 flex items-center pl-2">
+      <div className="p-4">
+        <h3 className="text-md font-medium text-gray-500 mb-3 flex items-center">
           <Book className="mr-2 h-4 w-4" />
           Glossary
         </h3>
-        <div className="space-y-1 pl-4">
+        <div className="space-y-1 pl-2">
           {glossarySections.map((section) => (
             <Button
               key={section.id}
               variant="ghost"
               size="sm"
               className={cn(
-                "w-full justify-start text-left font-normal text-sm",
-                activeSection === `glossary-${section.id}` && "bg-candilingo-pink/10 text-candilingo-pink font-medium"
+                "w-full justify-start text-left font-normal text-sm rounded-md",
+                activeSection === `glossary-${section.id}` 
+                  ? "bg-candilingo-pink/10 text-candilingo-pink font-medium"
+                  : "text-gray-500 hover:text-candilingo-pink hover:bg-candilingo-pink/5"
               )}
               onClick={() => onSectionChange(`glossary-${section.id}`)}
             >
@@ -111,58 +117,64 @@ const ProductsSidebar: React.FC<ProductsSidebarProps> = ({
       </div>
 
       {/* Organization */}
-      <div>
-        <h3 className="text-xl font-bold text-candilingo-purple mb-4 flex items-center">
+      <div className="p-4">
+        <h3 className="text-xl font-bold text-candilingo-purple mb-3 flex items-center">
           <Building className="mr-2 h-5 w-5" />
           Organization
         </h3>
-        <div className="space-y-1 pl-2">
+        <div className="space-y-1">
           {organizationSections.map((section) => (
             <Button
               key={section.id}
               variant="ghost"
               className={cn(
-                "w-full justify-start text-left font-normal",
-                activeSection === `org-${section.id}` && "bg-candilingo-purple/10 text-candilingo-purple font-medium"
+                "w-full justify-start text-left font-normal rounded-md",
+                activeSection === `org-${section.id}` 
+                  ? "bg-candilingo-purple/10 text-candilingo-purple font-medium"
+                  : "text-gray-600 hover:text-candilingo-purple hover:bg-candilingo-purple/5"
               )}
               onClick={() => onSectionChange(`org-${section.id}`)}
             >
               <section.icon className="mr-2 h-4 w-4" />
               {section.name}
               {section.badge && (
-                <span className="ml-auto bg-blue-500 text-white text-xs py-0.5 px-1.5 rounded-full">
-                  i
+                <span className="ml-auto bg-blue-500/10 text-blue-500 text-xs py-1 px-2 rounded-md">
+                  Info
                 </span>
               )}
+              <ChevronRight className="ml-auto h-4 w-4 opacity-50" />
             </Button>
           ))}
         </div>
       </div>
 
       {/* Resources */}
-      <div>
-        <h3 className="text-xl font-bold text-candilingo-purple mb-4 flex items-center">
+      <div className="p-4">
+        <h3 className="text-xl font-bold text-candilingo-purple mb-3 flex items-center">
           <FileText className="mr-2 h-5 w-5" />
           Resources
         </h3>
-        <div className="space-y-1 pl-2">
+        <div className="space-y-1">
           {resourceSections.map((section) => (
             <Button
               key={section.id}
               variant="ghost"
               className={cn(
-                "w-full justify-start text-left font-normal",
-                activeSection === `res-${section.id}` && "bg-candilingo-purple/10 text-candilingo-purple font-medium"
+                "w-full justify-start text-left font-normal rounded-md",
+                activeSection === `res-${section.id}` 
+                  ? "bg-candilingo-purple/10 text-candilingo-purple font-medium"
+                  : "text-gray-600 hover:text-candilingo-purple hover:bg-candilingo-purple/5"
               )}
               onClick={() => onSectionChange(`res-${section.id}`)}
             >
               <section.icon className="mr-2 h-4 w-4" />
               {section.name}
               {section.badge && (
-                <span className="ml-auto bg-blue-500 text-white text-xs py-0.5 px-1.5 rounded-full">
+                <span className="ml-auto bg-blue-500/10 text-blue-500 text-xs py-1 px-2 rounded-md">
                   {section.id === 'faq' ? '8' : '1'}
                 </span>
               )}
+              <ChevronRight className="ml-auto h-4 w-4 opacity-50" />
             </Button>
           ))}
         </div>
