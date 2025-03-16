@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User } from '@/hooks/auth/types';
-import { CreditCard, Book, Lock, Settings, Users, Palette, BookOpen, Package, Building, FileText, HelpCircle } from 'lucide-react';
+import { CreditCard, Book, Lock, Settings, Users, Palette, BookOpen } from 'lucide-react';
 import TutorialGuide from './TutorialGuide';
 import { useLocation } from 'react-router-dom';
 
@@ -15,7 +15,6 @@ import OrganizationPermissionsSection from './sections/OrganizationPermissionsSe
 import ProfileSettingsSection from './sections/ProfileSettingsSection';
 import TechLingoWikiSection from './sections/TechLingoWikiSection';
 import GlossarySection from './sections/GlossarySection';
-import ProductsSection from './sections/ProductsSection';
 
 interface PortalSectionsProps {
   user: User;
@@ -43,20 +42,13 @@ const PortalSections: React.FC<PortalSectionsProps> = ({ user, setLocalLoading }
       </div>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="flex w-full rounded-none bg-gray-50 p-1 gap-1 overflow-x-auto border-b">
+        <TabsList className="grid grid-cols-8 w-full rounded-none bg-gray-50 p-1 gap-1">
           <TabsTrigger 
             value="billing" 
             className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-candilingo-purple data-[state=active]:to-candilingo-purple/80 data-[state=active]:text-white"
           >
             <CreditCard className="h-4 w-4" />
             <span className="hidden sm:inline">Billing</span>
-          </TabsTrigger>
-          <TabsTrigger 
-            value="products" 
-            className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-candilingo-pink data-[state=active]:to-candilingo-pink/80 data-[state=active]:text-white"
-          >
-            <Package className="h-4 w-4" />
-            <span className="hidden sm:inline">Products</span>
           </TabsTrigger>
           <TabsTrigger 
             value="dictionaries" 
@@ -83,22 +75,8 @@ const PortalSections: React.FC<PortalSectionsProps> = ({ user, setLocalLoading }
             value="organization" 
             className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-candilingo-lightpurple data-[state=active]:to-candilingo-purple data-[state=active]:text-white"
           >
-            <Building className="h-4 w-4" />
-            <span className="hidden sm:inline">Organization</span>
-          </TabsTrigger>
-          <TabsTrigger 
-            value="resources" 
-            className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-candilingo-pink data-[state=active]:to-candilingo-pink/80 data-[state=active]:text-white"
-          >
-            <FileText className="h-4 w-4" />
-            <span className="hidden sm:inline">Resources</span>
-          </TabsTrigger>
-          <TabsTrigger 
-            value="team" 
-            className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-candilingo-lightpurple data-[state=active]:to-candilingo-purple data-[state=active]:text-white"
-          >
             <Users className="h-4 w-4" />
-            <span className="hidden sm:inline">Team</span>
+            <span className="hidden sm:inline">Organization</span>
           </TabsTrigger>
           <TabsTrigger 
             value="profile" 
@@ -120,10 +98,6 @@ const PortalSections: React.FC<PortalSectionsProps> = ({ user, setLocalLoading }
           <BillingSection user={user} setLocalLoading={setLocalLoading} />
         </TabsContent>
         
-        <TabsContent value="products" className="p-6 bg-gradient-to-br from-white to-candilingo-pink/5">
-          <ProductsSection user={user} setLocalLoading={setLocalLoading} />
-        </TabsContent>
-        
         <TabsContent value="dictionaries" className="p-6 bg-gradient-to-br from-white to-candilingo-teal/5">
           <PublicDictionariesSection user={user} setLocalLoading={setLocalLoading} />
         </TabsContent>
@@ -138,17 +112,6 @@ const PortalSections: React.FC<PortalSectionsProps> = ({ user, setLocalLoading }
         
         <TabsContent value="organization" className="p-6 bg-gradient-to-br from-white to-candilingo-lightpurple/5">
           <OrganizationPermissionsSection user={user} setLocalLoading={setLocalLoading} />
-        </TabsContent>
-        
-        <TabsContent value="team" className="p-6 bg-gradient-to-br from-white to-candilingo-lightpurple/5">
-          <OrganizationPermissionsSection user={user} setLocalLoading={setLocalLoading} />
-        </TabsContent>
-        
-        <TabsContent value="resources" className="p-6 bg-gradient-to-br from-white to-candilingo-pink/5">
-          <div className="text-center py-6 text-gray-500">
-            <h3 className="text-xl font-medium mb-2">Resources Coming Soon</h3>
-            <p>This section is currently under development.</p>
-          </div>
         </TabsContent>
         
         <TabsContent value="profile" className="p-6 bg-gradient-to-br from-white to-candilingo-pink/5">
