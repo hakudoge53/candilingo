@@ -37,7 +37,8 @@ const PrivateDictionariesContent: React.FC<PrivateDictionariesContentProps> = ({
     handleUpdateTerm,
     handleEditTermClick,
     handleDeleteTerm,
-    handleAddTermClick
+    handleAddTermClick,
+    handleEditGlossaryClick
   } = usePrivateDictionaries(organizationId);
 
   const totalLoading = externalLoading || isGlossaryLoading || isTermsLoading;
@@ -51,7 +52,7 @@ const PrivateDictionariesContent: React.FC<PrivateDictionariesContentProps> = ({
           isLoading={totalLoading}
           onSelectGlossary={handleSelectGlossary}
           onCreateGlossary={() => setIsGlossaryDialogOpen(true)}
-          onEditGlossary={handleEditTermClick}
+          onEditGlossary={handleEditGlossaryClick}
           onDeleteGlossary={handleDeleteGlossary}
         />
       </div>
