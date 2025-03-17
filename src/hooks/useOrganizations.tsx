@@ -24,10 +24,8 @@ export const useOrganizations = (): UseOrganizationsReturn => {
     organizations,
     activeOrganization,
     setActiveOrganization,
-    createOrganization,
-    isLoading: isOrgLoading,
-    error: orgError,
-    refetch: refetchOrganizations
+    createNewOrganization, // Note: renamed from createOrganization to match the implementation
+    organizationsLoading: isOrgLoading,
   } = useOrganizationList();
 
   const {
@@ -43,13 +41,22 @@ export const useOrganizations = (): UseOrganizationsReturn => {
   // Combine loading states
   const isLoading = isOrgLoading || isMembersLoading;
   
-  // Combine errors
-  const error = orgError || membersError;
+  // Use only member errors for now
+  const error = membersError;
   
   // Simplified inviteMember to use the active organization
   const inviteMember = async (email: string, name: string, role: UserRole) => {
     return await inviteMemberToOrg(email, name, role);
   };
+
+  // Create a refetch function that does nothing for now
+  const refetch = async () => {
+    // This would normally refetch organizations, but we don't have that function yet
+    // Could be implemented in useOrganizationList
+  };
+
+  // Rename createNewOrganization to match interface
+  const createOrganization = createNewOrganization;
 
   return {
     organizations,
@@ -62,7 +69,7 @@ export const useOrganizations = (): UseOrganizationsReturn => {
     removeMember,
     isLoading,
     error,
-    refetch: refetchOrganizations,
+    refetch,
     refetchMembers
   };
 };

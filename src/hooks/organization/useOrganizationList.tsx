@@ -1,7 +1,8 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { Organization, UserRole } from '@/types/organization';
-import { useAuth } from '../../useAuth';
+import { useAuth } from '../useAuth';
 import { toast } from "sonner";
 import { castRole } from '@/utils/supabaseHelpers';
 

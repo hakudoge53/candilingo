@@ -1,8 +1,7 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Glossary } from '@/types/organization';
+import { Glossary } from '@/types/glossary';
 import { useAuth } from '../useAuth';
 import { UseGlossaryListReturn } from './types';
 
