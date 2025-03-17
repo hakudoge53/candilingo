@@ -50,7 +50,7 @@ export interface OrganizationInvitation {
 }
 
 // User roles based on Supabase database enum
-export type UserRole = 'owner' | 'manager' | 'team_lead' | 'employee' | 'super_admin';
+export type UserRole = 'super_admin' | 'owner' | 'manager' | 'team_lead' | 'employee' | 'consultant' | 'admin';
 export type MemberStatus = 'pending' | 'active' | 'inactive';
 
 export const ROLE_LABELS: Record<string, string> = {
@@ -58,7 +58,9 @@ export const ROLE_LABELS: Record<string, string> = {
   'owner': 'Business Owner',
   'manager': 'Manager',
   'team_lead': 'Team Lead',
-  'employee': 'Employee'
+  'employee': 'Employee',
+  'admin': 'Administrator',
+  'consultant': 'Consultant'
 };
 
 export const ROLE_DESCRIPTIONS: Record<string, string> = {
@@ -66,5 +68,7 @@ export const ROLE_DESCRIPTIONS: Record<string, string> = {
   'owner': 'Full access to organization settings and billing. Can add/remove members and change roles.',
   'manager': 'Can manage organization resources, members, and team assignments, but cannot change billing.',
   'team_lead': 'Can lead projects and manage team assignments within assigned areas.',
-  'employee': 'Standard member access to shared resources without administrative privileges.'
+  'employee': 'Standard member access to shared resources without administrative privileges.',
+  'admin': 'Administrative access to organization settings and resources.',
+  'consultant': 'Limited access to specific resources as an external collaborator.'
 };

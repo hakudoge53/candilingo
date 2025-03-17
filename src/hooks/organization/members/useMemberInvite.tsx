@@ -38,7 +38,7 @@ export const useMemberInvite = ({
         user_id: '00000000-0000-0000-0000-000000000000', // Placeholder until user accepts invitation
         invited_email: email,
         invited_name: name,
-        role, // Need to cast to any for Supabase
+        role: role as any, // Cast to any to work around TypeScript issues
         invitation_token: token,
         status: 'pending'
       };
@@ -46,7 +46,7 @@ export const useMemberInvite = ({
       // Insert the new member
       const { data, error } = await supabase
         .from('organization_members')
-        .insert(memberData as any)
+        .insert(memberData)
         .select()
         .single();
       
@@ -55,7 +55,11 @@ export const useMemberInvite = ({
       const newMember: OrganizationMember = {
         ...data,
         role: data.role as UserRole,
-        status: data.status as MemberStatus
+        status: data.status as MemberStatus,
+        user: {
+          name: name,
+          email: email
+        }
       };
       
       setMembers(prev => [newMember, ...prev]);

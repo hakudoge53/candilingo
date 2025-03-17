@@ -28,11 +28,11 @@ export const useMemberRoleUpdate = ({
     
     try {
       // Create the update object with the role
-      const updateData = { role };
+      const updateData = { role: role as any }; // Cast to any to work around TypeScript issues
       
       const { error } = await supabase
         .from('organization_members')
-        .update(updateData as any)
+        .update(updateData)
         .eq('id', memberId);
       
       if (error) throw error;
