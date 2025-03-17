@@ -5,6 +5,17 @@ import { useAuth } from '../auth/useAuth';
 import { useState, useEffect } from 'react';
 import { toast } from "sonner";
 
+// Define UserSettings interface with active_organization_id
+interface UserSettings {
+  id?: string;
+  user_id?: string;
+  highlight_enabled?: boolean;
+  highlight_color?: string;
+  created_at?: string;
+  updated_at?: string;
+  active_organization_id?: string;
+}
+
 export interface UseOrganizationListReturn {
   organizations: Organization[];
   activeOrganization: Organization | null;
@@ -81,15 +92,15 @@ export const useOrganizationList = (): UseOrganizationListReturn => {
           return;
         }
 
-        // Check if the active_organization_id property exists in user settings
-        const activeOrgId = userSettings && 'active_organization_id' in userSettings ? 
-          userSettings.active_organization_id : null;
+        // Safely check if active_organization_id exists in the user settings
+        const activeOrgId = userSettings ? 
+          (userSettings as UserSettings).active_organization_id : null;
 
         if (activeOrgId) {
           const activeOrg = organizations.find(org => org.id === activeOrgId) || null;
           setActiveOrganizationState(activeOrg);
         } else {
-          setActiveOrganizationState(null);
+          setActiveOrganizationState(organizations.length > 0 ? organizations[0] : null);
         }
       } catch (error) {
         console.error("Error fetching active organization:", error);
@@ -105,6 +116,8 @@ export const useOrganizationList = (): UseOrganizationListReturn => {
     setActiveOrganizationState(organization);
 
     try {
+      if (!user) return;
+      
       // First check if user settings record exists
       const { data: existingSettings } = await supabase
         .from('user_settings')
@@ -112,26 +125,29 @@ export const useOrganizationList = (): UseOrganizationListReturn => {
         .eq('user_id', user.id)
         .single();
 
+      // Create the update object with type safety
+      const updateData: UserSettings = {
+        user_id: user.id,
+        active_organization_id: organization?.id || null,
+      };
+
       if (existingSettings) {
         // Update existing settings
         await supabase
           .from('user_settings')
-          .update({
-            active_organization_id: organization?.id || null,
-          })
+          .update(updateData)
           .eq('user_id', user.id);
       } else {
-        // Create new settings record
+        // Create new settings record with defaults
+        const newSettings: UserSettings = {
+          ...updateData,
+          highlight_enabled: true,
+          highlight_color: '#9b87f5'
+        };
+        
         await supabase
           .from('user_settings')
-          .insert([
-            {
-              user_id: user.id,
-              active_organization_id: organization?.id || null,
-              highlight_enabled: true,
-              highlight_color: '#9b87f5'
-            }
-          ]);
+          .insert([newSettings]);
       }
 
       console.log("Updated active organization in settings");
