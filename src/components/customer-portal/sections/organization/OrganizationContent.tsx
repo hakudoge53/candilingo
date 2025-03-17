@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { User } from '@/hooks/auth/types';
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -7,7 +6,7 @@ import { OrganizationMember, Organization, UserRole } from '@/types/organization
 import MembersList from './MembersList';
 import InvitesList from './InvitesList';
 import NoOrganizationCard from './NoOrganizationCard';
-import { OrganizationCard as OrgCard } from './OrganizationCard';
+import OrganizationCard from './OrganizationCard';
 
 interface OrganizationContentProps {
   user: User;
@@ -63,7 +62,7 @@ const OrganizationContent: React.FC<OrganizationContentProps> = ({
   
   return (
     <div className="space-y-6">
-      <OrgCard
+      <OrganizationCard
         organization={activeOrganization}
         members={activeMembers}
         invites={pendingInvites.map(invite => ({
@@ -73,7 +72,7 @@ const OrganizationContent: React.FC<OrganizationContentProps> = ({
           invited_name: invite.invited_name || null,
           role: invite.role,
           status: invite.status,
-          created_at: invite.created_at
+          created_at: invite.created_at || ''
         }))}
         currentUserId={user.id}
         onInviteMember={handleInviteMember}

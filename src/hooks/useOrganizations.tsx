@@ -1,7 +1,7 @@
 
 import { Organization, OrganizationMember, UserRole } from '@/types/organization';
-import { useOrganizationList, UseOrganizationListReturn } from './organization/useOrganizationList';
-import { useOrganizationMembers, UseOrganizationMembersReturn } from './organization/useOrganizationMembers';
+import { useOrganizationList } from './organization/useOrganizationList';
+import { useOrganizationMembers } from './organization/useOrganizationMembers';
 
 export interface UseOrganizationsReturn {
   organizations: Organization[];
@@ -24,7 +24,7 @@ export const useOrganizations = (): UseOrganizationsReturn => {
     organizations,
     activeOrganization,
     setActiveOrganization,
-    createNewOrganization, // Note: renamed from createOrganization to match the implementation
+    createNewOrganization,
     organizationsLoading: isOrgLoading,
   } = useOrganizationList();
 
@@ -53,6 +53,7 @@ export const useOrganizations = (): UseOrganizationsReturn => {
   const refetch = async () => {
     // This would normally refetch organizations, but we don't have that function yet
     // Could be implemented in useOrganizationList
+    return Promise.resolve();
   };
 
   // Rename createNewOrganization to match interface

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertTriangle, Check, Upload, User as UserIcon } from 'lucide-react';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { ensureStorageBucket } from '@/utils/supabaseHelpers';
+import { User } from '@/hooks/auth/types';
 
 interface ProfileSettingsSectionProps {
   user: User;

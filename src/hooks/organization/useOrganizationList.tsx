@@ -4,11 +4,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from '../auth/useAuth';
 import { toast } from "sonner";
 import { castRole } from '@/utils/supabaseHelpers';
+import { Organization } from '@/types/organization';
 
-export const useOrganizationList = ({ onOrganizationChange } = {}) => {
+interface UseOrganizationListProps {
+  onOrganizationChange?: (org: Organization) => void;
+}
+
+export const useOrganizationList = (props: UseOrganizationListProps = {}) => {
+  const { onOrganizationChange } = props;
   const { user } = useAuth();
-  const [organizations, setOrganizations] = useState([]);
-  const [activeOrganization, setActiveOrganization] = useState(null);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [activeOrganization, setActiveOrganization] = useState<Organization | null>(null);
   const [organizationsLoading, setOrganizationsLoading] = useState(false);
   const [activeOrganizationLoading, setActiveOrganizationLoading] = useState(false);
 
@@ -40,7 +46,9 @@ export const useOrganizationList = ({ onOrganizationChange } = {}) => {
           }
         }
       })
-      .catch(error => console.error('Error in useEffect:', error))
+      .catch(error => {
+        console.error('Error in useEffect:', error);
+      })
       .finally(() => {
         setOrganizationsLoading(false);
       });
@@ -73,7 +81,9 @@ export const useOrganizationList = ({ onOrganizationChange } = {}) => {
           onOrganizationChange?.(org);
         }
       })
-      .catch(error => console.error('Error loading active organization:', error))
+      .catch(error => {
+        console.error('Error loading active organization:', error);
+      })
       .finally(() => {
         setActiveOrganizationLoading(false);
       });
@@ -88,15 +98,15 @@ export const useOrganizationList = ({ onOrganizationChange } = {}) => {
     }
   }, [activeOrganization]);
 
-  const createNewOrganization = async (name) => {
-    if (!user) return;
+  const createNewOrganization = async (name: string) => {
+    if (!user) return null;
     setOrganizationsLoading(true);
     try {
       // First create the organization with the required created_by field
       const { data: orgData, error: orgError } = await supabase
         .from('organizations')
         .insert({
-          name: name,
+          name,
           created_by: user.id
         })
         .select()
@@ -119,7 +129,7 @@ export const useOrganizationList = ({ onOrganizationChange } = {}) => {
       if (memberError) throw memberError;
 
       // Update local state
-      const newOrg = {
+      const newOrg: Organization = {
         ...orgData,
         role: 'owner',
         member_count: 1
@@ -134,7 +144,7 @@ export const useOrganizationList = ({ onOrganizationChange } = {}) => {
       return newOrg;
     } catch (error) {
       console.error('Error creating organization:', error);
-      toast.error('Failed to create organization: ' + error.message);
+      toast.error('Failed to create organization: ' + (error as Error).message);
       return null;
     } finally {
       setOrganizationsLoading(false);
