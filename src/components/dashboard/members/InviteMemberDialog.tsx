@@ -78,9 +78,11 @@ const InviteMemberDialog: React.FC<InviteMemberDialogProps> = ({ isOpen, onClose
               </SelectTrigger>
               <SelectContent>
                 {Object.entries(ROLE_LABELS).map(([roleKey, label]) => (
-                  <SelectItem key={roleKey} value={roleKey}>
-                    {label}
-                  </SelectItem>
+                  roleKey !== 'super_admin' && roleKey !== 'owner' && (
+                    <SelectItem key={roleKey} value={roleKey}>
+                      {label}
+                    </SelectItem>
+                  )
                 ))}
               </SelectContent>
             </Select>

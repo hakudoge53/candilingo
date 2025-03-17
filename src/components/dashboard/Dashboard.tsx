@@ -9,6 +9,7 @@ import ResourcesPanel from './ResourcesPanel';
 import MembersPanel from './MembersPanel';
 import { useAuth } from '@/hooks/useAuth';
 import { useOrganizations } from '@/hooks/useOrganizations';
+import { useGlossaries } from '@/hooks/useGlossaries';
 import { Organization } from '@/types/organization';
 
 const Dashboard = () => {
@@ -21,6 +22,21 @@ const Dashboard = () => {
     createOrganization,
     isLoading: orgLoading 
   } = useOrganizations();
+  
+  const { 
+    glossaries,
+    activeGlossary,
+    setActiveGlossary,
+    isLoading: glossariesLoading,
+    terms,
+    isLoadingTerms,
+    addTerm,
+    updateTerm,
+    deleteTerm,
+    addGlossary,
+    updateGlossary,
+    deleteGlossary
+  } = useGlossaries(activeOrganization?.id);
   
   const [activeSection, setActiveSection] = useState('products');
   const [activeTab, setActiveTab] = useState('glossaries');
@@ -87,7 +103,20 @@ const Dashboard = () => {
   const renderPanel = () => {
     if (activeSection === 'products') {
       if (activeTab === 'glossaries') {
-        return <GlossaryPanel />;
+        return <GlossaryPanel 
+          glossaries={glossaries}
+          activeGlossary={activeGlossary}
+          setActiveGlossary={setActiveGlossary}
+          terms={terms}
+          isLoadingGlossaries={glossariesLoading}
+          isLoadingTerms={isLoadingTerms}
+          addTerm={addTerm}
+          updateTerm={updateTerm}
+          deleteTerm={deleteTerm}
+          addGlossary={addGlossary}
+          updateGlossary={updateGlossary}
+          deleteGlossary={deleteGlossary}
+        />;
       } else if (activeTab === 'extensions') {
         return <WebExtensionsPanel />;
       }
@@ -106,7 +135,20 @@ const Dashboard = () => {
     }
     
     // Default
-    return <GlossaryPanel />;
+    return <GlossaryPanel 
+      glossaries={glossaries}
+      activeGlossary={activeGlossary}
+      setActiveGlossary={setActiveGlossary}
+      terms={terms}
+      isLoadingGlossaries={glossariesLoading}
+      isLoadingTerms={isLoadingTerms}
+      addTerm={addTerm}
+      updateTerm={updateTerm}
+      deleteTerm={deleteTerm}
+      addGlossary={addGlossary}
+      updateGlossary={updateGlossary}
+      deleteGlossary={deleteGlossary}
+    />;
   };
   
   return (

@@ -83,15 +83,15 @@ export const useOrganizationList = (): UseOrganizationListReturn => {
       
       if (error) throw error;
       
-      // Also create a membership record for the creator as admin
+      // Also create a membership record for the creator as owner
       const { error: memberError } = await supabase
         .from('organization_members')
-        .insert([{
+        .insert({
           organization_id: data.id,
           user_id: activeUser.id,
           role: 'owner',
           status: 'active'
-        }]);
+        });
       
       if (memberError) throw memberError;
       

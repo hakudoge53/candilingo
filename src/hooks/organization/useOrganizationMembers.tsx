@@ -42,7 +42,16 @@ export const useOrganizationMembers = (organizationId: string | undefined): UseO
       
       // Transform data to match expected format
       const transformedData: OrganizationMember[] = data.map(item => ({
-        ...item,
+        id: item.id,
+        organization_id: item.organization_id,
+        user_id: item.user_id,
+        role: item.role as UserRole,
+        status: item.status,
+        invited_email: item.invited_email,
+        invited_name: item.invited_name,
+        invitation_token: item.invitation_token,
+        created_at: item.created_at,
+        updated_at: item.updated_at,
         user: item.user || (item.invited_email ? {
           name: item.invited_name || '',
           email: item.invited_email,
@@ -66,7 +75,7 @@ export const useOrganizationMembers = (organizationId: string | undefined): UseO
     try {
       const { data, error } = await supabase
         .from('organization_members')
-        .insert([{
+        .insert({
           organization_id: organizationId,
           user_id: '00000000-0000-0000-0000-000000000000', // Placeholder for pending invites
           invited_email: email,
@@ -74,7 +83,7 @@ export const useOrganizationMembers = (organizationId: string | undefined): UseO
           role,
           status: 'pending',
           invitation_token: `inv_${Math.random().toString(36).substring(2, 15)}` // Simple token generation
-        }])
+        })
         .select()
         .single();
       
@@ -83,6 +92,7 @@ export const useOrganizationMembers = (organizationId: string | undefined): UseO
       // Add the new member to the local state
       const newMember: OrganizationMember = {
         ...data,
+        role: data.role as UserRole,
         user: {
           name: name,
           email: email,

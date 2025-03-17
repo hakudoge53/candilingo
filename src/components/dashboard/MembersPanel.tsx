@@ -1,16 +1,18 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useOrganizations } from '@/hooks/useOrganizations';
-import { UserRole, OrganizationMember, ROLE_LABELS } from '@/types/organization';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useAuth } from '@/hooks/useAuth';
+import { UserRole } from '@/types/organization';
 import { UserPlus, Users, Mail, AlertTriangle } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ActiveMembersTable from './members/ActiveMembersTable';
+import PendingInvitationsTable from './members/PendingInvitationsTable';
 import InviteMemberDialog from './members/InviteMemberDialog';
 
 const MembersPanel = () => {
+  const { activeUser } = useAuth();
   const { activeOrganization, members, inviteMember, updateMemberRole, removeMember, isLoading } = useOrganizations();
   const [activeTab, setActiveTab] = useState('active');
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
@@ -19,27 +21,15 @@ const MembersPanel = () => {
   const activeMembers = members.filter(member => member.status === 'active');
   const pendingInvites = members.filter(member => member.status === 'pending');
   
+  // Check if current user is an admin (owner or super_admin)
+  const isAdmin = members.some(member => 
+    member.user_id === activeUser?.id && 
+    (member.role === 'owner' || member.role === 'super_admin' || member.role === 'manager')
+  );
+  
   const handleInviteMember = async (name: string, email: string, role: UserRole) => {
-    if (!activeOrganization) return;
-    
-    await inviteMember(activeOrganization.id, email, name, role);
+    await inviteMember(email, name, role);
     setIsInviteDialogOpen(false);
-  };
-  
-  const handleRoleChange = async (memberId: string, role: UserRole) => {
-    await updateMemberRole(memberId, role);
-  };
-  
-  const handleRemoveMember = async (memberId: string) => {
-    if (confirm('Are you sure you want to remove this member?')) {
-      await removeMember(memberId);
-    }
-  };
-  
-  const handleRevokeInvite = async (inviteId: string) => {
-    if (confirm('Are you sure you want to revoke this invitation?')) {
-      await removeMember(inviteId);
-    }
   };
   
   if (isLoading) {
@@ -66,9 +56,11 @@ const MembersPanel = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Team Members</h2>
-        <Button onClick={() => setIsInviteDialogOpen(true)} variant="coral">
-          <UserPlus className="mr-2 h-4 w-4" /> Invite Member
-        </Button>
+        {isAdmin && (
+          <Button onClick={() => setIsInviteDialogOpen(true)}>
+            <UserPlus className="mr-2 h-4 w-4" /> Invite Member
+          </Button>
+        )}
       </div>
       
       <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -92,59 +84,13 @@ const MembersPanel = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {activeMembers.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-gray-500">No active members found</p>
-                </div>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Role</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {activeMembers.map((member) => (
-                      <TableRow key={member.id}>
-                        <TableCell className="font-medium">
-                          {member.user?.name || 'Unknown'}
-                        </TableCell>
-                        <TableCell>{member.user?.email || 'No email'}</TableCell>
-                        <TableCell>
-                          <Select
-                            value={member.role}
-                            onValueChange={(value) => handleRoleChange(member.id, value as UserRole)}
-                          >
-                            <SelectTrigger className="w-32">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {Object.entries(ROLE_LABELS).map(([role, label]) => (
-                                <SelectItem key={role} value={role}>
-                                  {label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleRemoveMember(member.id)}
-                            className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                          >
-                            Remove
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
+              <ActiveMembersTable 
+                members={activeMembers}
+                currentUserId={activeUser?.id || ''}
+                isAdmin={isAdmin}
+                onRoleChange={updateMemberRole}
+                onRemove={removeMember}
+              />
             </CardContent>
           </Card>
         </TabsContent>
@@ -158,47 +104,11 @@ const MembersPanel = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {pendingInvites.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-gray-500">No pending invitations</p>
-                </div>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Role</TableHead>
-                      <TableHead>Sent</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {pendingInvites.map((invite) => (
-                      <TableRow key={invite.id}>
-                        <TableCell className="font-medium">
-                          {invite.invited_name || 'No name'}
-                        </TableCell>
-                        <TableCell>{invite.invited_email || 'No email'}</TableCell>
-                        <TableCell>{ROLE_LABELS[invite.role]}</TableCell>
-                        <TableCell>
-                          {new Date(invite.created_at).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleRevokeInvite(invite.id)}
-                            className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                          >
-                            Revoke
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
+              <PendingInvitationsTable 
+                invites={pendingInvites}
+                isAdmin={isAdmin}
+                onRemove={removeMember}
+              />
             </CardContent>
           </Card>
         </TabsContent>

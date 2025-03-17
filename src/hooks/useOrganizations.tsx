@@ -9,7 +9,7 @@ export interface UseOrganizationsReturn {
   setActiveOrganization: (org: Organization | null) => void;
   members: OrganizationMember[];
   createOrganization: (name: string) => Promise<Organization | null>;
-  inviteMember: (organizationId: string, email: string, name: string, role: UserRole) => Promise<OrganizationMember | null>;
+  inviteMember: (email: string, name: string, role: UserRole) => Promise<OrganizationMember | null>;
   updateMemberRole: (memberId: string, role: UserRole) => Promise<void>;
   removeMember: (memberId: string) => Promise<void>;
   isLoading: boolean;
@@ -19,7 +19,6 @@ export interface UseOrganizationsReturn {
 }
 
 // This is a facade hook that combines the functionality of the more focused hooks
-// while maintaining the same API for backward compatibility
 export const useOrganizations = (): UseOrganizationsReturn => {
   const {
     organizations,
@@ -47,8 +46,8 @@ export const useOrganizations = (): UseOrganizationsReturn => {
   // Combine errors
   const error = orgError || membersError;
   
-  // Wrapper for inviteMember to maintain the same API
-  const inviteMember = async (organizationId: string, email: string, name: string, role: UserRole) => {
+  // Simplified inviteMember to use the active organization
+  const inviteMember = async (email: string, name: string, role: UserRole) => {
     return await inviteMemberToOrg(email, name, role);
   };
 
@@ -64,6 +63,6 @@ export const useOrganizations = (): UseOrganizationsReturn => {
     isLoading,
     error,
     refetch: refetchOrganizations,
-    refetchMembers: () => activeOrganization && refetchMembers()
+    refetchMembers
   };
 };
