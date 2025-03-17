@@ -503,6 +503,12 @@ export type Database = {
         }
         Returns: undefined
       }
+      add_newsletter_subscriber: {
+        Args: {
+          subscriber_email: string
+        }
+        Returns: undefined
+      }
       akeys: {
         Args: {
           "": unknown
