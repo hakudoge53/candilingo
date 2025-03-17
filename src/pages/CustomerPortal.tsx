@@ -27,8 +27,8 @@ const CustomerPortal: React.FC<CustomerPortalProps> = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-candilingo-purple/5 flex flex-col">
       <Navbar />
-      <div className="flex-grow container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto">
+      <div className="flex-grow container mx-auto px-4 py-12 max-w-full">
+        <div className="mx-auto w-full max-w-6xl">
           <PortalHeader />
           
           <CustomerPortalContent
