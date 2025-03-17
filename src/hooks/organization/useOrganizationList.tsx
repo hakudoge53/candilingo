@@ -127,7 +127,7 @@ export const useOrganizationList = (): UseOrganizationListReturn => {
 
       if (existingSettings) {
         // Update existing settings using a properly typed object
-        const updateData: { active_organization_id: string | null } = {
+        const updateData = {
           active_organization_id: organization?.id || null,
         };
 
