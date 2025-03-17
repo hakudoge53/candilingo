@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Check } from "lucide-react";
+import { Link } from 'react-router-dom';
 
 const CTASection = () => {
   const [seatsRemaining, setSeatsRemaining] = useState(200);
@@ -73,13 +74,14 @@ const CTASection = () => {
             
             <div className="flex items-center justify-center">
               <div className="flex flex-row gap-3 justify-center space-x-4">
-                <Button 
-                  variant="purple"
-                  className="w-40 text-sm py-2 px-4 shadow-md hover:shadow-lg transition-all duration-300"
-                  onClick={() => window.location.href = '/dashboard'}
-                >
-                  Start Your Free Trial
-                </Button>
+                <Link to="/portal">
+                  <Button 
+                    variant="purple"
+                    className="w-40 text-sm py-2 px-4 shadow-md hover:shadow-lg transition-all duration-300"
+                  >
+                    Start Your Free Trial
+                  </Button>
+                </Link>
                 
                 <Dialog open={open} onOpenChange={setOpen}>
                   <DialogTrigger asChild>
