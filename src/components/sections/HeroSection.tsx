@@ -11,12 +11,36 @@ const HeroSection = ({ onShowVideo }: { onShowVideo?: () => void }) => {
   const [email, setEmail] = useState('');
   const [confirmedLicenses, setConfirmedLicenses] = useState(1); // Starting with 1 confirmed license
   const [seatsRemaining, setSeatsRemaining] = useState(200 - 1); // Calculate remaining seats
+  const [currentTextIndex, setCurrentTextIndex] = useState(0);
+
+  // Array of phrases to cycle through
+  const highlightedPhrases = [
+    "improve the candidate experience",
+    "ask relevant questions",
+    "improve onboarding",
+    "make sourcing effective",
+    "make interviews efficient",
+    "place more candidates",
+    "improve customer relationships",
+    "shorten placement cycle",
+    "sell more"
+  ];
 
   useEffect(() => {
     // This is where we would fetch the actual confirmed licenses count
     // For now, we're using a static value
     setSeatsRemaining(200 - confirmedLicenses);
   }, [confirmedLicenses]);
+
+  useEffect(() => {
+    // Set up timer to cycle through the phrases
+    const intervalId = setInterval(() => {
+      setCurrentTextIndex((prevIndex) => (prevIndex + 1) % highlightedPhrases.length);
+    }, 3000); // Change every 3 seconds
+
+    // Clean up the interval on component unmount
+    return () => clearInterval(intervalId);
+  }, []);
 
   const handleNewsletterSignup = (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +70,7 @@ const HeroSection = ({ onShowVideo }: { onShowVideo?: () => void }) => {
               Keyword scanning and instant definitions for Recruiters
             </h1>
             <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed">
-              Instantly highlight key terms on LinkedIn, ATS-systems & PDFs to <span className="underline decoration-candilingo-pink decoration-2 font-semibold">improve the candidate experience</span>.
+              Instantly highlight key terms on LinkedIn, ATS-systems & PDFs to <span className="inline-block underline decoration-candilingo-pink decoration-2 font-semibold text-candilingo-pink transition-colors duration-500">{highlightedPhrases[currentTextIndex]}</span>.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
               <Link to="/portal">
