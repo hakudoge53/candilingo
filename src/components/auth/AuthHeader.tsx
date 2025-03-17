@@ -8,6 +8,7 @@ interface AuthHeaderProps {
   showSocialLogin?: boolean;
   onGoogleLogin?: () => void;
   onLinkedInLogin?: () => void;
+  showLogo?: boolean;
 }
 
 const AuthHeader = ({
@@ -15,13 +16,16 @@ const AuthHeader = ({
   description,
   showSocialLogin = false,
   onGoogleLogin,
-  onLinkedInLogin
+  onLinkedInLogin,
+  showLogo = true
 }: AuthHeaderProps) => {
   return (
     <CardHeader>
-      <div className="mb-4 flex justify-center">
-        <img src="/lovable-uploads/3ba829c2-54b7-4152-b767-9eb28429dbd7.png" alt="Candilingo" className="h-24 w-auto" />
-      </div>
+      {showLogo && (
+        <div className="mb-4 flex justify-center">
+          <img src="/lovable-uploads/3ba829c2-54b7-4152-b767-9eb28429dbd7.png" alt="Candilingo" className="h-24 w-auto" />
+        </div>
+      )}
       <CardTitle className="text-center">{title}</CardTitle>
       <CardDescription className="text-center mb-4">{description}</CardDescription>
       
