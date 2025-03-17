@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import PortalSections from './PortalSections';
 import { Button } from '@/components/ui/button';
 import { RefreshCcw } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export interface CustomerPortalContentProps {
   isLoggedIn: boolean;
@@ -29,6 +30,7 @@ const CustomerPortalContent: React.FC<CustomerPortalContentProps> = ({
   // Combined loading state for both auth operations and local form submissions
   const showLoading = isLoading || localLoading;
   const [hasLoadingTimedOut, setHasLoadingTimedOut] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     // Log component state for debugging
@@ -36,7 +38,8 @@ const CustomerPortalContent: React.FC<CustomerPortalContentProps> = ({
       isLoggedIn,
       isLoading,
       hasActiveUser: !!activeUser,
-      localLoading
+      localLoading,
+      isMobile
     });
     
     // Reset timeout state when loading state changes
@@ -58,11 +61,11 @@ const CustomerPortalContent: React.FC<CustomerPortalContentProps> = ({
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [isLoggedIn, isLoading, activeUser, localLoading, showLoading]);
+  }, [isLoggedIn, isLoading, activeUser, localLoading, showLoading, isMobile]);
 
   if (showLoading) {
     return (
-      <div className="flex flex-col items-center justify-center pt-10 gap-4">
+      <div className="flex flex-col items-center justify-center pt-10 gap-4 px-4">
         <LoadingSpinner message={
           isLoading ? "Loading your profile..." : "Processing your request..."
         } />
@@ -87,7 +90,7 @@ const CustomerPortalContent: React.FC<CustomerPortalContentProps> = ({
 
   if (!isLoggedIn) {
     return (
-      <div className="max-w-md mx-auto">
+      <div className="max-w-md mx-auto px-4">
         <AuthContainer setIsLoading={setLocalLoading} />
       </div>
     );
@@ -96,9 +99,9 @@ const CustomerPortalContent: React.FC<CustomerPortalContentProps> = ({
   // Safety check - should not reach here without an active user if logged in
   if (!activeUser) {
     return (
-      <div className="text-center py-8">
+      <div className="text-center py-8 px-4">
         <p className="text-red-500 mb-4">There was an issue loading your profile. Your session may have expired or there was a problem connecting to the server.</p>
-        <div className="flex gap-3 justify-center">
+        <div className="flex gap-3 justify-center flex-wrap">
           <Button 
             onClick={() => window.location.reload()}
             variant="default"
@@ -117,7 +120,7 @@ const CustomerPortalContent: React.FC<CustomerPortalContentProps> = ({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-4 md:px-0">
       {activeUser && (
         <UserProfile 
           user={activeUser} 

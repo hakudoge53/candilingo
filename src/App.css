@@ -1,8 +1,15 @@
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
   text-align: center;
+}
+
+@media (min-width: 768px) {
+  #root {
+    padding: 2rem;
+  }
 }
 
 .logo {
@@ -34,9 +41,38 @@
 }
 
 .card {
-  padding: 2em;
+  padding: 1em;
+}
+
+@media (min-width: 768px) {
+  .card {
+    padding: 2em;
+  }
 }
 
 .read-the-docs {
   color: #888;
+}
+
+/* Mobile viewport adjustments */
+@media (max-width: 640px) {
+  /* Increase touch target size for interactive elements */
+  button, a, input, select, textarea {
+    min-height: 44px;
+  }
+  
+  /* Adjust spacing for mobile viewports */
+  .mobile-spacing {
+    padding: 0.75rem;
+  }
+  
+  /* Fix for iOS overflow issues */
+  .ios-fix {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Prevent content shift when scrollbar appears */
+html {
+  scrollbar-gutter: stable;
 }

@@ -26,6 +26,7 @@ import {
   DialogTitle,
   DialogDescription
 } from "@/components/ui/dialog";
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface InviteFormValues {
   email: string;
@@ -42,6 +43,7 @@ const InviteMemberForm: React.FC<InviteMemberFormProps> = ({
   onInvite,
   isLoading
 }) => {
+  const isMobile = useIsMobile();
   const form = useForm<InviteFormValues>({
     defaultValues: {
       email: '',
@@ -68,7 +70,11 @@ const InviteMemberForm: React.FC<InviteMemberFormProps> = ({
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="john.doe@example.com" {...field} />
+                  <Input 
+                    placeholder="john.doe@example.com" 
+                    {...field} 
+                    className={isMobile ? 'h-12' : ''}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -82,7 +88,11 @@ const InviteMemberForm: React.FC<InviteMemberFormProps> = ({
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="John Doe" {...field} />
+                  <Input 
+                    placeholder="John Doe" 
+                    {...field} 
+                    className={isMobile ? 'h-12' : ''}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -97,7 +107,7 @@ const InviteMemberForm: React.FC<InviteMemberFormProps> = ({
                 <FormLabel>Role</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className={isMobile ? 'h-12' : ''}>
                       <SelectValue placeholder="Select a role" />
                     </SelectTrigger>
                   </FormControl>
@@ -116,8 +126,12 @@ const InviteMemberForm: React.FC<InviteMemberFormProps> = ({
             )}
           />
           
-          <DialogFooter>
-            <Button type="submit" disabled={isLoading}>
+          <DialogFooter className={isMobile ? 'flex-col' : ''}>
+            <Button 
+              type="submit" 
+              disabled={isLoading}
+              className={isMobile ? 'w-full h-12 mt-4' : ''}
+            >
               {isLoading ? "Inviting..." : "Invite Member"}
             </Button>
           </DialogFooter>

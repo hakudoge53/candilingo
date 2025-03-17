@@ -8,6 +8,7 @@ import MembersList from './MembersList';
 import InvitesList from './InvitesList';
 import NoOrganizationCard from './NoOrganizationCard';
 import OrganizationCard from './OrganizationCard';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface OrganizationContentProps {
   user: User;
@@ -48,6 +49,8 @@ const OrganizationContent: React.FC<OrganizationContentProps> = ({
   handleRemoveMember,
   handleRevokeInvitation
 }) => {
+  const isMobile = useIsMobile();
+  
   if (isLoading) {
     return <div className="text-center py-8">Loading organization data...</div>;
   }
@@ -62,7 +65,7 @@ const OrganizationContent: React.FC<OrganizationContentProps> = ({
   }
   
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-4 md:px-0">
       <OrganizationCard
         organization={activeOrganization}
         member={members.find(m => m.user_id === user.id) || null}
@@ -70,9 +73,9 @@ const OrganizationContent: React.FC<OrganizationContentProps> = ({
       />
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="mb-4">
-          <TabsTrigger value="members">Members ({activeMembers.length})</TabsTrigger>
-          <TabsTrigger value="invites">Pending Invites ({pendingInvites.length})</TabsTrigger>
+        <TabsList className={`mb-4 ${isMobile ? 'w-full' : ''}`}>
+          <TabsTrigger className={isMobile ? 'flex-1' : ''} value="members">Members ({activeMembers.length})</TabsTrigger>
+          <TabsTrigger className={isMobile ? 'flex-1' : ''} value="invites">Pending Invites ({pendingInvites.length})</TabsTrigger>
         </TabsList>
         
         <TabsContent value="members">
