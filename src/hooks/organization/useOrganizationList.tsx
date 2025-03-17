@@ -4,7 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Organization } from '@/types/organization';
 import { useAuth } from '../useAuth';
-import { User } from '@/hooks/auth/types';
 
 export interface UseOrganizationListReturn {
   organizations: Organization[];
@@ -90,7 +89,7 @@ export const useOrganizationList = (): UseOrganizationListReturn => {
         .insert([{
           organization_id: data.id,
           user_id: activeUser.id,
-          role: 'admin',
+          role: 'owner',
           status: 'active'
         }]);
       
@@ -110,6 +109,21 @@ export const useOrganizationList = (): UseOrganizationListReturn => {
     }
   };
 
+  // Special function to create an organization for a specific user
+  // This will be triggered when the dashboard loads if no organizations exist
+  const createDefaultOrganization = async () => {
+    if (!isLoggedIn || !activeUser) return;
+    
+    // Check if user already has organizations
+    if (organizations.length > 0) return;
+    
+    // Check if user has email simon.tejme@hotmail.com
+    if (activeUser.email === 'simon.tejme@hotmail.com') {
+      console.log("Creating default organization for Simon");
+      await createOrganization("Candilingo");
+    }
+  };
+
   // Load organizations when user logs in
   useEffect(() => {
     if (isLoggedIn && activeUser) {
@@ -119,6 +133,13 @@ export const useOrganizationList = (): UseOrganizationListReturn => {
       setActiveOrganization(null);
     }
   }, [isLoggedIn, activeUser]);
+
+  // Create default organization if needed
+  useEffect(() => {
+    if (isLoggedIn && activeUser && organizations.length === 0 && !isLoading) {
+      createDefaultOrganization();
+    }
+  }, [isLoggedIn, activeUser, organizations, isLoading]);
 
   return {
     organizations,
