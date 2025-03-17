@@ -10,7 +10,7 @@ import PendingInvitationsTable from './members/PendingInvitationsTable';
 import InviteMemberDialog from './members/InviteMemberDialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-interface MembersPanelProps {
+export interface MembersPanelProps {
   organizationId: string;
 }
 

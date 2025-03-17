@@ -9,3 +9,37 @@ const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiO
 // import { supabase } from "@/integrations/supabase/client";
 
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+// Add a function to check and alter the user_settings table structure
+export const ensureUserSettingsTableStructure = async () => {
+  try {
+    // Check if the user_settings table has the active_organization_id column
+    const { data, error } = await supabase.rpc('check_column_exists', {
+      table_name: 'user_settings',
+      column_name: 'active_organization_id'
+    });
+
+    if (error) {
+      console.error("Error checking column existence:", error);
+      return;
+    }
+
+    // If the column doesn't exist, add it
+    if (!data) {
+      const { error: alterError } = await supabase.rpc('add_column_to_table', {
+        table_name: 'user_settings',
+        column_name: 'active_organization_id',
+        column_type: 'uuid',
+        column_default: 'null'
+      });
+
+      if (alterError) {
+        console.error("Error adding column to user_settings:", alterError);
+      } else {
+        console.log("Added active_organization_id column to user_settings table");
+      }
+    }
+  } catch (error) {
+    console.error("Error ensuring user_settings table structure:", error);
+  }
+};

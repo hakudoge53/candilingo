@@ -128,7 +128,7 @@ const Dashboard = () => {
           isLoading={orgLoading}
         />;
       } else if (activeTab === 'members') {
-        return <MembersPanel />;
+        return <MembersPanel organizationId={activeOrganization?.id || ''} />;
       }
     } else if (activeSection === 'resources') {
       return <ResourcesPanel activeTab={activeTab} />;
