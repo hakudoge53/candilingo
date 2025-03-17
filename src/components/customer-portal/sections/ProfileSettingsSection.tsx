@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { User } from '@/hooks/auth/types';
 import { supabase } from '@/integrations/supabase/client';
@@ -27,6 +28,7 @@ const ProfileSettingsSection: React.FC<ProfileSettingsSectionProps> = ({ user, s
   const [isSaving, setIsSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(user.avatar_url || null);
+  const [currentLanguage, setCurrentLanguage] = useState(user.preferred_language || 'en');
 
   const profileForm = useForm<ProfileFormValues>({
     defaultValues: {
@@ -39,11 +41,16 @@ const ProfileSettingsSection: React.FC<ProfileSettingsSectionProps> = ({ user, s
     if (user.avatar_url) {
       setImageUrl(user.avatar_url);
     }
-  }, [user.avatar_url]);
+    if (user.preferred_language) {
+      setCurrentLanguage(user.preferred_language);
+      profileForm.setValue('preferredLanguage', user.preferred_language);
+    }
+  }, [user.avatar_url, user.preferred_language]);
 
   const handleProfileUpdate = async (values: ProfileFormValues) => {
     setIsSaving(true);
     try {
+      console.log("Updating profile with:", values);
       const { data, error } = await supabase
         .from('profiles')
         .update({
@@ -58,12 +65,32 @@ const ProfileSettingsSection: React.FC<ProfileSettingsSectionProps> = ({ user, s
         throw error;
       }
 
+      setCurrentLanguage(values.preferredLanguage);
+      console.log("Profile updated:", data);
       toast.success("Profile updated successfully");
     } catch (error: any) {
       console.error("Error updating profile:", error);
       toast.error("Failed to update profile");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  // Create storage bucket if it doesn't exist
+  const ensureStorageBucket = async () => {
+    try {
+      const { data: bucketData, error: bucketError } = await supabase.storage.getBucket('avatars');
+      
+      if (bucketError && bucketError.message.includes('The resource was not found')) {
+        await supabase.storage.createBucket('avatars', {
+          public: true,
+          fileSizeLimit: 1024 * 1024 * 5
+        });
+      }
+      return true;
+    } catch (error) {
+      console.error("Error ensuring storage bucket:", error);
+      return false;
     }
   };
 
@@ -75,19 +102,17 @@ const ProfileSettingsSection: React.FC<ProfileSettingsSectionProps> = ({ user, s
 
     setUploading(true);
     try {
-      const { data: bucketData, error: bucketError } = await supabase.storage.getBucket('avatars');
-      
-      if (bucketError && bucketError.message.includes('The resource was not found')) {
-        await supabase.storage.createBucket('avatars', {
-          public: true,
-          fileSizeLimit: 1024 * 1024 * 5
-        });
+      // Ensure avatar bucket exists with proper permissions
+      const bucketExists = await ensureStorageBucket();
+      if (!bucketExists) {
+        throw new Error("Failed to ensure avatar storage bucket exists");
       }
 
       const fileExt = file.name.split('.').pop();
       const fileName = `${user.id}.${fileExt}`;
       const filePath = `${fileName}`;
 
+      // Upload file to storage
       const { data, error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file, {
@@ -99,6 +124,7 @@ const ProfileSettingsSection: React.FC<ProfileSettingsSectionProps> = ({ user, s
         throw uploadError;
       }
 
+      // Get public URL
       const { data: urlData } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
@@ -109,6 +135,7 @@ const ProfileSettingsSection: React.FC<ProfileSettingsSectionProps> = ({ user, s
 
       setImageUrl(urlData.publicUrl);
 
+      // Update profile with avatar URL
       const { error: profileError } = await supabase
         .from('profiles')
         .update({ avatar_url: urlData.publicUrl })
@@ -191,7 +218,7 @@ const ProfileSettingsSection: React.FC<ProfileSettingsSectionProps> = ({ user, s
               <div>
                 <Label htmlFor="preferredLanguage">Preferred Language</Label>
                 <Select
-                  defaultValue={profileForm.getValues().preferredLanguage}
+                  value={profileForm.getValues().preferredLanguage}
                   onValueChange={(value) => profileForm.setValue("preferredLanguage", value)}
                 >
                   <SelectTrigger className="w-full">

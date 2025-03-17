@@ -32,13 +32,13 @@ export const useMemberInvite = ({
       // Generate a random token for the invitation
       const token = Math.random().toString(36).substring(2, 15);
       
-      // Create the member data object - we don't need to cast the role
+      // Create the member data object with proper type casting for Supabase
       const memberData = {
         organization_id: organizationId,
         user_id: '00000000-0000-0000-0000-000000000000', // Placeholder until user accepts invitation
         invited_email: email,
         invited_name: name,
-        role, 
+        role: role as any, // Cast to any for Supabase compatibility
         invitation_token: token,
         status: 'pending' as MemberStatus
       };
@@ -52,8 +52,11 @@ export const useMemberInvite = ({
       
       if (error) throw error;
       
+      // Create a properly typed OrganizationMember object
       const newMember: OrganizationMember = {
         ...data,
+        role: data.role as UserRole,
+        status: data.status as MemberStatus,
         user: {
           name: name,
           email: email

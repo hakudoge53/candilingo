@@ -28,7 +28,7 @@ export const useMemberRoleUpdate = ({
     
     try {
       // Create the update object with the role - cast to handle type mismatch with Supabase
-      const updateData = { role };
+      const updateData = { role: role as any };
       
       const { error } = await supabase
         .from('organization_members')
