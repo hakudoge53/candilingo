@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from './layout/DashboardLayout';
@@ -13,7 +12,7 @@ import OrganizationChartPanel from './OrganizationChartPanel';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { useOrganizations } from '@/hooks/useOrganizations';
 import { useGlossaries } from '@/hooks/useGlossaries';
-import { Organization, OrganizationMember } from '@/types/organization';
+import { Organization, OrganizationMember, MemberStatus, UserRole } from '@/types/organization';
 import { supabase } from '@/integrations/supabase/client';
 
 const Dashboard = () => {
@@ -79,7 +78,18 @@ const Dashboard = () => {
           .eq('status', 'active');
         
         if (error) throw error;
-        setAdminMembers(data || []);
+        
+        // Convert the raw data to the expected OrganizationMember format
+        const typedMembers: OrganizationMember[] = (data || []).map((member: any) => {
+          return {
+            ...member,
+            role: member.role as UserRole,
+            status: member.status as MemberStatus,
+            user: member.user || {}
+          };
+        });
+        
+        setAdminMembers(typedMembers);
       }
     } catch (error) {
       console.error('Error fetching admin members:', error);

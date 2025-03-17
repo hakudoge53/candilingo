@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { TeamMember } from '../types';
-import { OrganizationMember } from '@/types/organization';
+import { OrganizationMember, UserRole, MemberStatus } from '@/types/organization';
 import { toast } from "sonner";
 
 export interface UseTeamMembersReturn {
@@ -48,15 +48,26 @@ export const useTeamMembers = (): UseTeamMembersReturn => {
 
       // Transform the data to match the expected format
       const transformedMembers: TeamMember[] = data.map(item => {
-        return {
-          id: item.id,
-          team_id: item.team_id,
-          member_id: item.member_id,
-          is_team_manager: item.is_team_manager,
-          created_at: item.created_at,
-          updated_at: item.updated_at,
-          member: item.member
-        };
+        // Convert raw member status string to MemberStatus type
+        if (item.member) {
+          const memberWithStatus = {
+            ...item.member,
+            status: item.member.status as MemberStatus,
+            role: item.member.role as UserRole
+          };
+          
+          return {
+            id: item.id,
+            team_id: item.team_id,
+            member_id: item.member_id,
+            is_team_manager: item.is_team_manager,
+            created_at: item.created_at,
+            updated_at: item.updated_at,
+            member: memberWithStatus
+          };
+        }
+        
+        return item as TeamMember;
       });
 
       setTeamMembers(transformedMembers);
@@ -125,7 +136,22 @@ export const useTeamMembers = (): UseTeamMembersReturn => {
 
       if (error) throw error;
 
-      setTeamMembers(prev => [...prev, data]);
+      // Transform data to include the correct types before adding to state
+      if (data.member) {
+        const newTeamMember: TeamMember = {
+          ...data,
+          member: {
+            ...data.member,
+            status: data.member.status as MemberStatus,
+            role: data.member.role as UserRole
+          }
+        };
+        
+        setTeamMembers(prev => [...prev, newTeamMember]);
+      } else {
+        setTeamMembers(prev => [...prev, data as TeamMember]);
+      }
+      
       toast.success('Member added to team successfully');
       return true;
     } catch (err: any) {

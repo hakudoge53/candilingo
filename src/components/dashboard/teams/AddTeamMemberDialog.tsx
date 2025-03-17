@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { OrganizationMember, UserRole } from '@/types/organization';
+import { OrganizationMember, UserRole, MemberStatus } from '@/types/organization';
 import { supabase } from '@/integrations/supabase/client';
 import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -77,7 +77,13 @@ const AddTeamMemberDialog: React.FC<AddTeamMemberDialogProps> = ({
       // Filter out members that are already in the team
       const availableMembers = data.filter(member => 
         !existingMemberIds.includes(member.id)
-      );
+      ).map(member => {
+        return {
+          ...member,
+          status: member.status as MemberStatus,
+          role: member.role as UserRole
+        } as OrganizationMember;
+      });
 
       setAllMembers(availableMembers);
       setFilteredMembers(availableMembers);

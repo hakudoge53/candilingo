@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PlusIcon, LicenseIcon, AlertCircleIcon } from 'lucide-react';
-import { OrganizationMember, UserRole } from '@/types/organization';
+import { PlusIcon, AlertCircleIcon, LucideIcon } from 'lucide-react';
+import { OrganizationMember, UserRole, MemberStatus } from '@/types/organization';
 import { useAuth } from '@/hooks/auth/useAuth';
 import ActiveMembersTable from './members/ActiveMembersTable';
 import PendingInvitationsTable from './members/PendingInvitationsTable';
@@ -13,6 +13,27 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { supabase } from '@/integrations/supabase/client';
 import { useLicenses } from '@/hooks/organization/licenses/useLicenses';
 import { toast } from 'sonner';
+
+// Since LicenseIcon doesn't exist in lucide-react, let's create a component for it
+const LicenseIcon: LucideIcon = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <path d="M20 6H4V18H20V6Z" />
+    <path d="M12 10C12.5523 10 13 9.55228 13 9C13 8.44772 12.5523 8 12 8C11.4477 8 11 8.44772 11 9C11 9.55228 11.4477 10 12 10Z" />
+    <path d="M16 14C16.5523 14 17 13.5523 17 13C17 12.4477 16.5523 12 16 12C15.4477 12 15 12.4477 15 13C15 13.5523 15.4477 14 16 14Z" />
+    <path d="M8 14C8.55228 14 9 13.5523 9 13C9 12.4477 8.55228 12 8 12C7.44772 12 7 12.4477 7 13C7 13.5523 7.44772 14 8 14Z" />
+  </svg>
+);
 
 export interface MembersPanelProps {
   organizationId: string;
@@ -61,8 +82,21 @@ const MembersPanel: React.FC<MembersPanelProps> = ({ organizationId }) => {
       if (error) throw error;
 
       // Separate active members and pending invitations
-      const activeMembers = data.filter(member => member.status === 'active');
-      const pendingInvites = data.filter(member => member.status === 'pending');
+      const activeMembers = data.filter(member => member.status === 'active').map(member => {
+        return {
+          ...member,
+          status: member.status as MemberStatus,
+          role: member.role as UserRole
+        } as OrganizationMember;
+      });
+      
+      const pendingInvites = data.filter(member => member.status === 'pending').map(member => {
+        return {
+          ...member,
+          status: member.status as MemberStatus,
+          role: member.role as UserRole
+        } as OrganizationMember;
+      });
       
       setMembers(activeMembers);
       setInvites(pendingInvites);
@@ -176,8 +210,10 @@ const MembersPanel: React.FC<MembersPanelProps> = ({ organizationId }) => {
       if (error) throw error;
 
       // Update the UI to show the new invitation
-      const newInvite = {
+      const newInvite: OrganizationMember = {
         ...data,
+        status: data.status as MemberStatus,
+        role: data.role as UserRole,
         user: {
           name: name,
           email: email

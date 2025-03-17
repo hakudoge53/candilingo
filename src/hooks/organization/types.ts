@@ -66,7 +66,24 @@ export interface TeamMember {
   is_team_manager: boolean;
   created_at?: string;
   updated_at?: string;
-  member?: OrganizationMember;
+  member?: OrganizationMember | {
+    id: string;
+    organization_id: string;
+    user_id: string;
+    invited_email: string | null;
+    invited_name: string | null;
+    role: UserRole;
+    status: string; // Using string instead of MemberStatus for database compatibility
+    invitation_token: string | null;
+    created_at?: string;
+    updated_at?: string;
+    user?: {
+      id?: string;
+      name: string | null;
+      email: string;
+      avatar_url?: string | null;
+    };
+  };
 }
 
 // License-related interfaces
