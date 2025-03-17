@@ -16,8 +16,7 @@ const AuthContainer = ({ setIsLoading }: AuthContainerProps) => {
     <Card>
       <AuthHeader 
         title="Welcome to Candilingo" 
-        description="Login or create an account to access exclusive features and resources."
-        showLogo={false}
+        description="Login or create an account to access exclusive features and resources." 
       />
       <CardContent>
         <AuthTabs defaultTab="login">
