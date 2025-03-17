@@ -1,9 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { OrganizationMember, MemberStatus, UserRole } from '@/types/organization';
-import { useAuth } from '../../useAuth';
+import { useAuth } from '../../auth/useAuth';
 
 export interface UseMembersFetchReturn {
   members: OrganizationMember[];

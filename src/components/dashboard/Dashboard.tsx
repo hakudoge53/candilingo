@@ -7,7 +7,7 @@ import WebExtensionsPanel from './WebExtensionsPanel';
 import OrganizationPanel from './OrganizationPanel';
 import ResourcesPanel from './ResourcesPanel';
 import MembersPanel from './MembersPanel';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth/useAuth';
 import { useOrganizations } from '@/hooks/useOrganizations';
 import { useGlossaries } from '@/hooks/useGlossaries';
 import { Organization } from '@/types/organization';

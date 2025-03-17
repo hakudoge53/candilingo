@@ -1,9 +1,8 @@
-
 import { useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { UserRole, OrganizationMember } from '@/types/organization';
-import { useAuth } from '../../useAuth';
+import { useAuth } from '../../auth/useAuth';
 
 export interface UseMemberRoleUpdateProps {
   setMembers: React.Dispatch<React.SetStateAction<OrganizationMember[]>>;

@@ -1,9 +1,8 @@
-
 import { useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { OrganizationMember, UserRole, MemberStatus } from '@/types/organization';
-import { useAuth } from '../../useAuth';
+import { useAuth } from '../../auth/useAuth';
 
 export interface UseMemberInviteProps {
   organizationId: string | undefined;
