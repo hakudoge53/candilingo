@@ -20,7 +20,10 @@ export const ensureStorageBucket = async (
     
     if (error && error.message.includes('The resource was not found')) {
       // Create bucket if it doesn't exist
-      const { error: createError } = await supabase.storage.createBucket(bucketName, options);
+      const { error: createError } = await supabase.storage.createBucket(bucketName, {
+        public: options.public === undefined ? true : options.public,
+        fileSizeLimit: options.fileSizeLimit
+      });
       
       if (createError) {
         console.error(`Error creating bucket ${bucketName}:`, createError);

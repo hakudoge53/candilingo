@@ -1,146 +1,168 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
-import { Organization } from '@/types/organization';
-import { toast } from 'sonner';
-import { useAuth } from '../useAuth';
+import { Organization, UserRole } from '@/types/organization';
+import { useAuth } from '../../useAuth';
+import { toast } from "sonner";
+import { castRole } from '@/utils/supabaseHelpers';
+
+export interface UseOrganizationListProps {
+  onOrganizationChange?: (org: Organization) => void;
+}
 
 export interface UseOrganizationListReturn {
   organizations: Organization[];
   activeOrganization: Organization | null;
-  setActiveOrganization: (org: Organization | null) => void;
-  createOrganization: (name: string) => Promise<Organization | null>;
-  isLoading: boolean;
-  error: string | null;
-  refetch: () => Promise<void>;
+  organizationsLoading: boolean;
+  activeOrganizationLoading: boolean;
+  setOrganizations: React.Dispatch<React.SetStateAction<Organization[]>>;
+  setActiveOrganization: React.Dispatch<React.SetStateAction<Organization | null>>;
+  createNewOrganization: (name: string) => Promise<Organization | null>;
 }
 
-export const useOrganizationList = (): UseOrganizationListReturn => {
-  const { isLoggedIn, activeUser } = useAuth();
+export const useOrganizationList = ({
+  onOrganizationChange
+}: UseOrganizationListProps = {}): UseOrganizationListReturn => {
+  const { user } = useAuth();
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [activeOrganization, setActiveOrganization] = useState<Organization | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [organizationsLoading, setOrganizationsLoading] = useState(false);
+  const [activeOrganizationLoading, setActiveOrganizationLoading] = useState(false);
 
-  // Fetch organizations
-  const fetchOrganizations = async () => {
-    if (!isLoggedIn || !activeUser) return;
+  // Load organizations on mount
+  useEffect(() => {
+    if (!user) return;
     
-    setIsLoading(true);
-    setError(null);
+    setOrganizationsLoading(true);
     
-    try {
-      // First, get the organizations where the user is a member
-      const { data: memberships, error: membershipError } = await supabase
-        .from('organization_members')
-        .select('organization_id')
-        .eq('user_id', activeUser.id);
-      
-      if (membershipError) throw membershipError;
-      
-      if (memberships.length === 0) {
-        setOrganizations([]);
-        setActiveOrganization(null);
-        return;
-      }
-      
-      // Get the organization IDs
-      const orgIds = memberships.map(membership => membership.organization_id);
-      
-      // Get the organizations
-      const { data: orgs, error: orgsError } = await supabase
-        .from('organizations')
-        .select('*')
-        .in('id', orgIds)
-        .order('created_at', { ascending: false });
-      
-      if (orgsError) throw orgsError;
-      
-      setOrganizations(orgs as Organization[]);
-      
-      // Set active organization to the first one if none is set
-      if (orgs.length > 0 && !activeOrganization) {
-        setActiveOrganization(orgs[0] as Organization);
-      }
-    } catch (error: any) {
-      console.error("Error fetching organizations:", error);
-      setError(error.message);
-      toast.error("Failed to load organizations");
-    } finally {
-      setIsLoading(false);
+    supabase
+      .from('organizations')
+      .select(`
+        *,
+        organization_members(role)
+      `)
+      .then(response => {
+        if (response.error) {
+          console.error('Error fetching organizations:', response.error);
+          toast.error('Failed to fetch organizations: ' + response.error.message);
+        } else {
+          const orgs = response.data.map(org => ({
+            ...org,
+            role: org.organization_members?.[0]?.role as UserRole,
+            member_count: 1
+          })) as Organization[];
+          setOrganizations(orgs);
+          
+          if (orgs.length > 0 && !activeOrganization) {
+            setActiveOrganization(orgs[0]);
+            onOrganizationChange?.(orgs[0]);
+          }
+        }
+      })
+      .finally(() => {
+        setOrganizationsLoading(false);
+      });
+  }, [user]);
+
+  // Load active organization from local storage on mount
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const orgId = localStorage.getItem('activeOrganizationId');
+    if (!orgId) return;
+    
+    setActiveOrganizationLoading(true);
+    
+    supabase
+      .from('organizations')
+      .select(`
+        *,
+        organization_members(role)
+      `)
+      .eq('id', orgId)
+      .then(response => {
+        if (response.error) {
+          console.error('Error fetching active organization:', response.error);
+        } else if (response.data && response.data.length > 0) {
+          const org = {
+            ...response.data[0],
+            role: response.data[0].organization_members?.[0]?.role as UserRole,
+            member_count: 1
+          } as Organization;
+          setActiveOrganization(org);
+          onOrganizationChange?.(org);
+        }
+      })
+      .finally(() => {
+        setActiveOrganizationLoading(false);
+      });
+  }, []);
+
+  // Save active organization to local storage when it changes
+  useEffect(() => {
+    if (!activeOrganization) {
+      localStorage.removeItem('activeOrganizationId');
+    } else {
+      localStorage.setItem('activeOrganizationId', activeOrganization.id);
     }
-  };
+  }, [activeOrganization]);
 
-  // Create a new organization
-  const createOrganization = async (name: string): Promise<Organization | null> => {
-    if (!isLoggedIn || !activeUser) return null;
+  const createNewOrganization = async (name: string) => {
+    if (!user) return;
     
-    setIsLoading(true);
+    setOrganizationsLoading(true);
     
     try {
       // First create the organization
       const { data: orgData, error: orgError } = await supabase
         .from('organizations')
-        .insert({
-          name,
-          created_by: activeUser.id
-        })
+        .insert([{ name: name }])
         .select()
         .single();
       
       if (orgError) throw orgError;
       
-      // Then create a membership for the current user as the owner
+      // Then add the current user as an owner
+      const memberData = {
+        organization_id: orgData.id,
+        user_id: user.id,
+        role: castRole('owner'), // Use castRole to handle type conversion
+        status: 'active'
+      };
+      
       const { error: memberError } = await supabase
         .from('organization_members')
-        .insert({
-          organization_id: orgData.id,
-          user_id: activeUser.id,
-          role: 'owner',
-          status: 'active'
-        });
+        .insert([memberData]);
       
-      if (memberError) {
-        // If membership creation fails, delete the organization to avoid orphaned organizations
-        await supabase
-          .from('organizations')
-          .delete()
-          .eq('id', orgData.id);
-        
-        throw memberError;
-      }
-      
-      const newOrg = orgData as Organization;
+      if (memberError) throw memberError;
       
       // Update local state
-      setOrganizations(prevOrgs => [newOrg, ...prevOrgs]);
+      const newOrg = {
+        ...orgData,
+        role: 'owner' as UserRole, // Type cast to UserRole
+        member_count: 1
+      };
+      
+      setOrganizations(prevOrgs => [...prevOrgs, newOrg]);
       setActiveOrganization(newOrg);
       
-      toast.success("Organization created successfully");
+      onOrganizationChange?.(newOrg);
       return newOrg;
     } catch (error: any) {
-      console.error("Error creating organization:", error);
-      toast.error("Failed to create organization");
+      console.error('Error creating organization:', error);
+      toast.error('Failed to create organization: ' + error.message);
       return null;
     } finally {
-      setIsLoading(false);
+      setOrganizationsLoading(false);
     }
   };
-
-  // Fetch organizations on mount
-  useEffect(() => {
-    if (isLoggedIn) {
-      fetchOrganizations();
-    }
-  }, [isLoggedIn, activeUser?.id]);
 
   return {
     organizations,
     activeOrganization,
+    organizationsLoading,
+    activeOrganizationLoading,
+    setOrganizations,
     setActiveOrganization,
-    createOrganization,
-    isLoading,
-    error,
-    refetch: fetchOrganizations
+    createNewOrganization
   };
 };

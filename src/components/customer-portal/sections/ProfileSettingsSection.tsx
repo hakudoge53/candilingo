@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { User } from '@/hooks/auth/types';
+import { User } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertTriangle, Check, Upload, User as UserIcon } from 'lucide-react';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { ensureStorageBucket } from '@/utils/supabaseHelpers';
 
 interface ProfileSettingsSectionProps {
   user: User;
@@ -76,24 +76,6 @@ const ProfileSettingsSection: React.FC<ProfileSettingsSectionProps> = ({ user, s
     }
   };
 
-  // Create storage bucket if it doesn't exist
-  const ensureStorageBucket = async () => {
-    try {
-      const { data: bucketData, error: bucketError } = await supabase.storage.getBucket('avatars');
-      
-      if (bucketError && bucketError.message.includes('The resource was not found')) {
-        await supabase.storage.createBucket('avatars', {
-          public: true,
-          fileSizeLimit: 1024 * 1024 * 5
-        });
-      }
-      return true;
-    } catch (error) {
-      console.error("Error ensuring storage bucket:", error);
-      return false;
-    }
-  };
-
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) {
@@ -102,8 +84,7 @@ const ProfileSettingsSection: React.FC<ProfileSettingsSectionProps> = ({ user, s
 
     setUploading(true);
     try {
-      // Ensure avatar bucket exists with proper permissions
-      const bucketExists = await ensureStorageBucket();
+      const bucketExists = await ensureStorageBucket('avatars', { public: true, fileSizeLimit: 1024 * 1024 * 5 });
       if (!bucketExists) {
         throw new Error("Failed to ensure avatar storage bucket exists");
       }
@@ -112,7 +93,6 @@ const ProfileSettingsSection: React.FC<ProfileSettingsSectionProps> = ({ user, s
       const fileName = `${user.id}.${fileExt}`;
       const filePath = `${fileName}`;
 
-      // Upload file to storage
       const { data, error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file, {
@@ -124,7 +104,6 @@ const ProfileSettingsSection: React.FC<ProfileSettingsSectionProps> = ({ user, s
         throw uploadError;
       }
 
-      // Get public URL
       const { data: urlData } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
@@ -135,7 +114,6 @@ const ProfileSettingsSection: React.FC<ProfileSettingsSectionProps> = ({ user, s
 
       setImageUrl(urlData.publicUrl);
 
-      // Update profile with avatar URL
       const { error: profileError } = await supabase
         .from('profiles')
         .update({ avatar_url: urlData.publicUrl })

@@ -1,6 +1,6 @@
-
-import { useState, useEffect, createContext, useContext } from 'react';
+import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { Session, User as SupabaseUser } from '@supabase/supabase-js';
 import { toast } from 'sonner';
 
 // Type definitions for context
@@ -16,12 +16,12 @@ interface AuthContextType {
 }
 
 // User type definition
-interface User {
+export interface User {
   id: string;
   email: string;
-  name: string;
-  avatar_url?: string;
-  preferred_language?: string;
+  name: string | null;
+  avatar_url: string | null;
+  preferred_language: string | null;
 }
 
 // Create context with default values
@@ -37,7 +37,7 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 // Provider component
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [activeUser, setActiveUser] = useState<User | null>(null);
