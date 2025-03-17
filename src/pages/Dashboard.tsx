@@ -7,7 +7,7 @@ import { useAuth } from '@/hooks/auth/useAuth';
 import Dashboard from '@/components/dashboard/Dashboard';
 import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, ensureUserSettingsTableStructure } from "@/integrations/supabase/client";
 
 const DashboardPage = () => {
   const { isLoggedIn, isLoading, activeUser } = useAuth();
@@ -27,6 +27,9 @@ const DashboardPage = () => {
             message: "Please log in to access the dashboard" 
           } 
         });
+      } else {
+        // Ensure user_settings table has the required columns
+        await ensureUserSettingsTableStructure();
       }
     };
 

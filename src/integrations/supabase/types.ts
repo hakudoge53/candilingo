@@ -376,6 +376,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_column_to_table: {
+        Args: {
+          table_name: string
+          column_name: string
+          column_type: string
+          column_default: string
+        }
+        Returns: undefined
+      }
       akeys: {
         Args: {
           "": unknown
@@ -387,6 +396,13 @@ export type Database = {
           "": unknown
         }
         Returns: string[]
+      }
+      check_column_exists: {
+        Args: {
+          table_name: string
+          column_name: string
+        }
+        Returns: boolean
       }
       citext:
         | {

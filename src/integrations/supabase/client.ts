@@ -30,15 +30,20 @@ export const ensureUserSettingsTableStructure = async () => {
     
     if (!hasColumn) {
       console.log("Adding active_organization_id column to user_settings table");
-      // Use a direct SQL query to add the column since we can't use RPC with type safety
-      const { error: alterError } = await supabase
-        .from('user_settings')
-        .update({ temp: null })
-        .eq('id', 'dummy')
-        .select();
+      
+      // Use raw SQL query instead of RPC call
+      const { error: alterError } = await supabase.rpc(
+        'add_column_to_table',
+        { 
+          table_name: 'user_settings', 
+          column_name: 'active_organization_id', 
+          column_type: 'uuid', 
+          column_default: 'null' 
+        }
+      );
 
       if (alterError) {
-        console.error("Error attempting to update user_settings:", alterError);
+        console.error("Error adding active_organization_id column:", alterError);
       }
     }
   } catch (error) {

@@ -8,7 +8,7 @@ import { toast } from "sonner";
 // Define UserSettings interface with active_organization_id
 interface UserSettings {
   id?: string;
-  user_id?: string;
+  user_id: string; // Make this required as it's needed for database operations
   highlight_enabled?: boolean;
   highlight_color?: string;
   created_at?: string;
@@ -93,8 +93,8 @@ export const useOrganizationList = (): UseOrganizationListReturn => {
         }
 
         // Safely check if active_organization_id exists in the user settings
-        const activeOrgId = userSettings ? 
-          (userSettings as UserSettings).active_organization_id : null;
+        const activeOrgId = userSettings && 'active_organization_id' in userSettings ? 
+          userSettings.active_organization_id : null;
 
         if (activeOrgId) {
           const activeOrg = organizations.find(org => org.id === activeOrgId) || null;
@@ -125,14 +125,12 @@ export const useOrganizationList = (): UseOrganizationListReturn => {
         .eq('user_id', user.id)
         .single();
 
-      // Create the update object with type safety
-      const updateData: UserSettings = {
-        user_id: user.id,
-        active_organization_id: organization?.id || null,
-      };
-
       if (existingSettings) {
-        // Update existing settings
+        // Update existing settings using a properly typed object
+        const updateData: { active_organization_id: string | null } = {
+          active_organization_id: organization?.id || null,
+        };
+
         await supabase
           .from('user_settings')
           .update(updateData)
@@ -140,14 +138,15 @@ export const useOrganizationList = (): UseOrganizationListReturn => {
       } else {
         // Create new settings record with defaults
         const newSettings: UserSettings = {
-          ...updateData,
+          user_id: user.id,
+          active_organization_id: organization?.id || null,
           highlight_enabled: true,
           highlight_color: '#9b87f5'
         };
         
         await supabase
           .from('user_settings')
-          .insert([newSettings]);
+          .insert(newSettings);
       }
 
       console.log("Updated active organization in settings");
