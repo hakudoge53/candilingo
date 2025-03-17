@@ -6,11 +6,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 // Additional info schema
 export const additionalInfoSchema = z.object({
   role: z.string().min(1, { message: "Please select your role" }),
   industry: z.string().min(1, { message: "Please select your industry" }),
+  companyName: z.string().min(1, { message: "Please enter your company name" }),
+  companySize: z.string().min(1, { message: "Please select your company size" }),
   referralSource: z.string().min(1, { message: "Please tell us how you heard about us" }),
 });
 
@@ -27,6 +30,8 @@ const AdditionalInfoForm = ({ onSubmit, onBack }: AdditionalInfoFormProps) => {
     defaultValues: {
       role: "",
       industry: "",
+      companyName: "",
+      companySize: "",
       referralSource: "",
     },
   });
@@ -42,6 +47,46 @@ const AdditionalInfoForm = ({ onSubmit, onBack }: AdditionalInfoFormProps) => {
       
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="companyName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Company Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter your company name" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="companySize"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Company Size</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select company size" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="1-10">1-10 employees</SelectItem>
+                    <SelectItem value="11-50">11-50 employees</SelectItem>
+                    <SelectItem value="51-200">51-200 employees</SelectItem>
+                    <SelectItem value="201-500">201-500 employees</SelectItem>
+                    <SelectItem value="501-1000">501-1000 employees</SelectItem>
+                    <SelectItem value="1001+">1001+ employees</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
           <FormField
             control={form.control}
             name="role"
@@ -67,6 +112,7 @@ const AdditionalInfoForm = ({ onSubmit, onBack }: AdditionalInfoFormProps) => {
               </FormItem>
             )}
           />
+          
           <FormField
             control={form.control}
             name="industry"
@@ -93,6 +139,7 @@ const AdditionalInfoForm = ({ onSubmit, onBack }: AdditionalInfoFormProps) => {
               </FormItem>
             )}
           />
+          
           <FormField
             control={form.control}
             name="referralSource"
@@ -119,6 +166,7 @@ const AdditionalInfoForm = ({ onSubmit, onBack }: AdditionalInfoFormProps) => {
               </FormItem>
             )}
           />
+          
           <div className="flex space-x-2">
             <Button type="button" variant="outline" className="flex-1" onClick={onBack}>
               Back

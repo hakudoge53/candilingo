@@ -34,6 +34,8 @@ export function useBusinessOwnerRegistration(
             role: additionalInfo.role,
             industry: additionalInfo.industry,
             referral_source: additionalInfo.referralSource,
+            company_name: additionalInfo.companyName,
+            company_size: additionalInfo.companySize,
             user_type: 'business_owner' // Add user type for business owners
           },
           emailRedirectTo: redirectUrl,

@@ -1,68 +1,88 @@
 
-import React, { useState } from 'react';
-import { useAuth } from "@/hooks/auth/useAuth";
+import React from 'react';
 import LoginFormFields from './LoginFormFields';
-import ResetPasswordForm from './ResetPasswordForm';
 import LoginSuccess from './LoginSuccess';
+import ResetPasswordForm from './ResetPasswordForm';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { useAuthHandlers } from './useAuthHandlers';
+import AuthHeader from './AuthHeader';
+
+// Define schema
+const loginSchema = z.object({
+  email: z.string().email({ message: "Please enter a valid email address" }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+});
+
+type LoginValues = z.infer<typeof loginSchema>;
 
 interface LoginFormProps {
   setIsLoading: (loading: boolean) => void;
 }
 
 const LoginForm = ({ setIsLoading }: LoginFormProps) => {
-  const [isResetMode, setIsResetMode] = useState(false);
-  const [resetEmailSent, setResetEmailSent] = useState(false);
-  const [loginSuccess, setLoginSuccess] = useState(false);
-  
-  const {
-    onLoginSubmit,
-    handleTestLogin,
-    handleGoogleLogin,
-    handleLinkedInLogin,
-    onResetSubmit
+  const [loginSuccess, setLoginSuccess] = React.useState(false);
+  const [showResetForm, setShowResetForm] = React.useState(false);
+  const [resetEmailSent, setResetEmailSent] = React.useState(false);
+  const formMethods = useForm<LoginValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    }
+  });
+
+  const { 
+    onLoginSubmit, 
+    handleTestLogin, 
+    handleGoogleLogin, 
+    handleLinkedInLogin, 
+    onResetSubmit 
   } = useAuthHandlers(
-    setIsLoading,
+    setIsLoading, 
     setLoginSuccess, 
     setResetEmailSent
   );
 
-  const navigateToDashboard = () => {
-    window.location.href = '/customer-portal';
+  // Handle form submission
+  const onSubmit = async (values: LoginValues) => {
+    await onLoginSubmit(values);
   };
 
-  const handleResetModeToggle = () => {
-    setIsResetMode(true);
-  };
-
-  const handleBackToLogin = () => {
-    setIsResetMode(false);
-    setResetEmailSent(false);
-  };
-
-  // Render based on current state
+  // If user is already logged in
   if (loginSuccess) {
-    return <LoginSuccess navigateToDashboard={navigateToDashboard} />;
+    return <LoginSuccess />;
   }
 
-  if (isResetMode) {
+  // If user wants to reset password
+  if (showResetForm) {
     return (
-      <ResetPasswordForm 
-        onResetSubmit={onResetSubmit} 
-        onBack={handleBackToLogin} 
-        resetEmailSent={resetEmailSent} 
+      <ResetPasswordForm
+        onSubmit={onResetSubmit}
+        onBack={() => setShowResetForm(false)}
+        resetEmailSent={resetEmailSent}
       />
     );
   }
 
+  // Main login form
   return (
-    <LoginFormFields 
-      onLoginSubmit={onLoginSubmit} 
-      onForgotPassword={handleResetModeToggle} 
-      handleTestLogin={handleTestLogin}
-      handleGoogleLogin={handleGoogleLogin}
-      handleLinkedInLogin={handleLinkedInLogin}
-    />
+    <div>
+      <AuthHeader 
+        title="Login to Your Account" 
+        description="Welcome back! Sign in using your email and password or social account." 
+        showSocialLogin={true}
+        onGoogleLogin={handleGoogleLogin}
+        onLinkedInLogin={handleLinkedInLogin}
+      />
+      <LoginFormFields
+        formMethods={formMethods}
+        onSubmit={onSubmit}
+        onClickForgotPassword={() => setShowResetForm(true)}
+        onTestLogin={handleTestLogin}
+      />
+    </div>
   );
 };
 

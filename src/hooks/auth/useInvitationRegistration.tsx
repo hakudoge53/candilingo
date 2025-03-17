@@ -60,6 +60,8 @@ export function useInvitationRegistration(
             role: values.role,
             industry: values.industry,
             referral_source: values.referralSource,
+            company_name: values.companyName,
+            company_size: values.companySize,
             user_type: 'invited_user' // Add user type for invited users
           },
           emailRedirectTo: redirectUrl,
