@@ -17,6 +17,7 @@ export interface GlossaryTerm {
   glossary_id: string;
   created_at?: string;
   updated_at?: string;
+  relatedTerms?: string[]; // Add relatedTerms property to match usage in data files
 }
 
 // Role labels and descriptions for the organization

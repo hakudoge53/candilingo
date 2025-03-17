@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { OrganizationMember } from '@/types/organization';
+import { OrganizationMember, UserRole } from '@/types/organization';
 import { useMembersFetch } from '@/hooks/organization/members/useMembersFetch';
 import { useAuth } from '@/hooks/auth/useAuth';
 import ActiveMembersTable from './members/ActiveMembersTable';
@@ -13,7 +13,7 @@ const MembersPanel = () => {
   const { activeUser } = useAuth();
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
   const [members, setMembers] = useState<OrganizationMember[]>([]);
-  const { isLoading } = useMembersFetch();
+  const { isLoading } = useMembersFetch(activeUser?.user_metadata?.organization_id);
 
   const handleInviteDialogOpen = () => {
     setIsInviteDialogOpen(true);
@@ -81,6 +81,17 @@ const MembersPanel = () => {
     }
   };
 
+  // Placeholder functions for ActiveMembersTable props
+  const handleRoleChange = async (memberId: string, role: UserRole) => {
+    console.log(`Change role for member ${memberId} to ${role}`);
+    // Implementation would go here
+  };
+
+  const handleRemoveMember = async (memberId: string) => {
+    console.log(`Remove member ${memberId}`);
+    // Implementation would go here
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -108,16 +119,21 @@ const MembersPanel = () => {
         )}
       </div>
 
-      <ActiveMembersTable members={members} isLoading={isLoading} />
+      <ActiveMembersTable 
+        members={members} 
+        isLoading={isLoading} 
+        onRoleChange={handleRoleChange}
+        onRemoveMember={handleRemoveMember}
+      />
 
       <PendingInvitationsTable
         invites={invitations}
-        loading={loadingInvitations}
+        isLoading={loadingInvitations}
         onRevokeInvite={handleRevokeInvite}
       />
 
       <InviteMemberDialog
-        open={isInviteDialogOpen}
+        isOpen={isInviteDialogOpen}
         onClose={handleInviteDialogClose}
         onSuccess={(newInvite) => {
           setInvitations(prev => [...prev, newInvite]);

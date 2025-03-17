@@ -1,163 +1,148 @@
-
-import { useState, useEffect } from 'react';
-import { supabase } from "@/integrations/supabase/client";
+import { Organization, OrganizationMember, UserRole } from '@/types/organization';
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useAuth } from '../auth/useAuth';
+import { useState, useEffect } from 'react';
 import { toast } from "sonner";
-import { castRole } from '@/utils/supabaseHelpers';
-import { Organization } from '@/types/organization';
 
-interface UseOrganizationListProps {
-  onOrganizationChange?: (org: Organization) => void;
+export interface UseOrganizationListReturn {
+  organizations: Organization[];
+  activeOrganization: Organization | null;
+  setActiveOrganization: (org: Organization | null) => void;
+  createNewOrganization: (name: string) => Promise<Organization | null>;
+  organizationsLoading: boolean;
 }
 
-export const useOrganizationList = (props: UseOrganizationListProps = {}) => {
-  const { onOrganizationChange } = props;
-  const { user } = useAuth();
+export const useOrganizationList = (): UseOrganizationListReturn => {
+  const supabase = useSupabaseClient();
+  const { session, user } = useAuth();
   const [organizations, setOrganizations] = useState<Organization[]>([]);
-  const [activeOrganization, setActiveOrganization] = useState<Organization | null>(null);
-  const [organizationsLoading, setOrganizationsLoading] = useState(false);
-  const [activeOrganizationLoading, setActiveOrganizationLoading] = useState(false);
+  const [activeOrganization, setActiveOrganizationState] = useState<Organization | null>(null);
+  const [organizationsLoading, setOrganizationsLoading] = useState<boolean>(false);
 
-  // Load organizations on mount
   useEffect(() => {
-    if (!user) return;
-    setOrganizationsLoading(true);
-
-    supabase
-      .from('organizations')
-      .select(`
-        *,
-        organization_members(role)
-      `)
-      .then((response) => {
-        if (response.error) {
-          console.error('Error fetching organizations:', response.error);
-          toast.error('Failed to fetch organizations: ' + response.error.message);
-        } else {
-          const orgs = response.data.map((org) => ({
-            ...org,
-            role: org.organization_members?.[0]?.role,
-            member_count: 1
-          }));
-          setOrganizations(orgs);
-          if (orgs.length > 0 && !activeOrganization) {
-            setActiveOrganization(orgs[0]);
-            onOrganizationChange?.(orgs[0]);
-          }
-        }
-      })
-      .catch(error => {
-        console.error('Error in useEffect:', error);
-      })
-      .finally(() => {
+    const fetchOrganizations = async () => {
+      if (!session) {
         setOrganizationsLoading(false);
-      });
-  }, [user]);
+        return;
+      }
 
-  // Load active organization from local storage on mount
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const orgId = localStorage.getItem('activeOrganizationId');
-    if (!orgId) return;
-    setActiveOrganizationLoading(true);
+      setOrganizationsLoading(true);
+      try {
+        const { data: organizationsData, error } = await supabase
+          .from('organizations')
+          .select('*')
+          .eq('created_by', user?.id);
 
-    supabase
-      .from('organizations')
-      .select(`
-        *,
-        organization_members(role)
-      `)
-      .eq('id', orgId)
-      .then((response) => {
-        if (response.error) {
-          console.error('Error fetching active organization:', response.error);
-        } else if (response.data && response.data.length > 0) {
-          const org = {
-            ...response.data[0],
-            role: response.data[0].organization_members?.[0]?.role,
-            member_count: 1
-          };
-          setActiveOrganization(org);
-          onOrganizationChange?.(org);
+        if (error) {
+          console.error("Error fetching organizations:", error);
+          toast.error("Failed to load organizations");
+        } else {
+          setOrganizations(organizationsData || []);
         }
+      } catch (error) {
+        console.error("Error fetching organizations:", error);
+        toast.error("Failed to load organizations");
+      } finally {
+        setOrganizationsLoading(false);
+      }
+    };
+
+    fetchOrganizations();
+  }, [session, supabase, user]);
+
+  useEffect(() => {
+    const fetchActiveOrganization = async () => {
+      if (!session) return;
+
+      try {
+        const { data: userSettings, error } = await supabase
+          .from('user_settings')
+          .select('active_organization_id')
+          .eq('user_id', user?.id)
+          .single();
+
+        if (error) {
+          console.error("Error fetching user settings:", error);
+          return;
+        }
+
+        const activeOrgId = userSettings?.active_organization_id;
+
+        if (activeOrgId) {
+          const activeOrg = organizations.find(org => org.id === activeOrgId) || null;
+          setActiveOrganizationState(activeOrg);
+        } else {
+          setActiveOrganizationState(null);
+        }
+      } catch (error) {
+        console.error("Error fetching active organization:", error);
+      }
+    };
+
+    fetchActiveOrganization();
+  }, [session, supabase, user, organizations]);
+
+  const setActiveOrganization = async (organization: Organization | null) => {
+    setActiveOrganizationState(organization);
+
+    return supabase
+      .from('user_settings')
+      .update({
+        active_organization_id: organization?.id || null,
+      })
+      .eq('user_id', user.id)
+      .then(() => {
+        console.log("Updated active organization in settings");
       })
       .catch(error => {
-        console.error('Error loading active organization:', error);
-      })
-      .finally(() => {
-        setActiveOrganizationLoading(false);
+        console.error("Error updating active organization:", error);
+        toast.error("Failed to update active organization");
       });
-  }, []);
+  };
 
-  // Save active organization to local storage when it changes
-  useEffect(() => {
-    if (!activeOrganization) {
-      localStorage.removeItem('activeOrganizationId');
-    } else {
-      localStorage.setItem('activeOrganizationId', activeOrganization.id);
-    }
-  }, [activeOrganization]);
-
-  const createNewOrganization = async (name: string) => {
-    if (!user) return null;
-    setOrganizationsLoading(true);
-    try {
-      // First create the organization with the required created_by field
-      const { data: orgData, error: orgError } = await supabase
-        .from('organizations')
-        .insert({
-          name,
-          created_by: user.id
-        })
-        .select()
-        .single();
-
-      if (orgError) throw orgError;
-
-      // Then add the current user as an owner
-      const memberData = {
-        organization_id: orgData.id,
-        user_id: user.id,
-        role: castRole('owner'),
-        status: 'active'
-      };
-
-      const { error: memberError } = await supabase
-        .from('organization_members')
-        .insert(memberData);
-
-      if (memberError) throw memberError;
-
-      // Update local state
-      const newOrg: Organization = {
-        ...orgData,
-        role: 'owner',
-        member_count: 1
-      };
-
-      setOrganizations((prevOrgs) => [
-        ...prevOrgs,
-        newOrg
-      ]);
-      setActiveOrganization(newOrg);
-      onOrganizationChange?.(newOrg);
-      return newOrg;
-    } catch (error) {
-      console.error('Error creating organization:', error);
-      toast.error('Failed to create organization: ' + (error as Error).message);
+  const createNewOrganization = async (name: string): Promise<Organization | null> => {
+    if (!user?.id) {
+      toast.error("User ID not available");
       return null;
-    } finally {
-      setOrganizationsLoading(false);
     }
+
+    return supabase
+      .from('organizations')
+      .insert([
+        {
+          name,
+          created_by: user.id,
+        },
+      ])
+      .select()
+      .then(({ data, error }) => {
+        if (error) {
+          console.error("Error creating organization:", error);
+          toast.error("Failed to create organization");
+          return null;
+        }
+
+        const newOrganization = data ? data[0] as Organization : null;
+
+        if (newOrganization) {
+          setOrganizations(prevOrgs => [...prevOrgs, newOrganization]);
+          toast.success("Organization created successfully!");
+        }
+
+        return newOrganization;
+      })
+      .catch(error => {
+        console.error("Error creating organization:", error);
+        toast.error("Failed to create organization");
+        return null;
+      });
   };
 
   return {
     organizations,
     activeOrganization,
-    organizationsLoading,
-    activeOrganizationLoading,
-    setOrganizations,
     setActiveOrganization,
-    createNewOrganization
+    createNewOrganization,
+    organizationsLoading,
   };
 };

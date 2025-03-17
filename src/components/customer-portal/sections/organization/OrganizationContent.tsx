@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { User } from '@/hooks/auth/types';
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -64,22 +65,8 @@ const OrganizationContent: React.FC<OrganizationContentProps> = ({
     <div className="space-y-6">
       <OrganizationCard
         organization={activeOrganization}
-        members={activeMembers}
-        invites={pendingInvites.map(invite => ({
-          id: invite.id,
-          organization_id: invite.organization_id,
-          invited_email: invite.invited_email || '',
-          invited_name: invite.invited_name || null,
-          role: invite.role,
-          status: invite.status,
-          created_at: invite.created_at || ''
-        }))}
-        currentUserId={user.id}
-        onInviteMember={handleInviteMember}
-        onChangeRole={handleRoleChange}
-        onRemoveMember={handleRemoveMember}
-        onRevokeInvite={handleRevokeInvitation}
-        isSubmittingInvite={false}
+        member={members.find(m => m.user_id === user.id) || null}
+        onEditClick={(org) => handleUpdateOrganization(org.id, org.name)}
       />
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -106,7 +93,7 @@ const OrganizationContent: React.FC<OrganizationContentProps> = ({
               invited_name: invite.invited_name || null,
               role: invite.role,
               status: invite.status,
-              created_at: invite.created_at
+              created_at: invite.created_at || ''
             }))}
             onRevokeInvite={handleRevokeInvitation}
           />

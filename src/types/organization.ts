@@ -50,7 +50,7 @@ export interface GlossaryTerm {
   glossary_id: string;
   created_at?: string;
   updated_at?: string;
-  relatedTerms?: string[];
+  relatedTerms?: string[]; // Explicitly add relatedTerms property
 }
 
 // Role labels and descriptions for the organization
