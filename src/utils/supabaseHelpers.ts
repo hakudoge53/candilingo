@@ -105,15 +105,15 @@ export const ensureColumnExists = async (
       return false;
     }
     
-    // If the column doesn't exist, add it
+    // If the column doesn't exist, add it - using updated parameter names
     if (!columnExists) {
       const { error: addError } = await supabase.rpc(
         'add_column_to_table',
         { 
-          table_name: tableName, 
-          column_name: columnName,
-          column_type: columnType,
-          column_default: columnDefault
+          p_table_name: tableName, 
+          p_column_name: columnName,
+          p_column_type: columnType,
+          p_column_default: columnDefault
         }
       );
       
