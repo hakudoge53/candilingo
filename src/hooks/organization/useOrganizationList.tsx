@@ -1,209 +1,35 @@
-
-import { Organization, OrganizationMember, UserRole } from '@/types/organization';
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from '../auth/useAuth';
+import { Organization, UserRole } from '@/types/organization';
+import { UseOrganizationListReturn } from './types';
+import { useOrganizationsFetch } from './useOrganizationsFetch';
+import { useActiveOrganization } from './useActiveOrganization';
+import { useOrganizationCreate } from './useOrganizationCreate';
 import { useState, useEffect } from 'react';
-import { toast } from "sonner";
 
-// Define UserSettings interface with active_organization_id
-interface UserSettings {
-  id?: string;
-  user_id: string; // Make this required as it's needed for database operations
-  highlight_enabled?: boolean;
-  highlight_color?: string;
-  created_at?: string;
-  updated_at?: string;
-  active_organization_id?: string;
-}
-
-export interface UseOrganizationListReturn {
-  organizations: Organization[];
-  activeOrganization: Organization | null;
-  setActiveOrganization: (org: Organization | null) => void;
-  createNewOrganization: (name: string) => Promise<Organization | null>;
-  organizationsLoading: boolean;
-}
+export { UserSettings } from './types';
+export { UseOrganizationListReturn } from './types';
 
 export const useOrganizationList = (): UseOrganizationListReturn => {
-  const { session, user } = useAuth();
-  const [organizations, setOrganizations] = useState<Organization[]>([]);
-  const [activeOrganization, setActiveOrganizationState] = useState<Organization | null>(null);
-  const [organizationsLoading, setOrganizationsLoading] = useState<boolean>(false);
+  const { organizations, isLoading: organizationsLoading } = useOrganizationsFetch();
+  const { activeOrganization, setActiveOrganization } = useActiveOrganization(organizations);
+  const { createOrganization } = useOrganizationCreate();
+  const [allOrganizations, setAllOrganizations] = useState<Organization[]>([]);
 
   useEffect(() => {
-    const fetchOrganizations = async () => {
-      if (!session) {
-        setOrganizationsLoading(false);
-        return;
-      }
-
-      setOrganizationsLoading(true);
-      try {
-        const { data: organizationsData, error } = await supabase
-          .from('organizations')
-          .select('*')
-          .eq('created_by', user?.id);
-
-        if (error) {
-          console.error("Error fetching organizations:", error);
-          toast.error("Failed to load organizations");
-        } else {
-          // Transform the data to match the Organization interface
-          const transformedOrgs: Organization[] = (organizationsData || []).map(org => ({
-            id: org.id,
-            name: org.name,
-            role: 'owner' as UserRole, // Default role for fetched organizations
-            member_count: 1, // Default member count
-            created_at: org.created_at,
-            active: org.active,
-            created_by: org.created_by
-          }));
-          
-          setOrganizations(transformedOrgs);
-        }
-      } catch (error) {
-        console.error("Error fetching organizations:", error);
-        toast.error("Failed to load organizations");
-      } finally {
-        setOrganizationsLoading(false);
-      }
-    };
-
-    fetchOrganizations().catch(err => {
-      console.error("Failed to fetch organizations:", err);
-      setOrganizationsLoading(false);
-    });
-  }, [session, user]);
-
-  useEffect(() => {
-    const fetchActiveOrganization = async () => {
-      if (!session) return;
-
-      try {
-        // First, check if the user_settings table exists and has the active_organization_id column
-        const { data: userSettings, error } = await supabase
-          .from('user_settings')
-          .select('*')
-          .eq('user_id', user?.id)
-          .single();
-
-        if (error) {
-          console.error("Error fetching user settings:", error);
-          return;
-        }
-
-        // Safely check if active_organization_id exists in the user settings
-        const activeOrgId = userSettings && 'active_organization_id' in userSettings ? 
-          userSettings.active_organization_id : null;
-
-        if (activeOrgId) {
-          const activeOrg = organizations.find(org => org.id === activeOrgId) || null;
-          setActiveOrganizationState(activeOrg);
-        } else {
-          setActiveOrganizationState(organizations.length > 0 ? organizations[0] : null);
-        }
-      } catch (error) {
-        console.error("Error fetching active organization:", error);
-      }
-    };
-
-    fetchActiveOrganization().catch(err => {
-      console.error("Failed to fetch active organization:", err);
-    });
-  }, [session, user, organizations]);
-
-  const setActiveOrganization = async (organization: Organization | null) => {
-    setActiveOrganizationState(organization);
-
-    try {
-      if (!user) return;
-      
-      // First check if user settings record exists
-      const { data: existingSettings } = await supabase
-        .from('user_settings')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-
-      if (existingSettings) {
-        // Update existing settings using a properly typed object
-        const updateData = {
-          active_organization_id: organization?.id || null,
-        };
-
-        await supabase
-          .from('user_settings')
-          .update(updateData)
-          .eq('user_id', user.id);
-      } else {
-        // Create new settings record with defaults
-        const newSettings: UserSettings = {
-          user_id: user.id,
-          active_organization_id: organization?.id || null,
-          highlight_enabled: true,
-          highlight_color: '#9b87f5'
-        };
-        
-        await supabase
-          .from('user_settings')
-          .insert(newSettings);
-      }
-
-      console.log("Updated active organization in settings");
-    } catch (error) {
-      console.error("Error updating active organization:", error);
-      toast.error("Failed to update active organization");
-    }
-  };
+    setAllOrganizations(organizations);
+  }, [organizations]);
 
   const createNewOrganization = async (name: string): Promise<Organization | null> => {
-    if (!user?.id) {
-      toast.error("User ID not available");
-      return null;
+    const newOrg = await createOrganization(name);
+    
+    if (newOrg) {
+      setAllOrganizations(prevOrgs => [...prevOrgs, newOrg]);
     }
-
-    try {
-      const { data, error } = await supabase
-        .from('organizations')
-        .insert([
-          {
-            name,
-            created_by: user.id,
-          },
-        ])
-        .select();
-
-      if (error) {
-        console.error("Error creating organization:", error);
-        toast.error("Failed to create organization");
-        return null;
-      }
-
-      const newOrganization = data && data[0] ? data[0] as any : null;
-
-      if (newOrganization) {
-        // Add required properties to match the Organization interface
-        const fullOrganization: Organization = {
-          ...newOrganization,
-          role: 'owner' as UserRole,
-          member_count: 1
-        };
-        
-        setOrganizations(prevOrgs => [...prevOrgs, fullOrganization]);
-        toast.success("Organization created successfully!");
-        return fullOrganization;
-      }
-
-      return null;
-    } catch (error) {
-      console.error("Error creating organization:", error);
-      toast.error("Failed to create organization");
-      return null;
-    }
+    
+    return newOrg;
   };
 
   return {
-    organizations,
+    organizations: allOrganizations,
     activeOrganization,
     setActiveOrganization,
     createNewOrganization,
