@@ -16,12 +16,12 @@ const resetSchema = z.object({
 type ResetFormValues = z.infer<typeof resetSchema>;
 
 interface ResetPasswordFormProps {
-  onResetSubmit: (values: ResetFormValues) => Promise<void>;
+  resetPasswordSubmit: (values: ResetFormValues) => Promise<void>;
   onBack: () => void;
   resetEmailSent: boolean;
 }
 
-const ResetPasswordForm = ({ onResetSubmit, onBack, resetEmailSent }: ResetPasswordFormProps) => {
+const ResetPasswordForm = ({ resetPasswordSubmit, onBack, resetEmailSent }: ResetPasswordFormProps) => {
   const resetForm = useForm<ResetFormValues>({
     resolver: zodResolver(resetSchema),
     defaultValues: {
@@ -54,7 +54,7 @@ const ResetPasswordForm = ({ onResetSubmit, onBack, resetEmailSent }: ResetPassw
   
   return (
     <Form {...resetForm}>
-      <form onSubmit={resetForm.handleSubmit(onResetSubmit)} className="space-y-4">
+      <form onSubmit={resetForm.handleSubmit(resetPasswordSubmit)} className="space-y-4">
         <div className="text-center mb-6">
           <h3 className="text-lg font-medium">Reset your password</h3>
           <p className="text-sm text-gray-500 mt-1">

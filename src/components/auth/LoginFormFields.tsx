@@ -1,87 +1,70 @@
 
 import React from 'react';
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { useForm, UseFormRegister, FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { LoginValues } from './LoginForm';
 
-// Define schema
-const loginSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address" }),
-  password: z.string().min(1, { message: "Password is required" }),
-});
-
-export type LoginFormValues = z.infer<typeof loginSchema>;
-
-export interface LoginFormFieldsProps {
-  onLoginSubmit: (values: LoginFormValues) => Promise<void>;
-  onForgotPassword: () => void;
-  handleTestLogin: () => Promise<void>;
-  handleGoogleLogin: () => Promise<void>;
-  handleLinkedInLogin: () => Promise<void>;
+interface LoginFormFieldsProps {
+  register: UseFormRegister<LoginValues>;
+  handleSubmit: any;
+  errors: FieldErrors<LoginValues>;
+  onSubmit: (values: LoginValues) => Promise<void>;
+  onClickForgotPassword: () => void;
+  onTestLogin: () => Promise<void>;
 }
 
 const LoginFormFields = ({ 
-  onLoginSubmit, 
-  onForgotPassword, 
-  handleTestLogin,
-  handleGoogleLogin,
-  handleLinkedInLogin
+  register, 
+  handleSubmit, 
+  errors, 
+  onSubmit, 
+  onClickForgotPassword, 
+  onTestLogin 
 }: LoginFormFieldsProps) => {
-  const form = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
-
   return (
     <div className="space-y-6">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onLoginSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input type="email" placeholder="you@example.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="••••••••" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="flex items-center justify-end">
-            <button
-              type="button"
-              onClick={onForgotPassword}
-              className="text-xs text-candilingo-purple hover:underline"
-            >
-              Forgot Password?
-            </button>
-          </div>
-          <Button type="submit" className="w-full bg-candilingo-purple">
-            Login
-          </Button>
-        </form>
-      </Form>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <div>
+          <FormLabel htmlFor="email">Email</FormLabel>
+          <FormControl>
+            <Input 
+              id="email"
+              type="email" 
+              placeholder="you@example.com" 
+              {...register("email")} 
+            />
+          </FormControl>
+          {errors.email && <span className="text-red-500 text-xs">{errors.email.message}</span>}
+        </div>
+        <div>
+          <FormLabel htmlFor="password">Password</FormLabel>
+          <FormControl>
+            <Input 
+              id="password"
+              type="password" 
+              placeholder="••••••••" 
+              {...register("password")} 
+            />
+          </FormControl>
+          {errors.password && <span className="text-red-500 text-xs">{errors.password.message}</span>}
+        </div>
+        <div className="flex items-center justify-end">
+          <button
+            type="button"
+            onClick={onClickForgotPassword}
+            className="text-xs text-candilingo-purple hover:underline"
+          >
+            Forgot Password?
+          </button>
+        </div>
+        <Button type="submit" className="w-full bg-candilingo-purple">
+          Login
+        </Button>
+      </form>
       
       <div className="relative flex items-center">
         <div className="flex-grow border-t border-gray-300"></div>
@@ -94,7 +77,7 @@ const LoginFormFields = ({
           type="button" 
           variant="outline" 
           className="w-full" 
-          onClick={handleGoogleLogin}
+          onClick={() => {}} // This will be handled by the parent component
         >
           <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
             <path
@@ -108,7 +91,7 @@ const LoginFormFields = ({
           type="button" 
           variant="outline" 
           className="w-full" 
-          onClick={handleLinkedInLogin}
+          onClick={() => {}} // This will be handled by the parent component
         >
           <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
             <path
@@ -122,7 +105,7 @@ const LoginFormFields = ({
           type="button" 
           variant="outline" 
           className="w-full text-gray-700" 
-          onClick={handleTestLogin}
+          onClick={onTestLogin}
         >
           Quick Login (Test Account)
         </Button>
