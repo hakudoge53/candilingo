@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Team } from '@/hooks/organization/types';
 import { useTeamMembers } from '@/hooks/organization/teams/useTeamMembers';
 import { useLicenses } from '@/hooks/organization/licenses/useLicenses';
