@@ -50,25 +50,25 @@ export interface OrganizationInvitation {
 }
 
 // User roles based on Supabase database enum
-export type UserRole = 'super_admin' | 'owner' | 'manager' | 'team_lead' | 'employee' | 'consultant' | 'admin';
+export type UserRole = 'super_admin' | 'owner' | 'admin' | 'manager' | 'team_lead' | 'employee' | 'consultant';
 export type MemberStatus = 'pending' | 'active' | 'inactive';
 
 export const ROLE_LABELS: Record<string, string> = {
   'super_admin': 'Super Admin',
   'owner': 'Business Owner',
+  'admin': 'Administrator',
   'manager': 'Manager',
   'team_lead': 'Team Lead',
   'employee': 'Employee',
-  'admin': 'Administrator',
   'consultant': 'Consultant'
 };
 
 export const ROLE_DESCRIPTIONS: Record<string, string> = {
   'super_admin': 'Full access to all organizations and system settings. Candilingo administrator only.',
   'owner': 'Full access to organization settings and billing. Can add/remove members and change roles.',
+  'admin': 'Administrative access to organization settings and resources.',
   'manager': 'Can manage organization resources, members, and team assignments, but cannot change billing.',
   'team_lead': 'Can lead projects and manage team assignments within assigned areas.',
   'employee': 'Standard member access to shared resources without administrative privileges.',
-  'admin': 'Administrative access to organization settings and resources.',
   'consultant': 'Limited access to specific resources as an external collaborator.'
 };
