@@ -1,35 +1,36 @@
 
 import React from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { ROLE_LABELS } from '@/types/organization';
-import { formatDistanceToNow } from 'date-fns';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { UserRole } from '@/types/organization';
 
-export interface PendingInvitationsTableProps {
-  invites: Array<{
-    id: string;
-    invited_email: string;
-    invited_name: string | null;
-    role: string;
-    created_at: string;
-  }>;
-  isLoading: boolean;
-  onRevokeInvite: (inviteId: string) => Promise<void>;
+interface PendingInviteData {
+  id: string;
+  invited_email: string;
+  invited_name: string;
+  role: UserRole;
+  created_at: string;
 }
 
-const PendingInvitationsTable: React.FC<PendingInvitationsTableProps> = ({
-  invites,
-  isLoading,
-  onRevokeInvite
+interface PendingInvitationsTableProps {
+  invites: PendingInviteData[];
+  onRevokeInvite: (inviteId: string) => void;
+  isLoading: boolean;
+}
+
+const PendingInvitationsTable: React.FC<PendingInvitationsTableProps> = ({ 
+  invites, 
+  onRevokeInvite, 
+  isLoading 
 }) => {
-  if (isLoading) {
-    return <div className="py-4 text-center">Loading pending invitations...</div>;
-  }
-
-  if (invites.length === 0) {
-    return <div className="py-4 text-center">No pending invitations</div>;
-  }
-
   return (
     <Table>
       <TableHeader>
@@ -37,8 +38,7 @@ const PendingInvitationsTable: React.FC<PendingInvitationsTableProps> = ({
           <TableHead>Email</TableHead>
           <TableHead>Name</TableHead>
           <TableHead>Role</TableHead>
-          <TableHead>Sent</TableHead>
-          <TableHead>Actions</TableHead>
+          <TableHead className="text-right">Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -46,15 +46,16 @@ const PendingInvitationsTable: React.FC<PendingInvitationsTableProps> = ({
           <TableRow key={invite.id}>
             <TableCell>{invite.invited_email}</TableCell>
             <TableCell>{invite.invited_name || '-'}</TableCell>
-            <TableCell>{ROLE_LABELS[invite.role] || invite.role}</TableCell>
             <TableCell>
-              {formatDistanceToNow(new Date(invite.created_at), { addSuffix: true })}
+              <Badge variant="secondary">{invite.role}</Badge>
             </TableCell>
-            <TableCell>
+            <TableCell className="text-right">
               <Button 
-                variant="outline" 
+                variant="ghost" 
                 size="sm" 
+                className="text-red-500 hover:text-red-700"
                 onClick={() => onRevokeInvite(invite.id)}
+                disabled={isLoading}
               >
                 Revoke
               </Button>

@@ -1,42 +1,22 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PlusIcon, UserIcon, MailIcon } from 'lucide-react';
 import { useOrganization } from '@/hooks/organization/useOrganization';
-import { Organization, OrganizationMember, UserRole } from '@/types/organization';
+import { UserRole, OrganizationMember } from '@/types/organization';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
-import InviteMemberForm from '@/components/customer-portal/sections/organization/InviteMemberForm';
 import { toast } from 'sonner';
 import { useOrganizationActions } from '@/components/customer-portal/sections/organization/OrganizationActions';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { MoreHorizontal, Shield, Trash2 } from 'lucide-react';
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
-} from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
+import EmptyMembersState from './members/EmptyMembersState';
+import ActiveMembersTable from './members/ActiveMembersTable';
+import PendingInvitationsTable from './members/PendingInvitationsTable';
+import InviteMemberDialog from './members/InviteMemberDialog';
 
 interface MembersPanelProps {
   organizationId: string;
@@ -55,6 +35,13 @@ const MembersPanel: React.FC<MembersPanelProps> = ({ organizationId }) => {
 
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("active");
+  const [localMembers, setLocalMembers] = useState<OrganizationMember[]>([]);
+  const [localInvites, setLocalInvites] = useState<OrganizationMember[]>([]);
+
+  useEffect(() => {
+    setLocalMembers(activeMembers);
+    setLocalInvites(pendingInvites);
+  }, [activeMembers, pendingInvites]);
 
   const {
     handleInviteMember,
@@ -67,8 +54,8 @@ const MembersPanel: React.FC<MembersPanelProps> = ({ organizationId }) => {
     isSubmittingInvite
   } = useOrganizationActions({
     organization: activeOrganization,
-    setMembers: React.Dispatch<React.SetStateAction<OrganizationMember[]>> = useState(activeMembers)[1],
-    setInvites: React.Dispatch<React.SetStateAction<any[]>> = useState(pendingInvites)[1]
+    setMembers: setLocalMembers,
+    setInvites: setLocalInvites
   });
 
   useEffect(() => {
@@ -76,6 +63,15 @@ const MembersPanel: React.FC<MembersPanelProps> = ({ organizationId }) => {
       fetchOrganization(organizationId);
     }
   }, [organizationId, fetchOrganization]);
+
+  // Format pending invites for the table
+  const formattedPendingInvites = localInvites.map(invite => ({
+    id: invite.id,
+    invited_email: invite.invited_email || '',
+    invited_name: invite.invited_name || '',
+    role: invite.role,
+    created_at: invite.created_at || new Date().toISOString()
+  }));
 
   return (
     <Card className="w-full">
@@ -98,7 +94,7 @@ const MembersPanel: React.FC<MembersPanelProps> = ({ organizationId }) => {
                 <Skeleton className="h-12 w-full" />
                 <Skeleton className="h-12 w-full" />
               </div>
-            ) : activeMembers.length === 0 ? (
+            ) : localMembers.length === 0 ? (
               <EmptyMembersState 
                 message="No active members"
                 subMessage="Your organization doesn't have any active members yet."
@@ -106,8 +102,8 @@ const MembersPanel: React.FC<MembersPanelProps> = ({ organizationId }) => {
               />
             ) : (
               <ActiveMembersTable
-                members={activeMembers}
-                onRoleChange={handleRoleChange}
+                members={localMembers}
+                onRoleChange={handleChangeRole}
                 onRemoveMember={handleRemoveMember}
                 isLoading={isRemovingMember || isChangingRole}
               />
@@ -120,7 +116,7 @@ const MembersPanel: React.FC<MembersPanelProps> = ({ organizationId }) => {
                 <Skeleton className="h-12 w-full" />
                 <Skeleton className="h-12 w-full" />
               </div>
-            ) : pendingInvites.length === 0 ? (
+            ) : formattedPendingInvites.length === 0 ? (
               <EmptyMembersState 
                 message="No pending invites"
                 subMessage="Your organization doesn't have any pending invites."
@@ -128,13 +124,7 @@ const MembersPanel: React.FC<MembersPanelProps> = ({ organizationId }) => {
               />
             ) : (
               <PendingInvitationsTable 
-                invites={pendingInvites.map(invite => ({
-                  id: invite.id,
-                  invited_email: invite.invited_email || '',
-                  invited_name: invite.invited_name || '',
-                  role: invite.role,
-                  created_at: invite.created_at || new Date().toISOString()
-                }))}
+                invites={formattedPendingInvites}
                 onRevokeInvite={handleRevokeInvite}
                 isLoading={isRevokingInvite}
               />
@@ -148,181 +138,13 @@ const MembersPanel: React.FC<MembersPanelProps> = ({ organizationId }) => {
               isOpen={isInviteModalOpen}
               onClose={() => setIsInviteModalOpen(false)}
               organization={activeOrganization}
-              onMemberInvited={(newInvite) => handleInviteMember(newInvite)}
+              onMemberInvited={handleInviteMember}
               isLoading={isSubmittingInvite}
             />
           </DialogContent>
         </Dialog>
       </CardContent>
     </Card>
-  );
-};
-
-interface EmptyMembersStateProps {
-  message: string;
-  subMessage: string;
-  icon: React.ReactNode;
-}
-
-const EmptyMembersState: React.FC<EmptyMembersStateProps> = ({ message, subMessage, icon }) => {
-  return (
-    <div className="text-center py-8">
-      {icon}
-      <h3 className="mt-2 text-sm font-semibold text-gray-900">{message}</h3>
-      <p className="mt-1 text-sm text-gray-500">
-        {subMessage}
-      </p>
-    </div>
-  );
-};
-
-interface ActiveMembersTableProps {
-  members: OrganizationMember[];
-  onRoleChange: (memberId: string, role: UserRole) => void;
-  onRemoveMember: (memberId: string) => void;
-  isLoading: boolean;
-}
-
-const ActiveMembersTable: React.FC<ActiveMembersTableProps> = ({ members, onRoleChange, onRemoveMember, isLoading }) => {
-  return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Member</TableHead>
-          <TableHead>Role</TableHead>
-          <TableHead className="text-right">Actions</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {members.map((member) => (
-          <TableRow key={member.id}>
-            <TableCell>
-              <div className="flex items-center space-x-3">
-                <Avatar>
-                  <AvatarFallback>{member.user?.name?.substring(0, 2).toUpperCase() || member.user_id.substring(0, 2).toUpperCase()}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-medium">{member.user?.name || member.user_id}</p>
-                  <p className="text-sm text-gray-500">{member.user?.email}</p>
-                </div>
-              </div>
-            </TableCell>
-            <TableCell>
-              <Badge variant={
-                member.role === 'admin' ? 'destructive' : 
-                member.role === 'manager' ? 'default' : 
-                'outline'
-              }>
-                {member.role}
-              </Badge>
-            </TableCell>
-            <TableCell className="text-right">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-8 w-8 p-0">
-                    <span className="sr-only">Open menu</span>
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                  <DropdownMenuItem onClick={() => onRoleChange(member.id, member.role)} disabled={isLoading}>
-                    <Shield className="mr-2 h-4 w-4" />
-                    Change Role
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => onRemoveMember(member.id)} disabled={isLoading}>
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Remove Member
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
-};
-
-interface PendingInvitationsTableProps {
-  invites: {
-    id: string;
-    invited_email: string;
-    invited_name: string;
-    role: UserRole;
-    created_at: string;
-  }[];
-  onRevokeInvite: (inviteId: string) => void;
-  isLoading: boolean;
-}
-
-const PendingInvitationsTable: React.FC<PendingInvitationsTableProps> = ({ invites, onRevokeInvite, isLoading }) => {
-  return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Email</TableHead>
-          <TableHead>Name</TableHead>
-          <TableHead>Role</TableHead>
-          <TableHead className="text-right">Actions</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {invites.map((invite) => (
-          <TableRow key={invite.id}>
-            <TableCell>{invite.invited_email}</TableCell>
-            <TableCell>{invite.invited_name}</TableCell>
-            <TableCell>
-              <Badge variant="secondary">{invite.role}</Badge>
-            </TableCell>
-            <TableCell className="text-right">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="text-red-500 hover:text-red-700"
-                onClick={() => onRevokeInvite(invite.id)}
-                disabled={isLoading}
-              >
-                Revoke
-              </Button>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
-};
-
-interface InviteMemberDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  organization: Organization | null;
-  onMemberInvited: (values: { email: string; name: string; role: UserRole }) => Promise<any>;
-  isLoading: boolean;
-}
-
-const InviteMemberDialog: React.FC<InviteMemberDialogProps> = ({ isOpen, onClose, organization, onMemberInvited, isLoading }) => {
-  const handleInvite = async (values: { email: string; name: string; role: UserRole }) => {
-    if (!organization) {
-      toast.error("No organization selected");
-      return;
-    }
-
-    await onMemberInvited(values);
-    onClose();
-  };
-
-  return (
-    <>
-      <DialogHeader>
-        <DialogTitle>Invite New Member</DialogTitle>
-        <DialogDescription>
-          Invite a new member to your organization.
-        </DialogDescription>
-      </DialogHeader>
-      <InviteMemberForm onInvite={handleInvite} isLoading={isLoading} />
-    </>
   );
 };
 
