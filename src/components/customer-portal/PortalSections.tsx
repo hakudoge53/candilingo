@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User } from '@/hooks/auth/types';
@@ -12,7 +13,6 @@ import PrivateDictionariesSection from './sections/PrivateDictionariesSection';
 import SettingsSection from './sections/SettingsSection';
 import OrganizationPermissionsSection from './sections/OrganizationPermissionsSection';
 import ProfileSettingsSection from './sections/ProfileSettingsSection';
-import TechLingoWikiSection from './sections/TechLingoWikiSection';
 import GlossarySection from './sections/GlossarySection';
 
 interface PortalSectionsProps {
@@ -41,7 +41,7 @@ const PortalSections: React.FC<PortalSectionsProps> = ({ user, setLocalLoading }
       </div>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-8 w-full rounded-none bg-gray-50 p-2 gap-1">
+        <TabsList className="grid grid-cols-7 w-full rounded-none bg-gray-50 p-2 gap-1">
           <TabsTrigger 
             value="billing" 
             className="flex items-center gap-2 py-2.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-candilingo-purple data-[state=active]:to-candilingo-purple/80 data-[state=active]:text-white"
@@ -55,13 +55,6 @@ const PortalSections: React.FC<PortalSectionsProps> = ({ user, setLocalLoading }
           >
             <Book className="h-4 w-4" />
             <span className="hidden sm:inline text-base">Dictionaries</span>
-          </TabsTrigger>
-          <TabsTrigger 
-            value="wiki" 
-            className="flex items-center gap-2 py-2.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-candilingo-teal data-[state=active]:to-candilingo-darkteal data-[state=active]:text-white"
-          >
-            <BookOpen className="h-4 w-4" />
-            <span className="hidden sm:inline text-base">TechLingo Wiki</span>
           </TabsTrigger>
           <TabsTrigger 
             value="private-dictionaries" 
@@ -99,10 +92,6 @@ const PortalSections: React.FC<PortalSectionsProps> = ({ user, setLocalLoading }
         
         <TabsContent value="dictionaries" className="p-6 bg-gradient-to-br from-white to-candilingo-teal/10">
           <PublicDictionariesSection user={user} setLocalLoading={setLocalLoading} />
-        </TabsContent>
-        
-        <TabsContent value="wiki" className="p-6 bg-gradient-to-br from-white to-candilingo-teal/10">
-          <TechLingoWikiSection user={user} setLocalLoading={setLocalLoading} />
         </TabsContent>
         
         <TabsContent value="private-dictionaries" className="p-6 bg-gradient-to-br from-white to-candilingo-coral/10">

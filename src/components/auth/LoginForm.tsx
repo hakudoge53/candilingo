@@ -49,7 +49,7 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
   );
 
   // Handle form submission
-  const onSubmit = async (values: LoginValues) => {
+  const onSubmit = async (values: LoginFormValues) => {
     // Now values is guaranteed to have email and password as non-optional
     await onLoginSubmit(values);
   };

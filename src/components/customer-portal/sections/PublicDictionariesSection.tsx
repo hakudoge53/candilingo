@@ -1,15 +1,12 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { User } from '@/hooks/auth/types';
-import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Search, Bookmark } from 'lucide-react';
-import { GlossaryTerm } from '@/types/glossary';
-import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import { toast } from 'sonner';
-import { publicGlossaries, publicGlossaryTerms } from '@/data/publicGlossaryTerms';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Book, BookOpen, ExternalLink } from "lucide-react";
+import { Link } from "react-router-dom";
+import TechLingoWikiSection from './TechLingoWikiSection';
 
 interface PublicDictionariesSectionProps {
   user: User;
@@ -17,175 +14,131 @@ interface PublicDictionariesSectionProps {
 }
 
 const PublicDictionariesSection: React.FC<PublicDictionariesSectionProps> = ({ user, setLocalLoading }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [selectedGlossary, setSelectedGlossary] = useState<string | null>(null);
-  const [glossaryTerms, setGlossaryTerms] = useState<GlossaryTerm[]>([]);
+  const [selectedView, setSelectedView] = useState<'dictionaries' | 'techlingo'>('dictionaries');
 
-  // Simulate fetching glossaries from Supabase
-  useEffect(() => {
-    const fetchPublicGlossaries = async () => {
-      setIsLoading(true);
-      try {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        // Select the first glossary by default if available
-        if (publicGlossaries.length > 0 && !selectedGlossary) {
-          setSelectedGlossary(publicGlossaries[0].id);
-        }
-      } catch (error) {
-        console.error("Error fetching public glossaries:", error);
-        toast.error("Failed to load public glossaries");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchPublicGlossaries();
-  }, []);
-
-  // Fetch glossary terms when a glossary is selected
-  useEffect(() => {
-    if (!selectedGlossary) return;
-    
-    const fetchGlossaryTerms = async () => {
-      setIsLoading(true);
-      try {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        // Filter terms for the selected glossary
-        const filteredTerms = publicGlossaryTerms.filter(term => term.glossary_id === selectedGlossary);
-        setGlossaryTerms(filteredTerms);
-      } catch (error) {
-        console.error("Error fetching glossary terms:", error);
-        toast.error("Failed to load glossary terms");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchGlossaryTerms();
-  }, [selectedGlossary]);
-
-  // Filter terms by search
-  const filteredTerms = glossaryTerms.filter(term => 
-    term.term.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    term.definition.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (term.category && term.category.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
-
-  // Group terms by category
-  const groupedTerms = filteredTerms.reduce((groups, term) => {
-    const category = term.category || 'Uncategorized';
-    if (!groups[category]) {
-      groups[category] = [];
-    }
-    groups[category].push(term);
-    return groups;
-  }, {} as Record<string, GlossaryTerm[]>);
+  // If TechLingo Wiki is selected, render that component
+  if (selectedView === 'techlingo') {
+    return (
+      <div>
+        <div className="flex items-center mb-6">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setSelectedView('dictionaries')}
+            className="mr-4"
+          >
+            ← Back to Dictionaries
+          </Button>
+          <h2 className="text-2xl font-bold">TechLingo Wiki</h2>
+        </div>
+        <TechLingoWikiSection user={user} setLocalLoading={setLocalLoading} />
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold mb-4">Public Dictionaries</h2>
-        <p className="text-gray-600 mb-6">
-          Access and search public dictionaries available to all users.
+    <div>
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold mb-2">Public Dictionaries</h2>
+        <p className="text-gray-600">
+          Available public dictionaries that can enhance your understanding of technical terms.
         </p>
       </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div className="lg:col-span-1">
-          <Card>
-            <CardHeader>
-              <CardTitle>Dictionaries</CardTitle>
-              <CardDescription>Available public dictionaries</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {isLoading && !publicGlossaries.length ? (
-                <LoadingSpinner message="Loading dictionaries..." />
-              ) : (
-                publicGlossaries.map(glossary => (
-                  <Button 
-                    key={glossary.id}
-                    variant={selectedGlossary === glossary.id ? "default" : "ghost"}
-                    className="w-full justify-start"
-                    onClick={() => setSelectedGlossary(glossary.id)}
-                  >
-                    <Bookmark className="mr-2 h-4 w-4" />
-                    {glossary.name}
-                  </Button>
-                ))
-              )}
-              
-              {!isLoading && publicGlossaries.length === 0 && (
-                <div className="text-center py-4 text-gray-500">
-                  <p>No public dictionaries available</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="lg:col-span-3">
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                {publicGlossaries.find(g => g.id === selectedGlossary)?.name || 'Dictionary Terms'}
-              </CardTitle>
-              <CardDescription>
-                {publicGlossaries.find(g => g.id === selectedGlossary)?.description || 'Search and browse terms'}
-              </CardDescription>
-              
-              <div className="mt-4 relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Search terms..."
-                  className="pl-9"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-            </CardHeader>
-            <CardContent className="max-h-[60vh] overflow-y-auto">
-              {isLoading && !glossaryTerms.length ? (
-                <LoadingSpinner message="Loading terms..." />
-              ) : (
-                Object.entries(groupedTerms).map(([category, terms]) => (
-                  <div key={category} className="mb-6">
-                    <h3 className="text-md font-semibold mb-2 text-gray-700 border-b pb-1">
-                      {category}
-                    </h3>
-                    <div className="space-y-3">
-                      {terms.map((term) => (
-                        <div key={term.id} className="border rounded-md p-3 bg-gray-50">
-                          <div className="font-medium text-gray-900">{term.term}</div>
-                          <div className="text-sm text-gray-600 mt-1">{term.definition}</div>
-                          {term.relatedTerms && term.relatedTerms.length > 0 && (
-                            <div className="text-xs text-gray-500 mt-2">
-                              Related: {term.relatedTerms.join(', ')}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))
-              )}
-              
-              {!isLoading && filteredTerms.length === 0 && (
-                <div className="text-center py-10 text-gray-500">
-                  {searchTerm ? (
-                    <p>No terms found matching "{searchTerm}"</p>
-                  ) : (
-                    <p>No terms available in this dictionary</p>
-                  )}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
+          <CardHeader className="pb-2 bg-candilingo-purple/5">
+            <CardTitle className="flex items-center text-xl">
+              <Book className="h-5 w-5 mr-2 text-candilingo-purple" />
+              Technical Dictionary
+            </CardTitle>
+            <CardDescription>
+              Comprehensive list of technical terms and definitions
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-4">
+            <div className="flex flex-wrap gap-2 mb-4">
+              <Badge variant="outline">500+ Terms</Badge>
+              <Badge variant="outline">Software Development</Badge>
+              <Badge variant="outline">IT</Badge>
+            </div>
+            <p className="text-sm text-gray-600 mb-4">
+              Our complete technical dictionary includes definitions for common technical terms 
+              used in software development, IT, and related fields.
+            </p>
+            <div className="flex justify-between items-center">
+              <Link to="/glossary">
+                <Button variant="outline" size="sm" className="flex items-center">
+                  <ExternalLink className="h-4 w-4 mr-1" />
+                  Open Dictionary
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
+          <CardHeader className="pb-2 bg-candilingo-pink/5">
+            <CardTitle className="flex items-center text-xl">
+              <Book className="h-5 w-5 mr-2 text-candilingo-pink" />
+              <span className="text-candilingo-pink">AI Glossary</span>
+            </CardTitle>
+            <CardDescription>
+              Artificial Intelligence and Machine Learning terminology
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-4">
+            <div className="flex flex-wrap gap-2 mb-4">
+              <Badge variant="outline">200+ Terms</Badge>
+              <Badge variant="outline">Artificial Intelligence</Badge>
+              <Badge variant="outline">Machine Learning</Badge>
+            </div>
+            <p className="text-sm text-gray-600 mb-4">
+              A specialized glossary focusing on AI and ML terminology to help you understand 
+              the rapidly evolving field of artificial intelligence.
+            </p>
+            <div className="flex justify-between items-center">
+              <Button variant="outline" size="sm" className="flex items-center">
+                <ExternalLink className="h-4 w-4 mr-1" />
+                Open Glossary
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
+          <CardHeader className="pb-2 bg-candilingo-teal/5">
+            <CardTitle className="flex items-center text-xl">
+              <BookOpen className="h-5 w-5 mr-2 text-candilingo-teal" />
+              TechLingo Wiki
+            </CardTitle>
+            <CardDescription>
+              Crowdsourced technical terminology database
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-4">
+            <div className="flex flex-wrap gap-2 mb-4">
+              <Badge variant="outline">Community-Driven</Badge>
+              <Badge variant="outline">Categorized</Badge>
+              <Badge variant="outline">Regularly Updated</Badge>
+            </div>
+            <p className="text-sm text-gray-600 mb-4">
+              Our TechLingo Wiki is a collaborative database of technical terms that is constantly 
+              evolving with contributions from our community.
+            </p>
+            <div className="flex justify-between items-center">
+              <Button 
+                onClick={() => setSelectedView('techlingo')}
+                variant="outline" 
+                size="sm" 
+                className="flex items-center"
+              >
+                <BookOpen className="h-4 w-4 mr-1" />
+                Open TechLingo Wiki
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
