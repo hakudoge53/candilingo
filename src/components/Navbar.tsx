@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from "@/hooks/auth/useAuth";
@@ -5,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, BookOpen, LayoutDashboard, UserCircle, Settings, Home, PieChart } from "lucide-react";
 import ThemeToggle from './ThemeToggle';
+
 const Navbar = () => {
   const {
     isLoggedIn,
@@ -22,12 +24,13 @@ const Navbar = () => {
   const getActiveLinkClass = (path: string) => {
     return isActive(path) ? "text-candilingo-purple font-semibold" : "text-gray-700 hover:text-candilingo-purple font-medium";
   };
-  return <div className="bg-white py-4 shadow-sm sticky top-0 z-50 dark:bg-gray-900 dark:text-white">
+  
+  return (
+    <div className="bg-white py-4 shadow-sm sticky top-0 z-50 dark:bg-gray-900 dark:text-white">
       <div className="container mx-auto px-4 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center">
           <img src="/lovable-uploads/3ba829c2-54b7-4152-b767-9eb28429dbd7.png" alt="Candilingo" className="h-10 w-auto mr-2" />
-          
         </Link>
 
         {/* Navigation Links */}
@@ -55,23 +58,29 @@ const Navbar = () => {
             </>}
           
           {/* Authentication Buttons */}
-          {isLoggedIn ? <div className="hidden md:flex items-center gap-4">
-              {activeUser && <div className="flex items-center">
+          {isLoggedIn ? (
+            <div className="hidden md:flex items-center gap-4">
+              {activeUser && (
+                <div className="flex items-center">
                   <div className="w-8 h-8 rounded-full bg-candilingo-purple/20 text-candilingo-purple flex items-center justify-center">
                     {activeUser.name ? activeUser.name[0].toUpperCase() : 'U'}
                   </div>
-                </div>}
+                </div>
+              )}
               <Button variant="outline" size="sm" onClick={handleLogout}>
                 Logout
               </Button>
-            </div> : <div className="hidden md:flex items-center gap-2">
+            </div>
+          ) : (
+            <div className="hidden md:flex items-center gap-2">
               <Link to="/customer-portal" className="text-gray-700 hover:text-candilingo-purple font-medium">
                 Login
               </Link>
               <Link to="/customer-portal">
                 <Button size="sm" variant="purple">Sign Up</Button>
               </Link>
-            </div>}
+            </div>
+          )}
 
           <ThemeToggle />
         </nav>
@@ -135,6 +144,8 @@ const Navbar = () => {
           </SheetContent>
         </Sheet>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default Navbar;

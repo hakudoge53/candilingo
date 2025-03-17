@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { UseOrganizationsFetchReturn } from './types';
 
 /**
- * Hook to fetch all organizations that the current user has created
+ * Hook to fetch all organizations that the current user has access to
  * 
  * @returns {UseOrganizationsFetchReturn} Object containing organizations and methods to fetch them
  */
@@ -23,7 +23,7 @@ export const useOrganizationsFetch = (): UseOrganizationsFetchReturn => {
    * @returns {Promise<void>}
    */
   const fetchOrganizations = async () => {
-    if (!session) {
+    if (!session || !user?.id) {
       setIsLoading(false);
       return;
     }
@@ -32,44 +32,96 @@ export const useOrganizationsFetch = (): UseOrganizationsFetchReturn => {
     setError(null);
     
     try {
-      const { data: organizationsData, error } = await supabase
+      console.log("Fetching organizations for user:", user.id);
+      
+      // First, get all organizations the user created
+      const { data: ownedOrgs, error: ownedError } = await supabase
         .from('organizations')
         .select('*')
-        .eq('created_by', user?.id);
+        .eq('created_by', user.id);
 
-      if (error) {
-        console.error("Error fetching organizations:", error);
+      if (ownedError) {
+        console.error("Error fetching owned organizations:", ownedError);
         setError("Failed to load organizations");
         toast.error("Failed to load organizations");
-      } else {
-        // Transform the data to match the Organization interface
-        const transformedOrgs: Organization[] = (organizationsData || []).map(org => ({
+        return;
+      }
+      
+      console.log("Owned organizations:", ownedOrgs?.length || 0);
+      
+      // Then, get all organizations the user is a member of
+      const { data: memberOrgs, error: memberError } = await supabase
+        .from('organization_members')
+        .select(`
+          organization_id,
+          role,
+          organizations (*)
+        `)
+        .eq('user_id', user.id)
+        .eq('status', 'active');
+
+      if (memberError) {
+        console.error("Error fetching member organizations:", memberError);
+        setError("Failed to load organizations");
+        toast.error("Failed to load organizations");
+        return;
+      }
+      
+      console.log("Member organizations:", memberOrgs?.length || 0);
+      
+      // Combine both sets of organizations, avoiding duplicates
+      const ownedOrgIds = new Set(ownedOrgs?.map(org => org.id) || []);
+      const allOrgs: Organization[] = [];
+      
+      // Add owned orgs first
+      if (ownedOrgs) {
+        allOrgs.push(...ownedOrgs.map(org => ({
           id: org.id,
           name: org.name,
-          role: 'owner' as UserRole, // Default role for fetched organizations
+          role: 'owner' as UserRole,
           member_count: 1, // Default member count
           created_at: org.created_at,
           active: org.active,
           created_by: org.created_by
-        }));
-        
-        setOrganizations(transformedOrgs);
+        })));
       }
-    } catch (error) {
+      
+      // Add member orgs if not already added as owned
+      if (memberOrgs) {
+        for (const memberOrg of memberOrgs) {
+          if (memberOrg.organizations && !ownedOrgIds.has(memberOrg.organization_id)) {
+            allOrgs.push({
+              id: memberOrg.organization_id,
+              name: memberOrg.organizations.name,
+              role: memberOrg.role as UserRole,
+              member_count: 1, // Default member count
+              created_at: memberOrg.organizations.created_at,
+              active: memberOrg.organizations.active,
+              created_by: memberOrg.organizations.created_by
+            });
+          }
+        }
+      }
+      
+      console.log("Combined organizations:", allOrgs.length);
+      setOrganizations(allOrgs);
+    } catch (error: any) {
       console.error("Error fetching organizations:", error);
-      setError("Failed to load organizations");
-      toast.error("Failed to load organizations");
+      setError(`Failed to load organizations: ${error.message}`);
+      toast.error(`Failed to load organizations: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchOrganizations().catch(err => {
-      console.error("Failed to fetch organizations:", err);
-      setIsLoading(false);
-    });
-  }, [session, user]);
+    if (session && user?.id) {
+      fetchOrganizations().catch(err => {
+        console.error("Failed to fetch organizations:", err);
+        setIsLoading(false);
+      });
+    }
+  }, [session, user?.id]);
 
   return {
     organizations,

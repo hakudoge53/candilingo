@@ -7,7 +7,7 @@ import { useAuth } from '@/hooks/auth/useAuth';
 import Dashboard from '@/components/dashboard/Dashboard';
 import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
-import { supabase, ensureUserSettingsTableStructure } from "@/integrations/supabase/client";
+import { supabase, ensureUserSettingsTableStructure, initializeApp } from "@/integrations/supabase/client";
 
 const DashboardPage = () => {
   const { isLoggedIn, isLoading, activeUser } = useAuth();
@@ -28,8 +28,8 @@ const DashboardPage = () => {
           } 
         });
       } else {
-        // Ensure user_settings table has the required columns
-        await ensureUserSettingsTableStructure();
+        // Initialize the app (ensure tables and columns exist)
+        await initializeApp();
       }
     };
 
@@ -41,7 +41,7 @@ const DashboardPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col">
+      <div className="min-h-screen bg-gray-50 flex flex-col dark:bg-gray-900">
         <Navbar />
         <div className="flex-grow flex items-center justify-center">
           <LoadingSpinner message="Loading your dashboard..." />
@@ -56,7 +56,7 @@ const DashboardPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col dark:bg-gray-900">
       <Navbar />
       <div className="flex-grow">
         <Dashboard />
