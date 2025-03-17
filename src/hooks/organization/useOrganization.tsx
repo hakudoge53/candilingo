@@ -1,8 +1,10 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Organization, OrganizationMember, MemberStatus } from '@/types/organization';
+import { getActiveOrganization, setActiveOrganization } from '@/utils/supabaseHelpers';
+import { useAuth } from '@/hooks/auth/useAuth';
 
 export interface UseOrganizationReturn {
   activeOrganization: Organization | null;
@@ -12,21 +14,75 @@ export interface UseOrganizationReturn {
   isLoading: boolean;
   error: string | null;
   fetchOrganization: (id: string) => Promise<void>;
+  setActiveOrg: (org: Organization | null) => Promise<boolean>;
 }
 
 export const useOrganization = (): UseOrganizationReturn => {
+  const { activeUser } = useAuth();
   const [activeOrganization, setActiveOrganization] = useState<Organization | null>(null);
   const [members, setMembers] = useState<OrganizationMember[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Fetch active organization on user change
+  useEffect(() => {
+    const loadActiveOrganization = async () => {
+      if (!activeUser?.id) return;
+      
+      try {
+        const activeOrgId = await getActiveOrganization(activeUser.id);
+        if (activeOrgId) {
+          await fetchOrganization(activeOrgId);
+        }
+      } catch (err) {
+        console.error("Error loading active organization:", err);
+      }
+    };
+    
+    loadActiveOrganization();
+  }, [activeUser?.id]);
 
-  const fetchOrganization = async (id: string) => {
+  // Set active organization in database and state
+  const setActiveOrg = async (org: Organization | null): Promise<boolean> => {
+    if (!activeUser?.id) {
+      toast.error("You must be logged in to set an active organization");
+      return false;
+    }
+    
+    try {
+      setIsLoading(true);
+      const success = await setActiveOrganization(activeUser.id, org?.id || null);
+      
+      if (success) {
+        setActiveOrganization(org);
+        if (org) {
+          await fetchOrganization(org.id);
+          toast.success(`Switched to ${org.name}`);
+        } else {
+          setMembers([]);
+          toast.success("Organization unset");
+        }
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error("Error setting active organization:", err);
+      toast.error("Failed to set organization");
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const fetchOrganization = useCallback(async (id: string) => {
     if (!id) return;
     
     setIsLoading(true);
     setError(null);
 
     try {
+      console.log(`Fetching organization with ID: ${id}`);
+      
       // Fetch organization details
       const { data: orgData, error: orgError } = await supabase
         .from('organizations')
@@ -34,7 +90,11 @@ export const useOrganization = (): UseOrganizationReturn => {
         .eq('id', id)
         .single();
 
-      if (orgError) throw orgError;
+      if (orgError) {
+        throw orgError;
+      }
+      
+      console.log("Organization data fetched:", orgData);
       
       // Fetch organization members
       const { data: membersData, error: membersError } = await supabase
@@ -45,7 +105,11 @@ export const useOrganization = (): UseOrganizationReturn => {
         `)
         .eq('organization_id', id);
 
-      if (membersError) throw membersError;
+      if (membersError) {
+        throw membersError;
+      }
+      
+      console.log("Organization members fetched:", membersData?.length);
 
       setActiveOrganization(orgData as Organization);
       
@@ -86,9 +150,9 @@ export const useOrganization = (): UseOrganizationReturn => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  // Filter members by status - fix type checking by using case-insensitive comparison
+  // Filter members by status - using case-insensitive comparison
   const activeMembers = members.filter(
     member => member.status?.toLowerCase() === 'active'
   );
@@ -104,6 +168,7 @@ export const useOrganization = (): UseOrganizationReturn => {
     pendingInvites,
     isLoading,
     error,
-    fetchOrganization
+    fetchOrganization,
+    setActiveOrg
   };
 };

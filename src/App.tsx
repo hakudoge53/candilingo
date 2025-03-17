@@ -1,10 +1,12 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AuthProvider } from './hooks/auth/useAuth';
+import { initializeApp } from './integrations/supabase/client';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 // Pages
 import Index from './pages/Index';
@@ -23,9 +25,40 @@ import Documentation from './pages/Documentation';
 import './App.css';
 
 // Create a client
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 function App() {
+  const [isInitializing, setIsInitializing] = useState(true);
+  
+  useEffect(() => {
+    const initialize = async () => {
+      try {
+        await initializeApp();
+      } catch (error) {
+        console.error("Failed to initialize app:", error);
+      } finally {
+        setIsInitializing(false);
+      }
+    };
+    
+    initialize();
+  }, []);
+  
+  if (isInitializing) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner message="Initializing application..." />
+      </div>
+    );
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="light" storageKey="candilingo-theme">
@@ -45,7 +78,7 @@ function App() {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Router>
-          <Toaster position="top-right" />
+          <Toaster position="top-right" richColors />
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
