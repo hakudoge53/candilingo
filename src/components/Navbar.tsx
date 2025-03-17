@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from "@/hooks/auth/useAuth";
@@ -63,8 +64,8 @@ const Navbar = () => {
               <Button variant="outline" size="sm" onClick={handleLogout}>
                 Logout
               </Button>
-            </div> : <div className="hidden md:flex items-center gap-2">
-              <Link to="/customer-portal" className="text-gray-700 hover:text-candilingo-purple font-medium">
+            </div> : <div className="hidden md:flex items-center gap-4">
+              <Link to="/customer-portal" className="text-gray-700 hover:text-candilingo-purple font-medium mr-2">
                 Login
               </Link>
               <Link to="/customer-portal">
