@@ -15,7 +15,7 @@ const loginSchema = z.object({
   password: z.string().min(6, { message: "Password must be at least 6 characters" }),
 });
 
-type LoginValues = z.infer<typeof loginSchema>;
+export type LoginValues = z.infer<typeof loginSchema>;
 
 interface LoginFormProps {
   setIsLoading: (loading: boolean) => void;
@@ -52,14 +52,14 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
 
   // If user is already logged in
   if (loginSuccess) {
-    return <LoginSuccess />;
+    return <LoginSuccess navigateToDashboard={() => window.location.href = '/customer-portal'} />;
   }
 
   // If user wants to reset password
   if (showResetForm) {
     return (
       <ResetPasswordForm
-        onSubmit={onResetSubmit}
+        resetPasswordSubmit={onResetSubmit}
         onBack={() => setShowResetForm(false)}
         resetEmailSent={resetEmailSent}
       />
@@ -77,7 +77,9 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
         onLinkedInLogin={handleLinkedInLogin}
       />
       <LoginFormFields
-        formMethods={formMethods}
+        register={formMethods.register}
+        handleSubmit={formMethods.handleSubmit}
+        errors={formMethods.formState.errors}
         onSubmit={onSubmit}
         onClickForgotPassword={() => setShowResetForm(true)}
         onTestLogin={handleTestLogin}
