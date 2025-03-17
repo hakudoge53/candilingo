@@ -88,13 +88,13 @@ export const useOrganization = (): UseOrganizationReturn => {
     }
   };
 
-  // Filter members by status - fixing the case sensitivity issue
+  // Filter members by status - fix type checking by using case-insensitive comparison
   const activeMembers = members.filter(
-    member => member.status === 'active' || member.status === 'Active'
+    member => member.status?.toLowerCase() === 'active'
   );
   
   const pendingInvites = members.filter(
-    member => member.status === 'pending' || member.status === 'Pending'
+    member => member.status?.toLowerCase() === 'pending'
   );
 
   return {
