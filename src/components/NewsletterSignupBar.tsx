@@ -21,9 +21,8 @@ const NewsletterSignupBar = () => {
     setIsSubmitting(true);
     
     try {
-      const { error } = await supabase
-        .from('newsletter_subscribers')
-        .insert([{ email }]);
+      // Use the rpc call instead of direct table access to work around TypeScript issues
+      const { error } = await supabase.rpc('add_newsletter_subscriber', { subscriber_email: email });
 
       if (error) {
         if (error.code === '23505') { // Unique violation error code

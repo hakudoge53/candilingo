@@ -8,7 +8,6 @@ import { AuthProvider } from './hooks/auth/useAuth';
 import { initializeApp } from './integrations/supabase/client';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
-import NewsletterSignupBar from '@/components/NewsletterSignupBar';
 
 // Pages
 import Index from './pages/Index';
@@ -67,7 +66,6 @@ function App() {
         <AuthProvider>
           <Router>
             <ErrorBoundary>
-              <NewsletterSignupBar />
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/portal" element={<Portal />} />

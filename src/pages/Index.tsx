@@ -12,6 +12,7 @@ import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import PricingSection from "@/components/sections/PricingSection";
 import CTASection from "@/components/sections/CTASection";
 import { Button } from '@/components/ui/button';
+import NewsletterSignupBar from '@/components/NewsletterSignupBar';
 
 const Index = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -37,6 +38,7 @@ const Index = () => {
   return (
     <div className={`min-h-screen bg-gray-50 ${isLoaded ? 'animate-fade-in' : 'opacity-0'}`}>
       <Navbar />
+      <NewsletterSignupBar />
       <HeroSection onShowVideo={handleShowVideo} />
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
