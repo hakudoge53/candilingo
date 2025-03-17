@@ -6,93 +6,108 @@ import { useAuth } from '../auth/useAuth';
 import { toast } from "sonner";
 import { UseActiveOrganizationReturn, UserSettings } from './types';
 
-export const useActiveOrganization = (
-  organizations: Organization[]
-): UseActiveOrganizationReturn => {
+export const useActiveOrganization = (organizations: Organization[]): UseActiveOrganizationReturn => {
   const { user } = useAuth();
-  const [activeOrganization, setActiveOrganizationState] = useState<Organization | null>(null);
+  const [activeOrganization, setActiveOrg] = useState<Organization | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Load the active organization when organizations are fetched
   useEffect(() => {
     const fetchActiveOrganization = async () => {
-      if (!user || organizations.length === 0) return;
+      if (!user?.id || organizations.length === 0) {
+        return;
+      }
 
       try {
-        // First, check if the user_settings table exists and has the active_organization_id column
-        const { data: userSettings, error } = await supabase
+        // Get user's active organization ID from user_settings
+        const { data: userSettings, error: settingsError } = await supabase
           .from('user_settings')
           .select('*')
-          .eq('user_id', user?.id)
-          .single();
+          .eq('user_id', user.id)
+          .maybeSingle();
 
-        if (error) {
-          console.error("Error fetching user settings:", error);
+        if (settingsError) {
+          console.error("Error fetching user settings:", settingsError);
+          setError("Failed to fetch user settings");
           return;
         }
 
-        // Safely check if active_organization_id exists in the user settings
-        const activeOrgId = userSettings && 'active_organization_id' in userSettings ? 
-          userSettings.active_organization_id : null;
-
-        if (activeOrgId) {
-          const activeOrg = organizations.find(org => org.id === activeOrgId) || null;
-          setActiveOrganizationState(activeOrg);
-        } else {
-          setActiveOrganizationState(organizations.length > 0 ? organizations[0] : null);
+        // Find matching organization from fetched organizations
+        if (userSettings?.active_organization_id) {
+          const active = organizations.find(org => org.id === userSettings.active_organization_id);
+          if (active) {
+            setActiveOrg(active);
+          } else if (organizations.length > 0) {
+            // If active not found but organizations exist, set first as active
+            setActiveOrg(organizations[0]);
+            await updateActiveOrganization(organizations[0]);
+          }
+        } else if (organizations.length > 0) {
+          // If no active org set, use first org and update settings
+          setActiveOrg(organizations[0]);
+          await updateActiveOrganization(organizations[0]);
         }
       } catch (error) {
-        console.error("Error fetching active organization:", error);
-        setError("Failed to fetch active organization");
+        console.error("Error setting active organization:", error);
+        setError("Failed to set active organization");
       }
     };
 
-    fetchActiveOrganization().catch(err => {
-      console.error("Failed to fetch active organization:", err);
-    });
+    fetchActiveOrganization();
   }, [user, organizations]);
 
-  const setActiveOrganization = async (organization: Organization | null) => {
-    setActiveOrganizationState(organization);
-    setError(null);
+  // Function to update active organization in user settings
+  const updateActiveOrganization = async (org: Organization | null) => {
+    if (!user?.id) {
+      return;
+    }
 
     try {
-      if (!user) return;
-      
-      // First check if user settings record exists
-      const { data: existingSettings } = await supabase
+      const { data: existingSettings, error: fetchError } = await supabase
         .from('user_settings')
-        .select('*')
+        .select('id')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
+
+      if (fetchError) {
+        console.error("Error fetching user settings:", fetchError);
+        return;
+      }
 
       if (existingSettings) {
         // Update existing settings
-        await supabase
+        const { error: updateError } = await supabase
           .from('user_settings')
           .update({
-            active_organization_id: organization?.id || null
+            active_organization_id: org?.id || null
           })
-          .eq('user_id', user.id);
-      } else {
-        // Create new settings record with defaults
-        const newSettings: UserSettings = {
-          user_id: user.id,
-          active_organization_id: organization?.id || null,
-          highlight_enabled: true,
-          highlight_color: '#9b87f5'
-        };
-        
-        await supabase
-          .from('user_settings')
-          .insert(newSettings);
-      }
+          .eq('id', existingSettings.id);
 
-      console.log("Updated active organization in settings");
+        if (updateError) {
+          console.error("Error updating user settings:", updateError);
+        }
+      } else {
+        // Create new settings
+        const { error: insertError } = await supabase
+          .from('user_settings')
+          .insert({
+            user_id: user.id,
+            active_organization_id: org?.id || null
+          });
+
+        if (insertError) {
+          console.error("Error creating user settings:", insertError);
+        }
+      }
     } catch (error) {
-      console.error("Error updating active organization:", error);
-      setError("Failed to update active organization");
-      toast.error("Failed to update active organization");
+      console.error("Error managing user settings:", error);
     }
+  };
+
+  // Function to set active organization (both local state and in DB)
+  const setActiveOrganization = async (org: Organization | null): Promise<void> => {
+    setActiveOrg(org);
+    await updateActiveOrganization(org);
   };
 
   return {

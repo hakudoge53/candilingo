@@ -39,3 +39,11 @@ export interface UseOrganizationListReturn {
   createNewOrganization: (name: string) => Promise<Organization | null>;
   organizationsLoading: boolean;
 }
+
+export interface UseOrganizationOperationsReturn {
+  updateOrganization: (id: string, name: string) => Promise<boolean>;
+  deleteOrganization: (id: string) => Promise<boolean>;
+  leaveOrganization: (id: string) => Promise<boolean>;
+  isLoading: boolean;
+  error: string | null;
+}

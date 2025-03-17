@@ -1,3 +1,4 @@
+
 import { Organization, UserRole } from '@/types/organization';
 import { UseOrganizationListReturn } from './types';
 import { useOrganizationsFetch } from './useOrganizationsFetch';
@@ -6,7 +7,7 @@ import { useOrganizationCreate } from './useOrganizationCreate';
 import { useState, useEffect } from 'react';
 
 export { UserSettings } from './types';
-export { UseOrganizationListReturn } from './types';
+export type { UseOrganizationListReturn } from './types';
 
 export const useOrganizationList = (): UseOrganizationListReturn => {
   const { organizations, isLoading: organizationsLoading } = useOrganizationsFetch();
