@@ -1,0 +1,98 @@
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1rem;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  #root {
+    padding: 2rem;
+  }
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+.card {
+  padding: 1em;
+}
+
+@media (min-width: 768px) {
+  .card {
+    padding: 2em;
+  }
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* Mobile viewport adjustments */
+@media (max-width: 640px) {
+  /* Increase touch target size for interactive elements */
+  button, a, input, select, textarea {
+    min-height: 44px;
+  }
+  
+  /* Adjust spacing for mobile viewports */
+  .mobile-spacing {
+    padding: 0.75rem;
+  }
+  
+  /* Fix for iOS overflow issues */
+  .ios-fix {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .dialog-content {
+    @apply p-4 w-[calc(100%-2rem)] max-w-none mx-4 rounded-xl;
+  }
+  
+  .drawer-content {
+    @apply rounded-t-xl p-4;
+  }
+  
+  .mobile-full {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  .mobile-p-4 {
+    @apply p-4;
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  select,
+  textarea {
+    @apply text-base;
+  }
+}
+
+/* Prevent content shift when scrollbar appears */
+html {
+  scrollbar-gutter: stable;
+}
+
+@media (max-height: 480px) and (orientation: landscape) {
+  .landscape-scroll {
+    @apply overflow-y-auto max-h-[80vh];
+  }
+  
+  .landscape-compact {
+    @apply py-2;
+  }
+}

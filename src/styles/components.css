@@ -1,0 +1,81 @@
+
+@tailwind components;
+
+@layer components {
+  .hero-glass {
+    @apply bg-white bg-opacity-70 backdrop-blur-md border border-white border-opacity-30 shadow-lg;
+  }
+  
+  .tech-term {
+    @apply bg-candilingo-purple text-white px-1 py-0.5 rounded-md cursor-pointer transition-all duration-300 hover:bg-candilingo-lightpurple;
+  }
+  
+  .btn-primary {
+    @apply bg-candilingo-purple text-white font-medium py-2.5 px-5 rounded-md transition-all duration-300
+    hover:bg-candilingo-lightpurple focus:outline-none focus:ring-2 focus:ring-candilingo-purple focus:ring-opacity-50
+    active:scale-95 shadow-md hover:shadow-lg;
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-candilingo-purple font-medium py-2.5 px-5 rounded-md transition-all duration-300
+    hover:bg-candilingo-gray focus:outline-none focus:ring-2 focus:ring-candilingo-purple focus:ring-opacity-50
+    active:scale-95 shadow-sm hover:shadow border border-candilingo-purple;
+  }
+
+  .btn-accent {
+    @apply bg-candilingo-pink text-white font-medium py-2.5 px-5 rounded-md transition-all duration-300
+    hover:bg-candilingo-lightpink focus:outline-none focus:ring-2 focus:ring-candilingo-pink focus:ring-opacity-50
+    active:scale-95 shadow-md hover:shadow-lg;
+  }
+  
+  .btn-pink {
+    @apply bg-candilingo-pink text-white font-medium py-2.5 px-5 rounded-md transition-all duration-300
+    hover:bg-candilingo-lightpink focus:outline-none focus:ring-2 focus:ring-candilingo-pink focus:ring-opacity-50
+    active:scale-95 shadow-md hover:shadow-lg;
+  }
+  
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  }
+  
+  .section-padding {
+    @apply py-16 md:py-24;
+  }
+  
+  .input-primary {
+    @apply w-full px-4 py-3 rounded-md bg-white border border-gray-300 focus:outline-none
+    focus:ring-2 focus:ring-candilingo-purple focus:border-transparent;
+  }
+
+  .pink-accent {
+    @apply text-candilingo-pink;
+  }
+  
+  .purple-accent {
+    @apply text-candilingo-purple;
+  }
+
+  .browser-window {
+    @apply bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200;
+  }
+  
+  .browser-header {
+    @apply bg-gray-100 px-4 py-2 flex items-center border-b border-gray-200;
+  }
+  
+  .browser-content {
+    @apply p-6;
+  }
+  
+  .shiny-card {
+    @apply bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-xl shadow-md hover:shadow-lg transition-all duration-300;
+  }
+  
+  .gradient-border {
+    @apply relative rounded-lg p-0.5 bg-gradient-to-br from-candilingo-purple via-candilingo-pink to-candilingo-coral;
+  }
+  
+  .gradient-border > * {
+    @apply relative bg-white rounded-md z-10;
+  }
+}

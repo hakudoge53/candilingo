@@ -1,0 +1,15 @@
+
+/* Base styles and CSS reset */
+@import './base.css';
+
+/* Components */
+@import './components.css';
+
+/* Utility classes */
+@import './utilities.css';
+
+/* Animations */
+@import './animations.css';
+
+/* Responsive styles */
+@import './responsive.css';

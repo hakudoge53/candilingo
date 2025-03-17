@@ -1,0 +1,62 @@
+
+@tailwind utilities;
+
+@layer utilities {
+  .glow-effect {
+    @apply relative;
+  }
+  
+  .glow-effect::after {
+    content: "";
+    @apply absolute inset-0 -z-10 bg-gradient-to-r from-candilingo-purple to-candilingo-pink opacity-0 blur-xl transition-opacity duration-500;
+  }
+  
+  .glow-effect:hover::after {
+    @apply opacity-20;
+  }
+  
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+  
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  
+  .ios-scroll {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .mobile-input {
+    @apply h-12 text-base;
+  }
+  
+  .mobile-btn {
+    @apply h-12 px-5 text-base;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.card-gradient {
+  background: linear-gradient(120deg, #ffffff 0%, #f8f9ff 100%);
+}
