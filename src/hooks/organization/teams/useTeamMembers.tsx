@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
-import { TeamMember } from '../types';
+import { TeamMember, SelectQueryError, UserData } from '../types';
 import { OrganizationMember, UserRole, MemberStatus } from '@/types/organization';
 import { toast } from "sonner";
 
@@ -51,14 +51,15 @@ export const useTeamMembers = (): UseTeamMembersReturn => {
         // Handle case when member is present
         if (item.member) {
           // Handle potential error in user data
-          let userObject = item.member.user;
-          if (!userObject || typeof userObject === 'object' && 'error' in userObject) {
-            // Create a fallback user object
+          let userObject: UserData | SelectQueryError | null = item.member.user;
+          
+          // If user is an error or null, create a fallback user object
+          if (!userObject || (typeof userObject === 'object' && 'error' in userObject)) {
             userObject = {
               name: item.member.invited_name || 'Unknown',
               email: item.member.invited_email || 'No email',
               avatar_url: null
-            };
+            } as UserData;
           }
 
           // Create a properly typed member object
@@ -66,8 +67,8 @@ export const useTeamMembers = (): UseTeamMembersReturn => {
             ...item.member,
             status: item.member.status as MemberStatus,
             role: item.member.role as UserRole,
-            user: userObject
-          };
+            user: userObject as UserData
+          } as OrganizationMember;
           
           return {
             id: item.id,
@@ -160,14 +161,15 @@ export const useTeamMembers = (): UseTeamMembersReturn => {
       // Handle case when member data is available
       if (data.member) {
         // Handle potential error in user data
-        let userObject = data.member.user;
-        if (!userObject || typeof userObject === 'object' && 'error' in userObject) {
-          // Create a fallback user object
+        let userObject: UserData | SelectQueryError | null = data.member.user;
+        
+        // If user is an error or null, create a fallback user object
+        if (!userObject || (typeof userObject === 'object' && 'error' in userObject)) {
           userObject = {
             name: data.member.invited_name || 'Unknown',
             email: data.member.invited_email || 'No email',
             avatar_url: null
-          };
+          } as UserData;
         }
 
         // Create a properly typed member object
@@ -175,8 +177,8 @@ export const useTeamMembers = (): UseTeamMembersReturn => {
           ...data.member,
           status: data.member.status as MemberStatus,
           role: data.member.role as UserRole,
-          user: userObject
-        };
+          user: userObject as UserData
+        } as OrganizationMember;
         
         const newTeamMember: TeamMember = {
           id: data.id,

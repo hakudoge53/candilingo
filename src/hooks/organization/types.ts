@@ -1,5 +1,5 @@
 
-import { Organization, OrganizationMember, UserRole } from '@/types/organization';
+import { Organization, OrganizationMember, UserRole, MemberStatus } from '@/types/organization';
 
 // Define UserSettings interface with active_organization_id
 export interface UserSettings {
@@ -59,6 +59,20 @@ export interface Team {
   member_count?: number;
 }
 
+// Define a type for the user object that might be an error
+export interface UserData {
+  id?: string;
+  name: string | null;
+  email: string;
+  avatar_url?: string | null;
+}
+
+// Interface for error response from Supabase
+export interface SelectQueryError {
+  error: true;
+  [key: string]: any;
+}
+
 // Updated TeamMember interface to handle Supabase query results more flexibly
 export interface TeamMember {
   id: string;
@@ -74,19 +88,11 @@ export interface TeamMember {
     invited_email: string | null;
     invited_name: string | null;
     role: UserRole;
-    status: string; // Using string instead of MemberStatus for database compatibility
+    status: string | MemberStatus; // Using both string and MemberStatus for database compatibility
     invitation_token: string | null;
     created_at?: string;
     updated_at?: string;
-    user?: {
-      id?: string;
-      name: string | null;
-      email: string;
-      avatar_url?: string | null;
-    } | {
-      error: true;
-      [key: string]: any;
-    };
+    user?: UserData | SelectQueryError;
   };
 }
 

@@ -1,356 +1,333 @@
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { PlusIcon, AlertCircleIcon, LucideIcon, AlertCircle } from 'lucide-react';
-import { OrganizationMember, UserRole, MemberStatus } from '@/types/organization';
-import { useAuth } from '@/hooks/auth/useAuth';
+import React, { useEffect, useState, forwardRef } from 'react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { UserPlus, Users, FileText, ShieldAlert, ShieldCheck, CircleCheck, Mail, CalendarDays } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useOrganizations } from "@/hooks/useOrganizations";
+import { Organization, OrganizationMember, UserRole, MemberStatus, ROLE_LABELS } from '@/types/organization';
+import InviteMemberDialog from "./members/InviteMemberDialog";
 import ActiveMembersTable from './members/ActiveMembersTable';
 import PendingInvitationsTable from './members/PendingInvitationsTable';
-import InviteMemberDialog from './members/InviteMemberDialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { supabase } from '@/integrations/supabase/client';
-import { useLicenses } from '@/hooks/organization/licenses/useLicenses';
+import EmptyMembersState from './members/EmptyMembersState';
+import { SelectQueryError, UserData } from '@/hooks/organization/types';
 import { toast } from 'sonner';
-import { forwardRef } from 'react';
-import { LucideProps } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
-// Create a proper LucideIcon component for License
-const LicenseIcon = forwardRef<SVGSVGElement, LucideProps>((props, ref) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    ref={ref}
-    {...props}
-  >
-    <path d="M20 6H4V18H20V6Z" />
-    <path d="M12 10C12.5523 10 13 9.55228 13 9C13 8.44772 12.5523 8 12 8C11.4477 8 11 8.44772 11 9C11 9.55228 11.4477 10 12 10Z" />
-    <path d="M16 14C16.5523 14 17 13.5523 17 13C17 12.4477 16.5523 12 16 12C15.4477 12 15 12.4477 15 13C15 13.5523 15.4477 14 16 14Z" />
-    <path d="M8 14C8.55228 14 9 13.5523 9 13C9 12.4477 8.55228 12 8 12C7.44772 12 7 12.4477 7 13C7 13.5523 7.44772 14 8 14Z" />
-  </svg>
-));
-
-LicenseIcon.displayName = 'LicenseIcon';
-
-export interface MembersPanelProps {
-  organizationId: string;
-}
-
-const MembersPanel: React.FC<MembersPanelProps> = ({ organizationId }) => {
-  const { user } = useAuth();
-  const { licenses, fetchLicenses, checkLicenseAvailability } = useLicenses();
-  
-  const [members, setMembers] = useState<OrganizationMember[]>([]);
-  const [invites, setInvites] = useState<OrganizationMember[]>([]);
-  const [activeTab, setActiveTab] = useState('members');
-  const [isLoading, setIsLoading] = useState(true);
-  const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
-  const [isRevoking, setIsRevoking] = useState(false);
-  const [isChangingRole, setIsChangingRole] = useState(false);
-  const [isRemovingMember, setIsRemovingMember] = useState(false);
-  const [showLicensePrompt, setShowLicensePrompt] = useState(false);
-
-  // Check if user is admin or manager
-  const isAdmin = user && members.some(member => 
-    member.user_id === user.id && 
-    (member.role === 'admin' || member.role === 'manager')
+// Create a custom LicenseIcon component since it's not available in lucide-react
+const LicenseIcon = forwardRef<SVGSVGElement, React.ComponentPropsWithoutRef<"svg">>((props, ref) => {
+  return (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      viewBox="0 0 24 24" 
+      width="24" 
+      height="24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+      ref={ref}
+      {...props}
+    >
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <line x1="3" y1="10" x2="21" y2="10" />
+      <line x1="8" y1="15" x2="16" y2="15" />
+    </svg>
   );
+});
+
+LicenseIcon.displayName = "LicenseIcon";
+
+const MembersPanel: React.FC = () => {
+  const [activeTab, setActiveTab] = useState('members');
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
+  const [members, setMembers] = useState<OrganizationMember[]>([]);
+  const [pendingInvites, setPendingInvites] = useState<OrganizationMember[]>([]);
+  const { activeOrganization } = useOrganizations();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (organizationId) {
-      fetchMembers();
-      fetchLicenses(organizationId);
+    if (activeOrganization?.id) {
+      fetchOrganizationMembers(activeOrganization.id);
     }
-  }, [organizationId]);
+  }, [activeOrganization]);
 
-  const fetchMembers = async () => {
+  const fetchOrganizationMembers = async (organizationId: string) => {
     setIsLoading(true);
     try {
-      // Fetch all members for the organization
       const { data, error } = await supabase
         .from('organization_members')
         .select(`
           *,
           user:profiles(id, name, email, avatar_url)
         `)
-        .eq('organization_id', organizationId)
-        .order('created_at', { ascending: false });
+        .eq('organization_id', organizationId);
 
       if (error) throw error;
 
-      // Separate active members and pending invitations with safer type handling
-      const processedData = data.map(member => {
-        // Create a properly shaped user object, handling potential errors
-        let userObject = member.user;
-        if (!userObject || typeof userObject === 'object' && 'error' in userObject) {
-          // If user is missing or has an error, create a fallback user object
+      // Transform data to ensure it matches OrganizationMember type
+      const transformedMembers = data.map(item => {
+        // Handle case when user is present but might be an error
+        let userObject: UserData | SelectQueryError | null = item.user;
+        
+        // If user is an error or null, create a fallback user object
+        if (!userObject || (typeof userObject === 'object' && 'error' in userObject)) {
           userObject = {
-            name: member.invited_name || 'Unknown',
-            email: member.invited_email || 'No email',
+            name: item.invited_name || 'Unknown',
+            email: item.invited_email || 'No email',
             avatar_url: null
-          };
+          } as UserData;
         }
 
-        return {
-          ...member,
-          status: member.status as MemberStatus,
-          role: member.role as UserRole,
-          user: userObject
+        // Create a properly typed member object
+        const memberWithUserData = {
+          ...item,
+          status: item.status as MemberStatus,
+          role: item.role as UserRole,
+          user: userObject as UserData
         } as OrganizationMember;
+        
+        return memberWithUserData;
       });
+
+      // Split into active members and pending invites
+      setMembers(transformedMembers.filter(m => m.status === 'active'));
+      setPendingInvites(transformedMembers.filter(m => m.status === 'pending'));
+    } catch (err: any) {
+      console.error('Error fetching organization members:', err);
+      toast.error('Failed to load members');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleInviteMember = async (email: string, name: string, role: UserRole) => {
+    if (!activeOrganization) {
+      toast.error('No active organization');
+      return false;
+    }
+
+    setIsLoading(true);
+    try {
+      // Cast role to any to work around type checking
+      const { data, error } = await supabase
+        .from('organization_members')
+        .insert({
+          organization_id: activeOrganization.id,
+          invited_email: email,
+          invited_name: name,
+          role: role as any,
+          status: 'pending',
+          user_id: '00000000-0000-0000-0000-000000000000' // Placeholder for pending invites
+        })
+        .select()
+        .single();
+        
+      if (error) throw error;
       
-      const activeMembers = processedData.filter(member => member.status === 'active');
-      const pendingInvites = processedData.filter(member => member.status === 'pending');
+      // Create a safe object with proper typing
+      const newInvite: OrganizationMember = {
+        ...data,
+        status: 'pending' as MemberStatus,
+        role: data.role as UserRole,
+        user: {
+          name: data.invited_name || name,
+          email: data.invited_email || email,
+          avatar_url: null
+        }
+      };
       
-      setMembers(activeMembers);
-      setInvites(pendingInvites);
-    } catch (error) {
-      console.error('Error fetching members:', error);
-      toast.error('Failed to load organization members');
+      setPendingInvites(prev => [...prev, newInvite]);
+      
+      toast.success("Invitation sent successfully");
+      setInviteDialogOpen(false);
+      return true;
+    } catch (err: any) {
+      console.error("Error inviting member:", err);
+      toast.error("Failed to send invitation");
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRevokeInvite = async (inviteId: string) => {
+    if (!activeOrganization) return;
+    
+    setIsLoading(true);
+    try {
+      const { error } = await supabase
+        .from('organization_members')
+        .delete()
+        .eq('id', inviteId);
+        
+      if (error) throw error;
+      
+      setPendingInvites(prev => prev.filter(invite => invite.id !== inviteId));
+      toast.success("Invitation revoked successfully");
+    } catch (err: any) {
+      console.error("Error revoking invite:", err);
+      toast.error("Failed to revoke invitation");
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleChangeRole = async (memberId: string, newRole: UserRole) => {
-    setIsChangingRole(true);
+    if (!activeOrganization) return;
+    
+    setIsLoading(true);
     try {
+      // Cast role to any to work around type checking
       const { error } = await supabase
         .from('organization_members')
         .update({ role: newRole as any })
         .eq('id', memberId);
-
+        
       if (error) throw error;
-
+      
       setMembers(prev => 
         prev.map(member => 
-          member.id === memberId ? { ...member, role: newRole } : member
+          member.id === memberId ? {...member, role: newRole} : member
         )
       );
       
-      toast.success(`Role updated successfully`);
-    } catch (error) {
-      console.error('Error changing role:', error);
-      toast.error('Failed to update role');
+      toast.success("Member role updated successfully");
+    } catch (err: any) {
+      console.error("Error changing role:", err);
+      toast.error("Failed to change role");
     } finally {
-      setIsChangingRole(false);
+      setIsLoading(false);
     }
   };
 
   const handleRemoveMember = async (memberId: string) => {
-    if (!confirm('Are you sure you want to remove this member?')) return;
+    if (!activeOrganization) return;
     
-    setIsRemovingMember(true);
+    setIsLoading(true);
     try {
       const { error } = await supabase
         .from('organization_members')
         .delete()
         .eq('id', memberId);
-
+        
       if (error) throw error;
-
-      // Update licenses if needed
-      await updateLicenseCount(false);
       
       setMembers(prev => prev.filter(member => member.id !== memberId));
-      toast.success('Member removed successfully');
-    } catch (error) {
-      console.error('Error removing member:', error);
-      toast.error('Failed to remove member');
+      toast.success("Member removed successfully");
+    } catch (err: any) {
+      console.error("Error removing member:", err);
+      toast.error("Failed to remove member");
     } finally {
-      setIsRemovingMember(false);
+      setIsLoading(false);
     }
   };
 
-  const handleRevokeInvite = async (inviteId: string) => {
-    if (!confirm('Are you sure you want to revoke this invitation?')) return;
-    
-    setIsRevoking(true);
-    try {
-      const { error } = await supabase
-        .from('organization_members')
-        .delete()
-        .eq('id', inviteId);
-
-      if (error) throw error;
-
-      setInvites(prev => prev.filter(invite => invite.id !== inviteId));
-      toast.success('Invitation revoked successfully');
-    } catch (error) {
-      console.error('Error revoking invitation:', error);
-      toast.error('Failed to revoke invitation');
-    } finally {
-      setIsRevoking(false);
-    }
+  // Create a transform function for the pending invites to match the expected type
+  const transformInviteForTable = (invites: OrganizationMember[]): { 
+    id: string; 
+    invited_email: string; 
+    invited_name: string; 
+    role: string; 
+    created_at: string; 
+  }[] => {
+    return invites.map(invite => ({
+      id: invite.id,
+      invited_email: invite.invited_email || invite.user?.email || '',
+      invited_name: invite.invited_name || invite.user?.name || '',
+      role: ROLE_LABELS[invite.role] || invite.role,
+      created_at: invite.created_at || new Date().toISOString()
+    }));
   };
 
-  const handleInviteMember = async (email: string, name: string, role: UserRole) => {
-    // Check if there's a license available
-    const hasLicense = await checkLicenseAvailability(organizationId);
-    
-    if (!hasLicense) {
-      setShowLicensePrompt(true);
-      return false;
-    }
-    
-    try {
-      // Generate a unique invitation token
-      const invitationToken = `inv_${Math.random().toString(36).substring(2, 15)}`;
-      
-      const { data, error } = await supabase
-        .from('organization_members')
-        .insert([{
-          organization_id: organizationId,
-          user_id: '00000000-0000-0000-0000-000000000000', // Placeholder for pending invites
-          invited_email: email,
-          invited_name: name,
-          role: role as any,
-          status: 'pending',
-          invitation_token: invitationToken
-        }])
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      // Create a properly shaped organization member
-      const newInvite: OrganizationMember = {
-        ...data,
-        status: data.status as MemberStatus,
-        role: data.role as UserRole,
-        user: {
-          name: name,
-          email: email
-        }
-      };
-      
-      setInvites(prev => [newInvite, ...prev]);
-      setIsInviteDialogOpen(false);
-      
-      toast.success(`Invitation sent to ${email}`);
-      return true;
-    } catch (error) {
-      console.error('Error inviting member:', error);
-      toast.error('Failed to send invitation');
-      return false;
-    }
-  };
-
-  const updateLicenseCount = async (increment: boolean) => {
-    if (!licenses || licenses.length === 0) return;
-    
-    try {
-      // Just update the standard license for now
-      const standardLicense = licenses.find(l => l.license_type === 'standard');
-      if (!standardLicense) return;
-      
-      const newCount = increment
-        ? standardLicense.used_licenses + 1
-        : Math.max(0, standardLicense.used_licenses - 1);
-      
-      await supabase
-        .from('organization_licenses')
-        .update({ used_licenses: newCount })
-        .eq('id', standardLicense.id);
-        
-      // Refetch licenses to update the UI
-      fetchLicenses(organizationId);
-    } catch (error) {
-      console.error('Error updating license count:', error);
-    }
-  };
-
-  const handleBuyLicenses = () => {
-    // Close the prompt
-    setShowLicensePrompt(false);
-    
-    // Navigate to licenses tab or open licenses dialog
-    // For now, we'll just show a toast
-    toast.info('Redirecting to purchase additional licenses...');
-    // In a real implementation, you would navigate to a purchase page or open a purchase dialog
+  // Modified the onInvite handler to match the expected signature
+  const handleNewInvite = (newInvite: any) => {
+    handleInviteMember(newInvite.email, newInvite.name, newInvite.role);
   };
 
   return (
-    <Card className="w-full">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Organization Members</CardTitle>
-        {isAdmin && (
-          <Button onClick={() => setIsInviteDialogOpen(true)} size="sm">
-            <PlusIcon className="mr-2 h-4 w-4" /> Invite Member
-          </Button>
-        )}
+    <Card className="col-span-2">
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="text-2xl font-bold">Members & Permissions</CardTitle>
+            <CardDescription>
+              Manage your organization members and their permissions
+            </CardDescription>
+          </div>
+          <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="flex items-center gap-2">
+                <UserPlus className="h-4 w-4" />
+                <span>Invite Member</span>
+              </Button>
+            </DialogTrigger>
+            <InviteMemberDialog
+              onInvite={handleNewInvite}
+              onClose={() => setInviteDialogOpen(false)}
+              isSubmitting={isLoading}
+            />
+          </Dialog>
+        </div>
       </CardHeader>
       <CardContent>
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <Tabs defaultValue="members" value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="mb-4">
-            <TabsTrigger value="members">Active Members ({members.length})</TabsTrigger>
-            <TabsTrigger value="invites">Pending Invites ({invites.length})</TabsTrigger>
+            <TabsTrigger value="members" className="flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              <span>Active Members ({members.length})</span>
+            </TabsTrigger>
+            <TabsTrigger value="pending" className="flex items-center gap-2">
+              <Mail className="h-4 w-4" />
+              <span>Pending Invitations ({pendingInvites.length})</span>
+            </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="members">
-            <ActiveMembersTable 
-              members={members} 
-              isLoading={isLoading}
-              onRoleChange={handleChangeRole}
-              onRemoveMember={handleRemoveMember}
-            />
+          <TabsContent value="members" className="pt-2">
+            {members.length === 0 ? (
+              <EmptyMembersState
+                title="No members yet"
+                description="Invite members to your organization to collaborate."
+                icon={<Users className="h-12 w-12 text-gray-400" />}
+              />
+            ) : (
+              <ActiveMembersTable
+                members={members}
+                onRoleChange={handleChangeRole}
+                onRemove={handleRemoveMember}
+                isLoading={isLoading}
+              />
+            )}
           </TabsContent>
           
-          <TabsContent value="invites">
-            <PendingInvitationsTable 
-              invites={invites as any[]} // Cast as any to work around type issue
-              isLoading={isLoading}
-              onRevokeInvite={handleRevokeInvite}
-            />
+          <TabsContent value="pending" className="pt-2">
+            {pendingInvites.length === 0 ? (
+              <EmptyMembersState
+                title="No pending invitations"
+                description="Invite members to your organization to collaborate."
+                icon={<Mail className="h-12 w-12 text-gray-400" />}
+              />
+            ) : (
+              <PendingInvitationsTable
+                invites={transformInviteForTable(pendingInvites)}
+                onRevoke={handleRevokeInvite}
+                isLoading={isLoading}
+              />
+            )}
           </TabsContent>
         </Tabs>
-        
-        <InviteMemberDialog 
-          isOpen={isInviteDialogOpen} 
-          onClose={() => setIsInviteDialogOpen(false)} 
-          onSuccess={handleInviteMember} 
-          organizationId={organizationId}
-        />
-        
-        {/* License Limit Dialog */}
-        <Dialog open={showLicensePrompt} onOpenChange={setShowLicensePrompt}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle className="flex items-center">
-                <LicenseIcon className="mr-2 h-5 w-5 text-amber-500" />
-                License Limit Reached
-              </DialogTitle>
-              <DialogDescription>
-                You've reached your license limit. To invite more members, you need to purchase additional licenses.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="bg-amber-50 border border-amber-200 rounded-md p-4 text-amber-800 text-sm">
-              <div className="flex items-start">
-                <AlertCircle className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="font-medium">Why do I need more licenses?</p>
-                  <p className="mt-1">Each active member in your organization requires a license. Adding more licenses allows you to invite additional team members.</p>
-                </div>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setShowLicensePrompt(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleBuyLicenses}>
-                Purchase Licenses
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </CardContent>
     </Card>
   );

@@ -13,6 +13,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { SearchIcon } from 'lucide-react';
+import { SelectQueryError, UserData } from '@/hooks/organization/types';
 
 interface AddTeamMemberDialogProps {
   isOpen: boolean;
@@ -75,27 +76,31 @@ const AddTeamMemberDialog: React.FC<AddTeamMemberDialogProps> = ({
       if (error) throw error;
 
       // Filter out members that are already in the team with safer type handling
-      const availableMembers = data.filter(member => 
-        !existingMemberIds.includes(member.id)
-      ).map(member => {
-        // Create a properly shaped user object, handling potential errors
-        let userObject = member.user;
-        if (!userObject || typeof userObject === 'object' && 'error' in userObject) {
-          // If user is missing or has an error, create a fallback user object
-          userObject = {
-            name: member.invited_name || 'Unknown',
-            email: member.invited_email || 'No email',
-            avatar_url: null
-          };
-        }
+      const availableMembers = data
+        .filter(member => !existingMemberIds.includes(member.id))
+        .map(member => {
+          // Handle case when user is present but might be an error
+          let userObject: UserData | SelectQueryError | null = member.user;
+          
+          // If user is an error or null, create a fallback user object
+          if (!userObject || (typeof userObject === 'object' && 'error' in userObject)) {
+            userObject = {
+              name: member.invited_name || 'Unknown',
+              email: member.invited_email || 'No email',
+              avatar_url: null
+            } as UserData;
+          }
 
-        return {
-          ...member,
-          status: member.status as MemberStatus,
-          role: member.role as UserRole,
-          user: userObject
-        } as OrganizationMember;
-      });
+          // Create a properly typed member object
+          const memberWithUserData = {
+            ...member,
+            status: member.status as MemberStatus,
+            role: member.role as UserRole,
+            user: userObject as UserData
+          } as OrganizationMember;
+          
+          return memberWithUserData;
+        });
 
       setAllMembers(availableMembers);
       setFilteredMembers(availableMembers);
@@ -191,7 +196,7 @@ const AddTeamMemberDialog: React.FC<AddTeamMemberDialogProps> = ({
                           {member.user?.name || member.invited_name || 'Unknown'}
                         </p>
                         <p className="text-sm text-gray-500 truncate">
-                          {member.user?.email || member.invited_email}
+                          {member.user?.email || member.invited_email || 'No email'}
                         </p>
                       </div>
                       <Badge variant={
