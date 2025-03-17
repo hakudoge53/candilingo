@@ -9,3 +9,11 @@ export const SIDEBAR_KEYBOARD_SHORTCUT = "b";
 
 // Types
 export type SidebarState = "expanded" | "collapsed";
+
+// Theme utilities
+export const isDarkMode = () => {
+  if (typeof window !== 'undefined') {
+    return document.documentElement.classList.contains('dark');
+  }
+  return false;
+};

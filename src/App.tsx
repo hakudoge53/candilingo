@@ -62,7 +62,7 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="light" storageKey="candilingo-theme">
+      <ThemeProvider defaultTheme="system" storageKey="candilingo-theme">
         <AuthProvider>
           <Router>
             <ErrorBoundary>

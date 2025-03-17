@@ -18,19 +18,26 @@ const ThemeToggle = () => {
     return null;
   }
 
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
+  };
+
   return (
     <Button
       variant="ghost"
       size="icon"
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      onClick={toggleTheme}
       aria-label="Toggle theme"
-      className="text-white hover:bg-techlex-blue-dark"
+      className="transition-colors"
     >
       {theme === "dark" ? (
         <Sun className="h-5 w-5" />
       ) : (
         <Moon className="h-5 w-5" />
       )}
+      <span className="sr-only">
+        {theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+      </span>
     </Button>
   );
 };
