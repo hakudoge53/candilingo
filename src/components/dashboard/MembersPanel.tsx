@@ -1,145 +1,183 @@
 
 import React, { useState, useEffect } from 'react';
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { PlusIcon } from 'lucide-react';
 import { OrganizationMember, UserRole } from '@/types/organization';
-import { useMembersFetch } from '@/hooks/organization/members/useMembersFetch';
 import { useAuth } from '@/hooks/auth/useAuth';
 import ActiveMembersTable from './members/ActiveMembersTable';
 import PendingInvitationsTable from './members/PendingInvitationsTable';
 import InviteMemberDialog from './members/InviteMemberDialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-const MembersPanel = () => {
-  const { activeUser } = useAuth();
-  const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
+interface MembersPanelProps {
+  organizationId: string;
+}
+
+const MembersPanel: React.FC<MembersPanelProps> = ({ organizationId }) => {
+  const { user } = useAuth();
   const [members, setMembers] = useState<OrganizationMember[]>([]);
-  const { isLoading } = useMembersFetch(activeUser?.user_metadata?.organization_id);
+  const [invites, setInvites] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState('members');
+  const [isLoading, setIsLoading] = useState(true);
+  const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
+  const [isRevoking, setIsRevoking] = useState(false);
+  const [isChangingRole, setIsChangingRole] = useState(false);
+  const [isRemovingMember, setIsRemovingMember] = useState(false);
 
-  const handleInviteDialogOpen = () => {
-    setIsInviteDialogOpen(true);
-  };
-
-  const handleInviteDialogClose = () => {
-    setIsInviteDialogOpen(false);
-  };
-
-  const [invitations, setInvitations] = useState<any[]>([]);
-  const [loadingInvitations, setLoadingInvitations] = useState(true);
+  // Check if user is admin or manager
+  const isAdmin = user && members.some(member => 
+    member.user_id === user.id && 
+    (member.role === 'admin' || member.role === 'manager')
+  );
 
   useEffect(() => {
-    const fetchInvitations = async () => {
-      if (!activeUser?.user_metadata?.organization_id) {
-        setLoadingInvitations(false);
-        return;
-      }
+    fetchMembers();
+    fetchPendingInvites();
+  }, [organizationId]);
 
-      setLoadingInvitations(true);
-      try {
-        // Note: Using raw SQL query or API endpoint since organization_invites table doesn't exist in Supabase schema
-        // This is a temporary implementation that will need to be updated once the schema is finalized
-        const { data, error } = await supabase
-          .from('organization_members')
-          .select('*')
-          .eq('organization_id', activeUser.user_metadata.organization_id)
-          .eq('status', 'pending')
-          .order('created_at', { ascending: false });
-
-        if (error) {
-          console.error("Error fetching invitations:", error);
-          toast.error("Failed to load invitations");
-        } else {
-          setInvitations(data || []);
-        }
-      } catch (error) {
-        console.error("Error fetching invitations:", error);
-        toast.error("Failed to load invitations");
-      } finally {
-        setLoadingInvitations(false);
-      }
-    };
-
-    fetchInvitations();
-  }, [activeUser?.user_metadata?.organization_id]);
-
-  const handleRevokeInvite = async (inviteId: string) => {
+  const fetchMembers = async () => {
+    setIsLoading(true);
     try {
-      const { error } = await supabase
-        .from('organization_members')
-        .delete()
-        .eq('id', inviteId);
-
-      if (error) {
-        console.error("Error revoking invite:", error);
-        toast.error("Failed to revoke invite");
-      } else {
-        setInvitations(prev => prev.filter(invite => invite.id !== inviteId));
-        toast.success("Invite revoked successfully");
-      }
+      // Fetch active members for organization
+      // Simulated for now
+      setMembers([
+        {
+          id: '1',
+          organization_id: organizationId,
+          user_id: user?.id || '',
+          invited_email: null,
+          invited_name: null,
+          role: 'admin' as UserRole,
+          status: 'active',
+          invitation_token: null,
+          user: {
+            id: user?.id,
+            name: user?.name || 'Current User',
+            email: user?.email || 'user@example.com',
+            avatar_url: null
+          }
+        },
+        // Add more sample members as needed
+      ]);
     } catch (error) {
-      console.error("Error revoking invite:", error);
-      toast.error("Failed to revoke invite");
+      console.error('Error fetching members:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Placeholder functions for ActiveMembersTable props
-  const handleRoleChange = async (memberId: string, role: UserRole) => {
-    console.log(`Change role for member ${memberId} to ${role}`);
-    // Implementation would go here
+  const fetchPendingInvites = async () => {
+    try {
+      // Fetch pending invitations for the organization
+      // Simulated for now
+      setInvites([
+        {
+          id: 'invite1',
+          organization_id: organizationId,
+          invited_email: 'pending@example.com',
+          invited_name: 'Pending User',
+          role: 'employee' as UserRole,
+          status: 'pending',
+          created_at: new Date().toISOString()
+        }
+      ]);
+    } catch (error) {
+      console.error('Error fetching invites:', error);
+    }
+  };
+
+  const handleChangeRole = async (memberId: string, newRole: UserRole) => {
+    setIsChangingRole(true);
+    try {
+      // Update member role logic would go here
+      console.log(`Changing role for member ${memberId} to ${newRole}`);
+      setMembers(prev => 
+        prev.map(member => 
+          member.id === memberId ? { ...member, role: newRole } : member
+        )
+      );
+    } catch (error) {
+      console.error('Error changing role:', error);
+    } finally {
+      setIsChangingRole(false);
+    }
   };
 
   const handleRemoveMember = async (memberId: string) => {
-    console.log(`Remove member ${memberId}`);
-    // Implementation would go here
+    setIsRemovingMember(true);
+    try {
+      // Remove member logic would go here
+      console.log(`Removing member ${memberId}`);
+      setMembers(prev => prev.filter(member => member.id !== memberId));
+    } catch (error) {
+      console.error('Error removing member:', error);
+    } finally {
+      setIsRemovingMember(false);
+    }
+  };
+
+  const handleRevokeInvite = async (inviteId: string) => {
+    setIsRevoking(true);
+    try {
+      // Revoke invitation logic would go here
+      console.log(`Revoking invite ${inviteId}`);
+      setInvites(prev => prev.filter(invite => invite.id !== inviteId));
+    } catch (error) {
+      console.error('Error revoking invitation:', error);
+    } finally {
+      setIsRevoking(false);
+    }
+  };
+
+  const handleInviteSuccess = (newInvite: any) => {
+    setInvites(prev => [...prev, newInvite]);
+    setIsInviteDialogOpen(false);
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <div className="flex items-center mb-2">
-            <img
-              src="/lovable-uploads/3ba829c2-54b7-4152-b767-9eb28429dbd7.png"
-              alt="Candilingo"
-              className="h-10 w-auto mr-2"
-            />
-            <h2 className="text-xl font-semibold">
-              Manage Team Members
-            </h2>
-          </div>
-          <p className="text-sm text-gray-500">Invite, manage, and remove members from your organization.</p>
-        </div>
-
-        {(activeUser?.role === 'owner' || activeUser?.role === 'admin') && (
-          <button
-            onClick={handleInviteDialogOpen}
-            className="bg-candilingo-purple text-white font-semibold py-2 px-4 rounded hover:bg-candilingo-lightpurple transition-colors"
-          >
-            Invite Member
-          </button>
+    <Card className="w-full">
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle>Organization Members</CardTitle>
+        {isAdmin && (
+          <Button onClick={() => setIsInviteDialogOpen(true)} size="sm">
+            <PlusIcon className="mr-2 h-4 w-4" /> Invite Member
+          </Button>
         )}
-      </div>
-
-      <ActiveMembersTable 
-        members={members} 
-        isLoading={isLoading} 
-        onRoleChange={handleRoleChange}
-        onRemoveMember={handleRemoveMember}
-      />
-
-      <PendingInvitationsTable
-        invites={invitations}
-        isLoading={loadingInvitations}
-        onRevokeInvite={handleRevokeInvite}
-      />
-
-      <InviteMemberDialog
-        isOpen={isInviteDialogOpen}
-        onClose={handleInviteDialogClose}
-        onSuccess={(newInvite) => {
-          setInvitations(prev => [...prev, newInvite]);
-        }}
-      />
-    </div>
+      </CardHeader>
+      <CardContent>
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="mb-4">
+            <TabsTrigger value="members">Active Members ({members.length})</TabsTrigger>
+            <TabsTrigger value="invites">Pending Invites ({invites.length})</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="members">
+            <ActiveMembersTable 
+              members={members} 
+              isLoading={isLoading}
+              onRoleChange={handleChangeRole}
+              onRemoveMember={handleRemoveMember}
+            />
+          </TabsContent>
+          
+          <TabsContent value="invites">
+            <PendingInvitationsTable 
+              invites={invites} 
+              isLoading={isLoading}
+              onRevokeInvite={handleRevokeInvite}
+            />
+          </TabsContent>
+        </Tabs>
+        
+        <InviteMemberDialog 
+          isOpen={isInviteDialogOpen} 
+          onClose={() => setIsInviteDialogOpen(false)} 
+          onSuccess={handleInviteSuccess} 
+          organizationId={organizationId}
+        />
+      </CardContent>
+    </Card>
   );
 };
 

@@ -376,12 +376,258 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      akeys: {
+        Args: {
+          "": unknown
+        }
+        Returns: string[]
+      }
+      avals: {
+        Args: {
+          "": unknown
+        }
+        Returns: string[]
+      }
+      citext:
+        | {
+            Args: {
+              "": boolean
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              "": string
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              "": unknown
+            }
+            Returns: string
+          }
+      citext_hash: {
+        Args: {
+          "": string
+        }
+        Returns: number
+      }
+      citextin: {
+        Args: {
+          "": unknown
+        }
+        Returns: string
+      }
+      citextout: {
+        Args: {
+          "": string
+        }
+        Returns: unknown
+      }
+      citextrecv: {
+        Args: {
+          "": unknown
+        }
+        Returns: string
+      }
+      citextsend: {
+        Args: {
+          "": string
+        }
+        Returns: string
+      }
+      each: {
+        Args: {
+          hs: unknown
+        }
+        Returns: Record<string, unknown>[]
+      }
+      ghstore_compress: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      ghstore_decompress: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      ghstore_in: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      ghstore_options: {
+        Args: {
+          "": unknown
+        }
+        Returns: undefined
+      }
+      ghstore_out: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      gtrgm_compress: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      gtrgm_decompress: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      gtrgm_in: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      gtrgm_options: {
+        Args: {
+          "": unknown
+        }
+        Returns: undefined
+      }
+      gtrgm_out: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
       has_role: {
         Args: {
           org_id: string
           required_role: Database["public"]["Enums"]["user_role"]
         }
         Returns: boolean
+      }
+      hstore:
+        | {
+            Args: {
+              "": string[]
+            }
+            Returns: unknown
+          }
+        | {
+            Args: {
+              "": Record<string, unknown>
+            }
+            Returns: unknown
+          }
+      hstore_hash: {
+        Args: {
+          "": unknown
+        }
+        Returns: number
+      }
+      hstore_in: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      hstore_out: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      hstore_recv: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      hstore_send: {
+        Args: {
+          "": unknown
+        }
+        Returns: string
+      }
+      hstore_subscript_handler: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      hstore_to_array: {
+        Args: {
+          "": unknown
+        }
+        Returns: string[]
+      }
+      hstore_to_json: {
+        Args: {
+          "": unknown
+        }
+        Returns: Json
+      }
+      hstore_to_json_loose: {
+        Args: {
+          "": unknown
+        }
+        Returns: Json
+      }
+      hstore_to_jsonb: {
+        Args: {
+          "": unknown
+        }
+        Returns: Json
+      }
+      hstore_to_jsonb_loose: {
+        Args: {
+          "": unknown
+        }
+        Returns: Json
+      }
+      hstore_to_matrix: {
+        Args: {
+          "": unknown
+        }
+        Returns: string[]
+      }
+      hstore_version_diag: {
+        Args: {
+          "": unknown
+        }
+        Returns: number
+      }
+      set_limit: {
+        Args: {
+          "": number
+        }
+        Returns: number
+      }
+      show_limit: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      show_trgm: {
+        Args: {
+          "": string
+        }
+        Returns: string[]
+      }
+      skeys: {
+        Args: {
+          "": unknown
+        }
+        Returns: string[]
+      }
+      svals: {
+        Args: {
+          "": unknown
+        }
+        Returns: string[]
       }
     }
     Enums: {

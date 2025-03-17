@@ -1,5 +1,6 @@
+
 import { Organization, OrganizationMember, UserRole } from '@/types/organization';
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from '../auth/useAuth';
 import { useState, useEffect } from 'react';
 import { toast } from "sonner";
@@ -13,7 +14,6 @@ export interface UseOrganizationListReturn {
 }
 
 export const useOrganizationList = (): UseOrganizationListReturn => {
-  const supabase = useSupabaseClient();
   const { session, user } = useAuth();
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [activeOrganization, setActiveOrganizationState] = useState<Organization | null>(null);
@@ -47,8 +47,11 @@ export const useOrganizationList = (): UseOrganizationListReturn => {
       }
     };
 
-    fetchOrganizations();
-  }, [session, supabase, user]);
+    fetchOrganizations().catch(err => {
+      console.error("Failed to fetch organizations:", err);
+      setOrganizationsLoading(false);
+    });
+  }, [session, user]);
 
   useEffect(() => {
     const fetchActiveOrganization = async () => {
@@ -79,8 +82,10 @@ export const useOrganizationList = (): UseOrganizationListReturn => {
       }
     };
 
-    fetchActiveOrganization();
-  }, [session, supabase, user, organizations]);
+    fetchActiveOrganization().catch(err => {
+      console.error("Failed to fetch active organization:", err);
+    });
+  }, [session, user, organizations]);
 
   const setActiveOrganization = async (organization: Organization | null) => {
     setActiveOrganizationState(organization);
@@ -106,36 +111,44 @@ export const useOrganizationList = (): UseOrganizationListReturn => {
       return null;
     }
 
-    return supabase
-      .from('organizations')
-      .insert([
-        {
-          name,
-          created_by: user.id,
-        },
-      ])
-      .select()
-      .then(({ data, error }) => {
-        if (error) {
-          console.error("Error creating organization:", error);
-          toast.error("Failed to create organization");
-          return null;
-        }
+    try {
+      const { data, error } = await supabase
+        .from('organizations')
+        .insert([
+          {
+            name,
+            created_by: user.id,
+          },
+        ])
+        .select();
 
-        const newOrganization = data ? data[0] as Organization : null;
-
-        if (newOrganization) {
-          setOrganizations(prevOrgs => [...prevOrgs, newOrganization]);
-          toast.success("Organization created successfully!");
-        }
-
-        return newOrganization;
-      })
-      .catch(error => {
+      if (error) {
         console.error("Error creating organization:", error);
         toast.error("Failed to create organization");
         return null;
-      });
+      }
+
+      const newOrganization = data && data[0] ? data[0] as Organization : null;
+
+      if (newOrganization) {
+        // Add required properties to match the Organization interface
+        const fullOrganization: Organization = {
+          ...newOrganization,
+          role: 'owner' as UserRole,
+          member_count: 1
+        };
+        
+        setOrganizations(prevOrgs => [...prevOrgs, fullOrganization]);
+        toast.success("Organization created successfully!");
+        return fullOrganization;
+      }
+
+      return null;
+    } catch (error) {
+      console.error("Error creating organization:", error);
+      toast.error("Failed to create organization");
+      return null;
+    }
   };
 
   return {
