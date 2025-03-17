@@ -2,22 +2,42 @@
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 0.5rem;
   text-align: center;
 }
 
+@media (min-width: 640px) {
+  #root {
+    padding: 1rem;
+  }
+}
+
 @media (min-width: 768px) {
+  #root {
+    padding: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
   #root {
     padding: 2rem;
   }
 }
 
 .logo {
-  height: 6em;
-  padding: 1.5em;
+  height: 4em;
+  padding: 1em;
   will-change: filter;
   transition: filter 300ms;
 }
+
+@media (min-width: 768px) {
+  .logo {
+    height: 6em;
+    padding: 1.5em;
+  }
+}
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
@@ -26,7 +46,13 @@
 }
 
 .card {
-  padding: 1em;
+  padding: 0.75em;
+}
+
+@media (min-width: 640px) {
+  .card {
+    padding: 1em;
+  }
 }
 
 @media (min-width: 768px) {
@@ -80,6 +106,25 @@
   textarea {
     @apply text-base;
   }
+  
+  /* Adjust font sizes for better mobile readability */
+  h1 {
+    font-size: 1.75rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  h2 {
+    font-size: 1.5rem !important;
+    line-height: 1.25 !important;
+  }
+  
+  h3 {
+    font-size: 1.25rem !important;
+  }
+  
+  p {
+    font-size: 0.95rem !important;
+  }
 }
 
 /* Prevent content shift when scrollbar appears */
@@ -94,5 +139,28 @@ html {
   
   .landscape-compact {
     @apply py-2;
+  }
+}
+
+/* Adjust browser window demo size on small screens */
+@media (max-width: 768px) {
+  .browser-window {
+    transform: scale(0.9);
+    transform-origin: top center;
+  }
+}
+
+@media (max-width: 640px) {
+  .browser-window {
+    transform: scale(0.8);
+    transform-origin: top center;
+  }
+}
+
+/* Make container full width on mobile */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
   }
 }

@@ -28,9 +28,9 @@ const Navbar = () => {
   return (
     <div className="bg-white py-4 shadow-sm sticky top-0 z-50 dark:bg-gray-900 dark:text-white">
       <div className="container mx-auto px-4 flex items-center justify-between">
-        {/* Logo */}
+        {/* Logo - removed drop-shadow-md class */}
         <Link to="/" className="flex items-center">
-          <img src="/lovable-uploads/3ba829c2-54b7-4152-b767-9eb28429dbd7.png" alt="Candilingo" className="h-24 w-auto drop-shadow-md" />
+          <img src="/lovable-uploads/3ba829c2-54b7-4152-b767-9eb28429dbd7.png" alt="Candilingo" className="h-24 w-auto" />
         </Link>
 
         {/* Navigation Links */}
