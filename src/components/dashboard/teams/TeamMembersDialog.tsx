@@ -1,14 +1,23 @@
-
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { X, Plus, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { OrganizationMember } from "@/types/organization";
+import TeamMembersDialogContent from './TeamMembersDialogContent';
 import { Team } from '@/hooks/organization/types';
 import { useTeamMembers } from '@/hooks/organization/teams/useTeamMembers';
 import { useLicenses } from '@/hooks/organization/licenses/useLicenses';
 import AddTeamMemberDialog from './AddTeamMemberDialog';
-import TeamMembersDialogContent from './TeamMembersDialogContent';
-import { OrganizationMember } from '@/types/organization';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
 import { useStripeCheckout } from '@/hooks/useStripeCheckout';
 
 interface TeamMembersDialogProps {
@@ -58,7 +67,6 @@ const TeamMembersDialog: React.FC<TeamMembersDialogProps> = ({
     if (window.confirm('Are you sure you want to remove this member from the team?')) {
       const success = await removeFromTeam(id);
       if (success) {
-        // Local state is updated in the useTeamMembers hook
         toast.success("Team member removed successfully");
       }
     }
@@ -67,7 +75,6 @@ const TeamMembersDialog: React.FC<TeamMembersDialogProps> = ({
   const handleToggleManager = async (teamMember: any) => {
     const success = await updateTeamMember(teamMember.id, !teamMember.is_team_manager);
     if (success) {
-      // Local state is updated in the useTeamMembers hook
       toast.success(
         teamMember.is_team_manager 
           ? "Manager role removed" 
@@ -79,10 +86,8 @@ const TeamMembersDialog: React.FC<TeamMembersDialogProps> = ({
   const handleAddMember = async (member: OrganizationMember, isManager: boolean) => {
     if (!team) return;
     
-    // Check license availability before adding
     const hasLicense = await checkLicenseAvailability(organizationId);
     if (!hasLicense) {
-      // If no license available, show upgrade prompt
       setShowPurchaseLicenseDialog(true);
       return;
     }
@@ -97,9 +102,9 @@ const TeamMembersDialog: React.FC<TeamMembersDialogProps> = ({
   const handlePurchaseLicenses = async () => {
     try {
       await redirectToCheckout({
-        priceId: 'price_1R15yGLRETKD7zlDSrCkpFFt', // Pro plan price ID
+        priceId: 'price_1R15yGLRETKD7zlDSrCkpFFt',
         productName: 'Candilingo Licenses',
-        customPrice: 10, // $10 per license
+        customPrice: 10,
         cancelUrl: window.location.href
       });
     } catch (error) {

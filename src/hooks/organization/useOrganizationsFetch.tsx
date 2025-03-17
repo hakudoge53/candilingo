@@ -4,6 +4,7 @@ import { Organization, UserRole } from '@/types/organization';
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from '../auth/useAuth';
 import { toast } from "sonner";
+import { getActiveOrganization } from '@/utils/supabaseHelpers';
 import { UseOrganizationsFetchReturn } from './types';
 
 /**
@@ -14,8 +15,25 @@ import { UseOrganizationsFetchReturn } from './types';
 export const useOrganizationsFetch = (): UseOrganizationsFetchReturn => {
   const { session, user } = useAuth();
   const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [activeOrganizationId, setActiveOrganizationId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Load active organization ID when the user changes
+  useEffect(() => {
+    const loadActiveOrganizationId = async () => {
+      if (!user?.id) return;
+      
+      try {
+        const activeOrgId = await getActiveOrganization(user.id);
+        setActiveOrganizationId(activeOrgId);
+      } catch (err) {
+        console.error("Error loading active organization ID:", err);
+      }
+    };
+    
+    loadActiveOrganizationId();
+  }, [user?.id]);
 
   /**
    * Fetch organizations from the database
@@ -105,6 +123,16 @@ export const useOrganizationsFetch = (): UseOrganizationsFetchReturn => {
       
       console.log("Combined organizations:", allOrgs.length);
       setOrganizations(allOrgs);
+      
+      // Get the active organization ID if it hasn't been loaded yet
+      if (!activeOrganizationId && user?.id) {
+        try {
+          const activeOrgId = await getActiveOrganization(user.id);
+          setActiveOrganizationId(activeOrgId);
+        } catch (err) {
+          console.error("Error loading active organization ID:", err);
+        }
+      }
     } catch (error: any) {
       console.error("Error fetching organizations:", error);
       setError(`Failed to load organizations: ${error.message}`);
@@ -125,6 +153,7 @@ export const useOrganizationsFetch = (): UseOrganizationsFetchReturn => {
 
   return {
     organizations,
+    activeOrganizationId,
     fetchOrganizations,
     isLoading,
     error

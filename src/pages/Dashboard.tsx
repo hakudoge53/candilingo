@@ -8,9 +8,11 @@ import Dashboard from '@/components/dashboard/Dashboard';
 import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import { supabase, ensureUserSettingsTableStructure, initializeApp } from "@/integrations/supabase/client";
+import { useOrganization } from '@/hooks/organization/useOrganization';
 
 const DashboardPage = () => {
   const { isLoggedIn, isLoading, activeUser } = useAuth();
+  const { activeOrganization, isLoading: isOrgLoading } = useOrganization();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -39,7 +41,7 @@ const DashboardPage = () => {
     document.title = "Dashboard | Candilingo";
   }, [navigate, location.pathname]);
 
-  if (isLoading) {
+  if (isLoading || isOrgLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col dark:bg-gray-900">
         <Navbar />
