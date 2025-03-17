@@ -46,7 +46,6 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('glossaries');
   const [adminMembers, setAdminMembers] = useState<OrganizationMember[]>([]);
   
-  // Redirect if not logged in
   useEffect(() => {
     if (!authLoading && !isLoggedIn) {
       navigate('/auth');
@@ -61,7 +60,6 @@ const Dashboard = () => {
   
   const fetchAdminMembers = async (orgId: string) => {
     try {
-      // Either use members from useOrganizations or fetch directly
       if (members && members.length > 0) {
         setAdminMembers(members.filter(m => 
           m.role === 'admin' || m.role === 'manager'
@@ -79,7 +77,6 @@ const Dashboard = () => {
         
         if (error) throw error;
         
-        // Convert the raw data to the expected OrganizationMember format
         const typedMembers: OrganizationMember[] = (data || []).map((member: any) => {
           return {
             ...member,
@@ -101,7 +98,6 @@ const Dashboard = () => {
   };
   
   const handleTabChange = (tab: string) => {
-    // Extract section and tab
     if (tab.includes('.')) {
       const [section, tabName] = tab.split('.');
       setActiveSection(section);
@@ -119,7 +115,6 @@ const Dashboard = () => {
     return null;
   }
   
-  // Define sidebar sections
   const sidebarSections = [
     {
       title: 'Products',
@@ -150,7 +145,6 @@ const Dashboard = () => {
     }
   ];
   
-  // Render appropriate panel based on active section and tab
   const renderPanel = () => {
     if (activeSection === 'products') {
       if (activeTab === 'glossaries') {
@@ -195,7 +189,6 @@ const Dashboard = () => {
       return <ResourcesPanel activeTab={activeTab} />;
     }
     
-    // Default
     return <GlossaryPanel 
       glossaries={glossaries}
       activeGlossary={activeGlossary}

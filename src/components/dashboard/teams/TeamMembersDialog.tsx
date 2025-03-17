@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -43,7 +42,6 @@ const TeamMembersDialog: React.FC<TeamMembersDialogProps> = ({
   const [isAddMemberDialogOpen, setIsAddMemberDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('members');
 
-  // Load team members when dialog is opened
   useEffect(() => {
     if (isOpen && team?.id) {
       fetchTeamMembers(team.id);
@@ -52,12 +50,20 @@ const TeamMembersDialog: React.FC<TeamMembersDialogProps> = ({
 
   const handleRemoveMember = async (id: string) => {
     if (window.confirm('Are you sure you want to remove this member from the team?')) {
-      await removeFromTeam(id);
+      const success = await removeFromTeam(id);
+      if (success) {
+        // Local state is updated in the useTeamMembers hook
+        // We just need to make sure UI is refreshed
+      }
     }
   };
 
   const handleToggleManager = async (teamMember: TeamMember) => {
-    await updateTeamMember(teamMember.id, !teamMember.is_team_manager);
+    const success = await updateTeamMember(teamMember.id, !teamMember.is_team_manager);
+    if (success) {
+      // Local state needs to be updated since we're not refetching
+      // This is now handled inside the useTeamMembers hook
+    }
   };
 
   const handleAddMember = async (member: OrganizationMember, isManager: boolean) => {
