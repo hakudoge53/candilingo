@@ -46,14 +46,27 @@ export const useTeamMembers = (): UseTeamMembersReturn => {
 
       if (error) throw error;
 
-      // Transform the data to match the expected format
+      // Transform the data to match the expected format with safer type handling
       const transformedMembers: TeamMember[] = data.map(item => {
-        // Convert raw member status string to MemberStatus type
+        // Handle case when member is present
         if (item.member) {
-          const memberWithStatus = {
+          // Handle potential error in user data
+          let userObject = item.member.user;
+          if (!userObject || typeof userObject === 'object' && 'error' in userObject) {
+            // Create a fallback user object
+            userObject = {
+              name: item.member.invited_name || 'Unknown',
+              email: item.member.invited_email || 'No email',
+              avatar_url: null
+            };
+          }
+
+          // Create a properly typed member object
+          const memberWithUserData = {
             ...item.member,
             status: item.member.status as MemberStatus,
-            role: item.member.role as UserRole
+            role: item.member.role as UserRole,
+            user: userObject
           };
           
           return {
@@ -63,11 +76,19 @@ export const useTeamMembers = (): UseTeamMembersReturn => {
             is_team_manager: item.is_team_manager,
             created_at: item.created_at,
             updated_at: item.updated_at,
-            member: memberWithStatus
-          };
+            member: memberWithUserData
+          } as TeamMember;
         }
         
-        return item as TeamMember;
+        // If no member data, return as is
+        return {
+          id: item.id,
+          team_id: item.team_id,
+          member_id: item.member_id,
+          is_team_manager: item.is_team_manager,
+          created_at: item.created_at,
+          updated_at: item.updated_at
+        } as TeamMember;
       });
 
       setTeamMembers(transformedMembers);
@@ -136,20 +157,51 @@ export const useTeamMembers = (): UseTeamMembersReturn => {
 
       if (error) throw error;
 
-      // Transform data to include the correct types before adding to state
+      // Handle case when member data is available
       if (data.member) {
+        // Handle potential error in user data
+        let userObject = data.member.user;
+        if (!userObject || typeof userObject === 'object' && 'error' in userObject) {
+          // Create a fallback user object
+          userObject = {
+            name: data.member.invited_name || 'Unknown',
+            email: data.member.invited_email || 'No email',
+            avatar_url: null
+          };
+        }
+
+        // Create a properly typed member object
+        const memberWithUserData = {
+          ...data.member,
+          status: data.member.status as MemberStatus,
+          role: data.member.role as UserRole,
+          user: userObject
+        };
+        
         const newTeamMember: TeamMember = {
-          ...data,
-          member: {
-            ...data.member,
-            status: data.member.status as MemberStatus,
-            role: data.member.role as UserRole
-          }
+          id: data.id,
+          team_id: data.team_id,
+          member_id: data.member_id,
+          is_team_manager: data.is_team_manager,
+          created_at: data.created_at,
+          updated_at: data.updated_at,
+          member: memberWithUserData
         };
         
         setTeamMembers(prev => [...prev, newTeamMember]);
       } else {
-        setTeamMembers(prev => [...prev, data as TeamMember]);
+        // If no member data, add as is
+        setTeamMembers(prev => [
+          ...prev, 
+          {
+            id: data.id,
+            team_id: data.team_id,
+            member_id: data.member_id,
+            is_team_manager: data.is_team_manager,
+            created_at: data.created_at,
+            updated_at: data.updated_at
+          } as TeamMember
+        ]);
       }
       
       toast.success('Member added to team successfully');

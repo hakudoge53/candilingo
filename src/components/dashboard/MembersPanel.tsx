@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PlusIcon, AlertCircleIcon, LucideIcon } from 'lucide-react';
+import { PlusIcon, AlertCircleIcon, LucideIcon, AlertCircle } from 'lucide-react';
 import { OrganizationMember, UserRole, MemberStatus } from '@/types/organization';
 import { useAuth } from '@/hooks/auth/useAuth';
 import ActiveMembersTable from './members/ActiveMembersTable';
@@ -13,9 +13,11 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { supabase } from '@/integrations/supabase/client';
 import { useLicenses } from '@/hooks/organization/licenses/useLicenses';
 import { toast } from 'sonner';
+import { forwardRef } from 'react';
+import { LucideProps } from 'lucide-react';
 
-// Since LicenseIcon doesn't exist in lucide-react, let's create a component for it
-const LicenseIcon: LucideIcon = (props) => (
+// Create a proper LucideIcon component for License
+const LicenseIcon = forwardRef<SVGSVGElement, LucideProps>((props, ref) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="24"
@@ -26,6 +28,7 @@ const LicenseIcon: LucideIcon = (props) => (
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
+    ref={ref}
     {...props}
   >
     <path d="M20 6H4V18H20V6Z" />
@@ -33,7 +36,9 @@ const LicenseIcon: LucideIcon = (props) => (
     <path d="M16 14C16.5523 14 17 13.5523 17 13C17 12.4477 16.5523 12 16 12C15.4477 12 15 12.4477 15 13C15 13.5523 15.4477 14 16 14Z" />
     <path d="M8 14C8.55228 14 9 13.5523 9 13C9 12.4477 8.55228 12 8 12C7.44772 12 7 12.4477 7 13C7 13.5523 7.44772 14 8 14Z" />
   </svg>
-);
+));
+
+LicenseIcon.displayName = 'LicenseIcon';
 
 export interface MembersPanelProps {
   organizationId: string;
@@ -81,22 +86,29 @@ const MembersPanel: React.FC<MembersPanelProps> = ({ organizationId }) => {
 
       if (error) throw error;
 
-      // Separate active members and pending invitations
-      const activeMembers = data.filter(member => member.status === 'active').map(member => {
+      // Separate active members and pending invitations with safer type handling
+      const processedData = data.map(member => {
+        // Create a properly shaped user object, handling potential errors
+        let userObject = member.user;
+        if (!userObject || typeof userObject === 'object' && 'error' in userObject) {
+          // If user is missing or has an error, create a fallback user object
+          userObject = {
+            name: member.invited_name || 'Unknown',
+            email: member.invited_email || 'No email',
+            avatar_url: null
+          };
+        }
+
         return {
           ...member,
           status: member.status as MemberStatus,
-          role: member.role as UserRole
+          role: member.role as UserRole,
+          user: userObject
         } as OrganizationMember;
       });
       
-      const pendingInvites = data.filter(member => member.status === 'pending').map(member => {
-        return {
-          ...member,
-          status: member.status as MemberStatus,
-          role: member.role as UserRole
-        } as OrganizationMember;
-      });
+      const activeMembers = processedData.filter(member => member.status === 'active');
+      const pendingInvites = processedData.filter(member => member.status === 'pending');
       
       setMembers(activeMembers);
       setInvites(pendingInvites);
@@ -209,7 +221,7 @@ const MembersPanel: React.FC<MembersPanelProps> = ({ organizationId }) => {
 
       if (error) throw error;
 
-      // Update the UI to show the new invitation
+      // Create a properly shaped organization member
       const newInvite: OrganizationMember = {
         ...data,
         status: data.status as MemberStatus,
@@ -294,7 +306,7 @@ const MembersPanel: React.FC<MembersPanelProps> = ({ organizationId }) => {
           
           <TabsContent value="invites">
             <PendingInvitationsTable 
-              invites={invites} 
+              invites={invites as any[]} // Cast as any to work around type issue
               isLoading={isLoading}
               onRevokeInvite={handleRevokeInvite}
             />
@@ -322,7 +334,7 @@ const MembersPanel: React.FC<MembersPanelProps> = ({ organizationId }) => {
             </DialogHeader>
             <div className="bg-amber-50 border border-amber-200 rounded-md p-4 text-amber-800 text-sm">
               <div className="flex items-start">
-                <AlertCircleIcon className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
+                <AlertCircle className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="font-medium">Why do I need more licenses?</p>
                   <p className="mt-1">Each active member in your organization requires a license. Adding more licenses allows you to invite additional team members.</p>

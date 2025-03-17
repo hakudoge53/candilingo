@@ -74,14 +74,26 @@ const AddTeamMemberDialog: React.FC<AddTeamMemberDialogProps> = ({
 
       if (error) throw error;
 
-      // Filter out members that are already in the team
+      // Filter out members that are already in the team with safer type handling
       const availableMembers = data.filter(member => 
         !existingMemberIds.includes(member.id)
       ).map(member => {
+        // Create a properly shaped user object, handling potential errors
+        let userObject = member.user;
+        if (!userObject || typeof userObject === 'object' && 'error' in userObject) {
+          // If user is missing or has an error, create a fallback user object
+          userObject = {
+            name: member.invited_name || 'Unknown',
+            email: member.invited_email || 'No email',
+            avatar_url: null
+          };
+        }
+
         return {
           ...member,
           status: member.status as MemberStatus,
-          role: member.role as UserRole
+          role: member.role as UserRole,
+          user: userObject
         } as OrganizationMember;
       });
 

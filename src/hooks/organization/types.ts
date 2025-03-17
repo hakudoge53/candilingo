@@ -59,6 +59,7 @@ export interface Team {
   member_count?: number;
 }
 
+// Updated TeamMember interface to handle Supabase query results more flexibly
 export interface TeamMember {
   id: string;
   team_id: string;
@@ -82,6 +83,9 @@ export interface TeamMember {
       name: string | null;
       email: string;
       avatar_url?: string | null;
+    } | {
+      error: true;
+      [key: string]: any;
     };
   };
 }
