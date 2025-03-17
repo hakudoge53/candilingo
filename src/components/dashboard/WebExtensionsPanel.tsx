@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Chrome, Firefox, Monitor, Settings, Download, Eye, EyeOff } from 'lucide-react';
+import { Chrome, Globe, Monitor, Settings, Download, Eye, EyeOff } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -38,7 +37,7 @@ const WebExtensionsPanel = () => {
             <ExtensionCard 
               title="Firefox Extension"
               description="Highlight and define technical terms directly in your browser."
-              icon={<Firefox className="h-6 w-6" />}
+              icon={<Globe className="h-6 w-6" />}
               status="available"
               installUrl="https://addons.mozilla.org"
             />
