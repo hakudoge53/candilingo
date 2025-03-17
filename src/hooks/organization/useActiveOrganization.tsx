@@ -1,131 +1,111 @@
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { Organization } from '@/types/organization';
-import { supabase } from "@/integrations/supabase/client";
+import { UserSettings, UseActiveOrganizationReturn } from './types';
 import { useAuth } from '../auth/useAuth';
-import { toast } from "sonner";
-import { UseActiveOrganizationReturn, UserSettings } from './types';
+import { toast } from 'sonner';
 
 /**
  * Hook to manage the active organization for the current user
  * 
- * @param {Organization[]} organizations - Array of organizations the user belongs to
- * @returns {UseActiveOrganizationReturn} Object containing active organization and methods to manage it
+ * @param {Organization[]} organizations - Array of organizations the user is a member of
+ * @returns {UseActiveOrganizationReturn} Object containing the active organization and methods to set it
  */
 export const useActiveOrganization = (organizations: Organization[]): UseActiveOrganizationReturn => {
   const { user } = useAuth();
-  const [activeOrganization, setActiveOrg] = useState<Organization | null>(null);
+  const [activeOrganization, setActiveOrganizationState] = useState<Organization | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  // Load the active organization when organizations are fetched
+  
+  // Fetch the user's active organization from user_settings when component mounts
   useEffect(() => {
-    const fetchActiveOrganization = async () => {
-      if (!user?.id || organizations.length === 0) {
-        return;
-      }
-
+    if (!user?.id || organizations.length === 0) return;
+    
+    const loadActiveOrganization = async () => {
       try {
-        // Get user's active organization ID from user_settings
-        const { data: userSettings, error: settingsError } = await supabase
+        const { data, error } = await supabase
           .from('user_settings')
           .select('*')
           .eq('user_id', user.id)
-          .maybeSingle();
-
-        if (settingsError) {
-          console.error("Error fetching user settings:", settingsError);
-          setError("Failed to fetch user settings");
-          return;
-        }
-
-        // Find matching organization from fetched organizations
-        if (userSettings?.active_organization_id) {
-          const active = organizations.find(org => org.id === userSettings.active_organization_id);
-          if (active) {
-            setActiveOrg(active);
-          } else if (organizations.length > 0) {
-            // If active not found but organizations exist, set first as active
-            setActiveOrg(organizations[0]);
-            await updateActiveOrganization(organizations[0]);
+          .single();
+        
+        if (error) {
+          // If no settings exist, create them
+          if (error.message.includes('No rows found')) {
+            await createUserSettings(user.id);
+            return;
           }
-        } else if (organizations.length > 0) {
-          // If no active org set, use first org and update settings
-          setActiveOrg(organizations[0]);
-          await updateActiveOrganization(organizations[0]);
+          throw error;
         }
-      } catch (error) {
-        console.error("Error setting active organization:", error);
-        setError("Failed to set active organization");
+        
+        // If active_organization_id exists, find it in the organizations array
+        if (data && data.active_organization_id) {
+          const activeOrg = organizations.find(org => org.id === data.active_organization_id);
+          if (activeOrg) {
+            setActiveOrganizationState(activeOrg);
+            return;
+          }
+        }
+        
+        // If no active org is set or it doesn't exist in the user's orgs, default to the first one
+        if (organizations.length > 0) {
+          setActiveOrganizationState(organizations[0]);
+          // Save this as the active organization
+          await setActiveOrganization(organizations[0]);
+        }
+      } catch (err: any) {
+        console.error("Error fetching active organization:", err);
+        setError(err.message);
       }
     };
-
-    fetchActiveOrganization();
-  }, [user, organizations]);
-
+    
+    loadActiveOrganization();
+  }, [user?.id, organizations]);
+  
   /**
-   * Update the active organization in the user settings table
-   * 
-   * @param {Organization | null} org - The organization to set as active, or null to clear
-   * @returns {Promise<void>}
+   * Create initial user settings for a user
    */
-  const updateActiveOrganization = async (org: Organization | null) => {
-    if (!user?.id) {
-      return;
-    }
-
+  const createUserSettings = async (userId: string) => {
     try {
-      const { data: existingSettings, error: fetchError } = await supabase
+      await supabase
         .from('user_settings')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (fetchError) {
-        console.error("Error fetching user settings:", fetchError);
-        return;
+        .insert([{ user_id: userId }]);
+      
+      // If organizations exist, set the first one as active
+      if (organizations.length > 0) {
+        setActiveOrganizationState(organizations[0]);
+        await setActiveOrganization(organizations[0]);
       }
-
-      if (existingSettings) {
-        // Update existing settings
-        const { error: updateError } = await supabase
-          .from('user_settings')
-          .update({
-            active_organization_id: org?.id || null
-          })
-          .eq('id', existingSettings.id);
-
-        if (updateError) {
-          console.error("Error updating user settings:", updateError);
-        }
-      } else {
-        // Create new settings
-        const { error: insertError } = await supabase
-          .from('user_settings')
-          .insert({
-            user_id: user.id,
-            active_organization_id: org?.id || null
-          });
-
-        if (insertError) {
-          console.error("Error creating user settings:", insertError);
-        }
-      }
-    } catch (error) {
-      console.error("Error managing user settings:", error);
+    } catch (err: any) {
+      console.error("Error creating user settings:", err);
+      setError(err.message);
     }
   };
-
+  
   /**
-   * Set active organization (both local state and in database)
-   * 
-   * @param {Organization | null} org - The organization to set as active, or null to clear
-   * @returns {Promise<void>}
+   * Set the active organization for the current user
    */
-  const setActiveOrganization = async (org: Organization | null): Promise<void> => {
-    setActiveOrg(org);
-    await updateActiveOrganization(org);
+  const setActiveOrganization = async (org: Organization | null) => {
+    if (!user?.id) return;
+    
+    try {
+      // Update state first for responsiveness
+      setActiveOrganizationState(org);
+      
+      // Update the user_settings table
+      const { error } = await supabase
+        .from('user_settings')
+        .update({ active_organization_id: org?.id || null })
+        .eq('user_id', user.id);
+      
+      if (error) throw error;
+    } catch (err: any) {
+      console.error("Error setting active organization:", err);
+      setError(err.message);
+      toast.error("Failed to update active organization");
+    }
   };
-
+  
   return {
     activeOrganization,
     setActiveOrganization,

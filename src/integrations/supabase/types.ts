@@ -112,6 +112,44 @@ export type Database = {
           },
         ]
       }
+      organization_licenses: {
+        Row: {
+          created_at: string
+          id: string
+          license_type: string
+          organization_id: string
+          total_licenses: number
+          updated_at: string
+          used_licenses: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          license_type?: string
+          organization_id: string
+          total_licenses?: number
+          updated_at?: string
+          used_licenses?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          license_type?: string
+          organization_id?: string
+          total_licenses?: number
+          updated_at?: string
+          used_licenses?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_licenses_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organization_members: {
         Row: {
           created_at: string
@@ -293,6 +331,83 @@ export type Database = {
           },
         ]
       }
+      team_members: {
+        Row: {
+          created_at: string
+          id: string
+          is_team_manager: boolean
+          member_id: string
+          team_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_team_manager?: boolean
+          member_id: string
+          team_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_team_manager?: boolean
+          member_id?: string
+          team_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_members_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "organization_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_members_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teams: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          organization_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          organization_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          organization_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teams_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       techlingo_terms: {
         Row: {
           category: string | null
@@ -346,6 +461,7 @@ export type Database = {
       }
       user_settings: {
         Row: {
+          active_organization_id: string | null
           created_at: string | null
           highlight_color: string | null
           highlight_enabled: boolean | null
@@ -354,6 +470,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          active_organization_id?: string | null
           created_at?: string | null
           highlight_color?: string | null
           highlight_enabled?: boolean | null
@@ -362,6 +479,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          active_organization_id?: string | null
           created_at?: string | null
           highlight_color?: string | null
           highlight_enabled?: boolean | null

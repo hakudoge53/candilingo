@@ -47,3 +47,35 @@ export interface UseOrganizationOperationsReturn {
   isLoading: boolean;
   error: string | null;
 }
+
+// Team-related interfaces
+export interface Team {
+  id: string;
+  name: string;
+  description?: string;
+  organization_id: string;
+  created_at?: string;
+  updated_at?: string;
+  member_count?: number;
+}
+
+export interface TeamMember {
+  id: string;
+  team_id: string;
+  member_id: string;
+  is_team_manager: boolean;
+  created_at?: string;
+  updated_at?: string;
+  member?: OrganizationMember;
+}
+
+// License-related interfaces
+export interface OrganizationLicense {
+  id: string;
+  organization_id: string;
+  total_licenses: number;
+  used_licenses: number;
+  license_type: string;
+  created_at?: string;
+  updated_at?: string;
+}

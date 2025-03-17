@@ -7,10 +7,14 @@ import WebExtensionsPanel from './WebExtensionsPanel';
 import OrganizationPanel from './OrganizationPanel';
 import ResourcesPanel from './ResourcesPanel';
 import MembersPanel from './MembersPanel';
+import TeamsPanel from './TeamsPanel';
+import LicensesPanel from './LicensesPanel';
+import OrganizationChartPanel from './OrganizationChartPanel';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { useOrganizations } from '@/hooks/useOrganizations';
 import { useGlossaries } from '@/hooks/useGlossaries';
-import { Organization } from '@/types/organization';
+import { Organization, OrganizationMember } from '@/types/organization';
+import { supabase } from '@/integrations/supabase/client';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -19,6 +23,7 @@ const Dashboard = () => {
     organizations, 
     activeOrganization, 
     setActiveOrganization,
+    members,
     createOrganization,
     isLoading: orgLoading 
   } = useOrganizations();
@@ -40,6 +45,7 @@ const Dashboard = () => {
   
   const [activeSection, setActiveSection] = useState('products');
   const [activeTab, setActiveTab] = useState('glossaries');
+  const [adminMembers, setAdminMembers] = useState<OrganizationMember[]>([]);
   
   // Redirect if not logged in
   useEffect(() => {
@@ -48,13 +54,37 @@ const Dashboard = () => {
     }
   }, [isLoggedIn, authLoading, navigate]);
   
-  if (authLoading || orgLoading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading dashboard...</div>;
-  }
+  useEffect(() => {
+    if (activeOrganization?.id) {
+      fetchAdminMembers(activeOrganization.id);
+    }
+  }, [activeOrganization, members]);
   
-  if (!activeUser) {
-    return null;
-  }
+  const fetchAdminMembers = async (orgId: string) => {
+    try {
+      // Either use members from useOrganizations or fetch directly
+      if (members && members.length > 0) {
+        setAdminMembers(members.filter(m => 
+          m.role === 'admin' || m.role === 'manager'
+        ));
+      } else {
+        const { data, error } = await supabase
+          .from('organization_members')
+          .select(`
+            *,
+            user:profiles(id, name, email, avatar_url)
+          `)
+          .eq('organization_id', orgId)
+          .in('role', ['admin', 'manager'])
+          .eq('status', 'active');
+        
+        if (error) throw error;
+        setAdminMembers(data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching admin members:', error);
+    }
+  };
   
   const handleOrganizationChange = (org: Organization) => {
     setActiveOrganization(org);
@@ -71,6 +101,14 @@ const Dashboard = () => {
     }
   };
   
+  if (authLoading || orgLoading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading dashboard...</div>;
+  }
+  
+  if (!activeUser) {
+    return null;
+  }
+  
   // Define sidebar sections
   const sidebarSections = [
     {
@@ -86,7 +124,10 @@ const Dashboard = () => {
       key: 'organization',
       tabs: [
         { label: 'Overview', value: 'organization.overview' },
-        { label: 'Members', value: 'organization.members' }
+        { label: 'Members', value: 'organization.members' },
+        { label: 'Teams', value: 'organization.teams' },
+        { label: 'Org Chart', value: 'organization.chart' },
+        { label: 'Licenses', value: 'organization.licenses' }
       ]
     },
     {
@@ -129,6 +170,16 @@ const Dashboard = () => {
         />;
       } else if (activeTab === 'members') {
         return <MembersPanel organizationId={activeOrganization?.id || ''} />;
+      } else if (activeTab === 'teams') {
+        return <TeamsPanel organizationId={activeOrganization?.id || ''} />;
+      } else if (activeTab === 'chart') {
+        return <OrganizationChartPanel 
+          organizationId={activeOrganization?.id || ''} 
+          orgName={activeOrganization?.name || 'Organization'}
+          admins={adminMembers}
+        />;
+      } else if (activeTab === 'licenses') {
+        return <LicensesPanel organizationId={activeOrganization?.id || ''} />;
       }
     } else if (activeSection === 'resources') {
       return <ResourcesPanel activeTab={activeTab} />;

@@ -6,7 +6,7 @@ import { useActiveOrganization } from './useActiveOrganization';
 import { useOrganizationCreate } from './useOrganizationCreate';
 import { useState, useEffect } from 'react';
 
-export { UserSettings } from './types';
+export type { UserSettings } from './types';
 export type { UseOrganizationListReturn } from './types';
 
 /**
