@@ -22,32 +22,32 @@ const DashboardHeader = ({
 }: DashboardHeaderProps) => {
   if (!activeOrganization || organizations.length === 0) {
     return (
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-8 bg-gradient-to-r from-candilingo-purple/10 to-candilingo-teal/10 p-4 rounded-xl">
         <div className="flex items-center">
           <img 
             src="/lovable-uploads/3ba829c2-54b7-4152-b767-9eb28429dbd7.png" 
             alt="Candilingo" 
-            className="h-14 w-auto mr-3" 
+            className="h-16 w-auto mr-4" 
           />
-          <h2 className="text-2xl font-bold text-candilingo-purple">Dashboard</h2>
+          <h2 className="text-3xl font-bold text-candilingo-purple">Dashboard</h2>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+    <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 bg-gradient-to-r from-candilingo-purple/10 to-candilingo-teal/10 p-4 rounded-xl">
       <div className="flex items-center">
         <img 
           src="/lovable-uploads/3ba829c2-54b7-4152-b767-9eb28429dbd7.png" 
           alt="Candilingo" 
-          className="h-14 w-auto mr-3" 
+          className="h-16 w-auto mr-4" 
         />
-        <h2 className="text-2xl font-bold text-candilingo-purple">Dashboard</h2>
+        <h2 className="text-3xl font-bold text-candilingo-purple">Dashboard</h2>
       </div>
       
-      <div className="flex items-center space-x-2">
-        <span className="text-sm text-gray-500">Organization:</span>
+      <div className="flex items-center space-x-3">
+        <span className="text-base font-medium text-gray-600">Organization:</span>
         <Select 
           value={activeOrganization.id} 
           onValueChange={(value) => {
@@ -55,7 +55,7 @@ const DashboardHeader = ({
             if (org) onOrganizationChange(org);
           }}
         >
-          <SelectTrigger className="w-[220px]">
+          <SelectTrigger className="w-[240px] border-candilingo-purple/30">
             <SelectValue placeholder="Select organization" />
           </SelectTrigger>
           <SelectContent>
