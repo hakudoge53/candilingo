@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import DashboardLayout from './layout/DashboardLayout';
 import { useDashboardState } from '@/hooks/dashboard/useDashboardState';
 import DashboardPanelRenderer from './panels/DashboardPanelRenderer';
@@ -34,6 +34,15 @@ const Dashboard = () => {
   } = useDashboardState();
   
   const sidebarSections = getDashboardSidebarConfig();
+  
+  // Set default active tab on first load
+  useEffect(() => {
+    if (!activeTab && sidebarSections.length > 0 && sidebarSections[0].tabs.length > 0) {
+      const firstSection = sidebarSections[0];
+      const firstTab = firstSection.tabs[0];
+      handleTabChange(firstTab.value);
+    }
+  }, [sidebarSections, activeTab, handleTabChange]);
   
   if (isLoading) {
     return <div className="flex items-center justify-center min-h-screen">

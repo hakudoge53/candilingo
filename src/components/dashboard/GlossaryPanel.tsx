@@ -1,6 +1,7 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Glossary, GlossaryTerm } from '@/types/organization';
+import { toast } from 'sonner';
 
 // Import refactored components
 import GlossaryHeader from './glossary/GlossaryHeader';
@@ -47,56 +48,126 @@ const GlossaryPanel = ({
   const [editingTerm, setEditingTerm] = useState<GlossaryTerm | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Set active glossary when glossaries are loaded and none is selected
+  useEffect(() => {
+    if (glossaries.length > 0 && !activeGlossary) {
+      setActiveGlossary(glossaries[0]);
+    }
+  }, [glossaries, activeGlossary, setActiveGlossary]);
+
   const handleCreateGlossary = async (name: string, description: string) => {
     if (!name.trim() || !addGlossary) return;
     
     setIsSubmitting(true);
-    await addGlossary(name, description);
-    setIsSubmitting(false);
-    setNewGlossaryOpen(false);
+    try {
+      const glossary = await addGlossary(name, description);
+      if (glossary) {
+        toast.success("Glossary created successfully!");
+        
+        // Set the new glossary as active
+        setActiveGlossary(glossary);
+      }
+    } catch (error) {
+      console.error("Error creating glossary:", error);
+      toast.error("Failed to create glossary");
+    } finally {
+      setIsSubmitting(false);
+      setNewGlossaryOpen(false);
+    }
   };
 
   const handleUpdateGlossary = async (glossaryId: string, name: string, description: string) => {
     if (!name.trim() || !glossaryId) return;
     
     setIsSubmitting(true);
-    await updateGlossary(glossaryId, {
-      name,
-      description
-    });
-    setIsSubmitting(false);
-    setEditGlossaryOpen(false);
+    try {
+      const updatedGlossary = await updateGlossary(glossaryId, {
+        name,
+        description
+      });
+      
+      if (updatedGlossary) {
+        toast.success("Glossary updated successfully!");
+        
+        // Update active glossary if it's the one that was edited
+        if (activeGlossary && activeGlossary.id === glossaryId) {
+          setActiveGlossary(updatedGlossary);
+        }
+      }
+    } catch (error) {
+      console.error("Error updating glossary:", error);
+      toast.error("Failed to update glossary");
+    } finally {
+      setIsSubmitting(false);
+      setEditGlossaryOpen(false);
+    }
   };
 
   const handleDeleteGlossary = async (glossaryId: string) => {
-    await deleteGlossary(glossaryId);
+    try {
+      await deleteGlossary(glossaryId);
+      toast.success("Glossary deleted successfully!");
+      
+      // If the active glossary was deleted, set a new active glossary
+      if (activeGlossary && activeGlossary.id === glossaryId) {
+        const remainingGlossaries = glossaries.filter(g => g.id !== glossaryId);
+        if (remainingGlossaries.length > 0) {
+          setActiveGlossary(remainingGlossaries[0]);
+        } else {
+          setActiveGlossary(null);
+        }
+      }
+    } catch (error) {
+      console.error("Error deleting glossary:", error);
+      toast.error("Failed to delete glossary");
+    }
   };
 
   const handleAddTerm = async (term: string, definition: string, category: string) => {
     if (!term.trim() || !definition.trim() || !activeGlossary) return;
     
     setIsSubmitting(true);
-    await addTerm(
-      activeGlossary.id, 
-      term, 
-      definition, 
-      category.trim() || undefined
-    );
-    setIsSubmitting(false);
-    setNewTermOpen(false);
+    try {
+      const newTerm = await addTerm(
+        activeGlossary.id, 
+        term, 
+        definition, 
+        category.trim() || undefined
+      );
+      
+      if (newTerm) {
+        toast.success("Term added successfully!");
+      }
+    } catch (error) {
+      console.error("Error adding term:", error);
+      toast.error("Failed to add term");
+    } finally {
+      setIsSubmitting(false);
+      setNewTermOpen(false);
+    }
   };
 
   const handleUpdateTerm = async (termId: string, term: string, definition: string, category: string) => {
     if (!term.trim() || !definition.trim() || !termId) return;
     
     setIsSubmitting(true);
-    await updateTerm(termId, {
-      term,
-      definition,
-      category: category.trim() || undefined
-    });
-    setIsSubmitting(false);
-    setEditTermOpen(false);
+    try {
+      const updatedTerm = await updateTerm(termId, {
+        term,
+        definition,
+        category: category.trim() || undefined
+      });
+      
+      if (updatedTerm) {
+        toast.success("Term updated successfully!");
+      }
+    } catch (error) {
+      console.error("Error updating term:", error);
+      toast.error("Failed to update term");
+    } finally {
+      setIsSubmitting(false);
+      setEditTermOpen(false);
+    }
   };
 
   const handleEditTerm = (term: GlossaryTerm) => {
@@ -105,7 +176,13 @@ const GlossaryPanel = ({
   };
 
   const handleDeleteTerm = async (termId: string) => {
-    await deleteTerm(termId);
+    try {
+      await deleteTerm(termId);
+      toast.success("Term deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting term:", error);
+      toast.error("Failed to delete term");
+    }
   };
 
   const handleEditGlossary = (glossary: Glossary) => {
@@ -127,10 +204,13 @@ const GlossaryPanel = ({
 
   return (
     <div className="space-y-6">
-      <GlossaryHeader onNewGlossaryOpen={handleNewGlossaryClick} />
+      <GlossaryHeader 
+        activeGlossary={activeGlossary}
+        onNewGlossaryOpen={handleNewGlossaryClick} 
+      />
 
       {glossaries.length === 0 ? (
-        <EmptyGlossaryState />
+        <EmptyGlossaryState onCreateClick={handleNewGlossaryClick} />
       ) : (
         <GlossaryTabs 
           glossaries={glossaries}

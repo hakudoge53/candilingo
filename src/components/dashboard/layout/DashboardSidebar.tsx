@@ -10,12 +10,18 @@ import {
   ChevronRight,
   Chrome,
   Menu,
-  X
+  X,
+  Home,
+  BarChart3,
+  Network,
+  Layers,
+  Key,
+  HelpCircle,
+  Route
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
-import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
 
 interface SidebarTab {
   label: string;
@@ -43,22 +49,44 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
 }) => {
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(false);
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    products: true,
+    organization: false,
+    resources: false
+  });
+
+  const toggleSection = (sectionKey: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [sectionKey]: !prev[sectionKey]
+    }));
+  };
 
   // Get icon based on tab value
   const getTabIcon = (tabValue: string) => {
-    switch (tabValue) {
+    const parts = tabValue.split('.');
+    const section = parts[0];
+    const tab = parts[1];
+
+    switch (tab) {
       case 'glossaries':
         return <Book className="w-5 h-5" />;
       case 'extensions':
         return <Chrome className="w-5 h-5" />;
-      case 'org-settings':
-        return <Settings className="w-5 h-5" />;
+      case 'overview':
+        return <Home className="w-5 h-5" />;
       case 'members':
         return <Users className="w-5 h-5" />;
+      case 'teams':
+        return <Users className="w-5 h-5" />;
+      case 'chart':
+        return <Network className="w-5 h-5" />;
+      case 'licenses':
+        return <Key className="w-5 h-5" />;
       case 'documentation':
         return <FileText className="w-5 h-5" />;
       case 'roadmap':
-        return <LayoutGrid className="w-5 h-5" />;
+        return <Route className="w-5 h-5" />;
       default:
         return <FileText className="w-5 h-5" />;
     }
@@ -73,15 +101,19 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
             alt="Candilingo" 
             className="h-12" 
           />
+          <span className="ml-2 text-xl font-semibold text-candilingo-purple">Candilingo</span>
         </div>
       </div>
       
       <div className="flex-1 overflow-y-auto py-4">
         {sidebarSections.map((section) => (
           <div key={section.key} className="mb-6">
-            <div className="px-5 py-2">
+            <div 
+              className="px-5 py-2 cursor-pointer" 
+              onClick={() => toggleSection(section.key)}
+            >
               <div className="flex items-center">
-                {section.key === activeSection ? (
+                {expandedSections[section.key] ? (
                   <ChevronDown className="w-5 h-5 mr-2 text-candilingo-purple" />
                 ) : (
                   <ChevronRight className="w-5 h-5 mr-2 text-gray-500" />
@@ -94,7 +126,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
             
             <div className={cn(
               "space-y-2 ml-8 transition-all",
-              section.key === activeSection ? "block" : "hidden"
+              expandedSections[section.key] ? "block" : "hidden"
             )}>
               {section.tabs.map((tab) => (
                 <button
@@ -146,11 +178,14 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
           >
             <Menu className="h-6 w-6 text-candilingo-purple" />
           </Button>
-          <img 
-            src="/lovable-uploads/3ba829c2-54b7-4152-b767-9eb28429dbd7.png" 
-            alt="Candilingo" 
-            className="h-9" 
-          />
+          <div className="flex items-center">
+            <img 
+              src="/lovable-uploads/3ba829c2-54b7-4152-b767-9eb28429dbd7.png" 
+              alt="Candilingo" 
+              className="h-9" 
+            />
+            <span className="ml-2 text-lg font-semibold text-candilingo-purple">Candilingo</span>
+          </div>
         </div>
         
         <div className={cn(

@@ -35,7 +35,7 @@ export function useDashboardState() {
   } = useGlossaries(activeOrganization?.id);
   
   const [activeSection, setActiveSection] = useState('products');
-  const [activeTab, setActiveTab] = useState('glossaries');
+  const [activeTab, setActiveTab] = useState('');
   const [adminMembers, setAdminMembers] = useState<OrganizationMember[]>([]);
   
   useEffect(() => {
@@ -93,9 +93,11 @@ export function useDashboardState() {
     if (tab.includes('.')) {
       const [section, tabName] = tab.split('.');
       setActiveSection(section);
-      setActiveTab(tabName);
-    } else {
       setActiveTab(tab);
+    } else {
+      // If just a section is provided, set it as active section
+      setActiveSection(tab);
+      setActiveTab('');
     }
   };
 

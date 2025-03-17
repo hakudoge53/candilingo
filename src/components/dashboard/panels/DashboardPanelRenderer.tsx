@@ -1,3 +1,4 @@
+
 import React from 'react';
 import GlossaryPanel from '../GlossaryPanel';
 import WebExtensionsPanel from '../WebExtensionsPanel';
@@ -9,6 +10,8 @@ import LicensesPanel from '../LicensesPanel';
 import OrganizationChartPanel from '../OrganizationChartPanel';
 import OrganizationOverviewPanel from '../OrganizationOverviewPanel';
 import ResourcesDocumentationPanel from '../ResourcesDocumentationPanel';
+import OrganizationLanding from '../organization/OrganizationLanding';
+import ResourcesLanding from '../resources/ResourcesLanding';
 import { Glossary, GlossaryTerm } from '@/types/organization';
 import { Organization, OrganizationMember } from '@/types/organization';
 
@@ -56,63 +59,82 @@ const DashboardPanelRenderer: React.FC<DashboardPanelRendererProps> = ({
   orgLoading
 }) => {
   const renderPanel = () => {
-    const tabParts = activeTab.split('.');
-    
-    switch (activeTab) {
-      case 'products.glossaries':
-        return (
-          <GlossaryPanel 
-            glossaries={glossaries}
-            activeGlossary={activeGlossary}
-            setActiveGlossary={setActiveGlossary}
-            terms={terms}
-            isLoadingGlossaries={glossariesLoading}
-            isLoadingTerms={isLoadingTerms}
-            addTerm={addTerm}
-            updateTerm={updateTerm}
-            deleteTerm={deleteTerm}
-            addGlossary={createGlossary}
-            updateGlossary={updateGlossary}
-            deleteGlossary={deleteGlossary}
-          />
-        );
+    // If we're on a section level with no specific tab selected, show the section landing page
+    if (activeTab.includes('.')) {
+      const tabParts = activeTab.split('.');
+      
+      switch (activeTab) {
+        case 'products.glossaries':
+          return (
+            <GlossaryPanel 
+              glossaries={glossaries}
+              activeGlossary={activeGlossary}
+              setActiveGlossary={setActiveGlossary}
+              terms={terms}
+              isLoadingGlossaries={glossariesLoading}
+              isLoadingTerms={isLoadingTerms}
+              addTerm={addTerm}
+              updateTerm={updateTerm}
+              deleteTerm={deleteTerm}
+              addGlossary={createGlossary}
+              updateGlossary={updateGlossary}
+              deleteGlossary={deleteGlossary}
+            />
+          );
+          
+        case 'products.extensions':
+          return <WebExtensionsPanel />;
+          
+        case 'organization.overview':
+          return <OrganizationOverviewPanel activeOrganization={activeOrganization} />;
+          
+        case 'organization.members':
+          return <MembersPanel organizationId={activeOrganization?.id || ''} />;
+          
+        case 'organization.teams':
+          return <TeamsPanel organizationId={activeOrganization?.id || ''} />;
+          
+        case 'organization.chart':
+          return (
+            <OrganizationChartPanel 
+              organizationId={activeOrganization?.id || ''} 
+              orgName={activeOrganization?.name || 'Organization'}
+              admins={adminMembers}
+            />
+          );
+          
+        case 'organization.licenses':
+          return <LicensesPanel organizationId={activeOrganization?.id || ''} />;
+          
+        case 'resources.documentation':
+          return <ResourcesDocumentationPanel />;
+          
+        case 'resources.roadmap':
+          return <ResourcesPanel activeTab={activeTab} />;
+          
+        default:
+          return (
+            <div className="flex items-center justify-center h-64">
+              <p className="text-gray-500">Select a tab to view content</p>
+            </div>
+          );
+      }
+    } else {
+      // Show section landing pages when only section is selected
+      switch (activeSection) {
+        case 'organization':
+          return <OrganizationLanding activeOrganization={activeOrganization} />;
         
-      case 'products.extensions':
-        return <WebExtensionsPanel />;
+        case 'resources':
+          return <ResourcesLanding />;
         
-      case 'organization.overview':
-        return <OrganizationOverviewPanel activeOrganization={activeOrganization} />;
-        
-      case 'organization.members':
-        return <MembersPanel organizationId={activeOrganization?.id || ''} />;
-        
-      case 'organization.teams':
-        return <TeamsPanel organizationId={activeOrganization?.id || ''} />;
-        
-      case 'organization.chart':
-        return (
-          <OrganizationChartPanel 
-            organizationId={activeOrganization?.id || ''} 
-            orgName={activeOrganization?.name || 'Organization'}
-            admins={adminMembers}
-          />
-        );
-        
-      case 'organization.licenses':
-        return <LicensesPanel organizationId={activeOrganization?.id || ''} />;
-        
-      case 'resources.documentation':
-        return <ResourcesDocumentationPanel />;
-        
-      case 'resources.roadmap':
-        return <ResourcesPanel activeTab={activeTab} />;
-        
-      default:
-        return (
-          <div className="flex items-center justify-center h-64">
-            <p className="text-gray-500">Select a tab to view content</p>
-          </div>
-        );
+        default:
+          return (
+            <div className="flex items-center justify-center h-64">
+              <p className="text-gray-500">Select a tab to view content</p>
+            </div>
+          );
+      }
     }
   };
   
