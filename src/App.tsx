@@ -7,6 +7,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { AuthProvider } from './hooks/auth/useAuth';
 import { initializeApp } from './integrations/supabase/client';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import ErrorBoundary from '@/components/ui/ErrorBoundary';
 
 // Pages
 import Index from './pages/Index';
@@ -64,19 +65,21 @@ function App() {
       <ThemeProvider defaultTheme="light" storageKey="candilingo-theme">
         <AuthProvider>
           <Router>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/portal" element={<Portal />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/customer-portal/*" element={<CustomerPortal />} />
-              <Route path="/payment-success" element={<PaymentSuccess />} />
-              <Route path="/glossary" element={<Glossary />} />
-              <Route path="/how-it-works" element={<HowItWorks />} />
-              <Route path="/wiki" element={<TechLingoWiki />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/documentation" element={<Documentation />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <ErrorBoundary>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/portal" element={<Portal />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/customer-portal/*" element={<CustomerPortal />} />
+                <Route path="/payment-success" element={<PaymentSuccess />} />
+                <Route path="/glossary" element={<Glossary />} />
+                <Route path="/how-it-works" element={<HowItWorks />} />
+                <Route path="/wiki" element={<TechLingoWiki />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/documentation" element={<Documentation />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </ErrorBoundary>
           </Router>
           <Toaster position="top-right" richColors />
         </AuthProvider>
