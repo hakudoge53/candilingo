@@ -19,7 +19,7 @@ export interface UseOrganizationReturn {
 
 export const useOrganization = (): UseOrganizationReturn => {
   const { activeUser } = useAuth();
-  const [activeOrganization, setActiveOrganization] = useState<Organization | null>(null);
+  const [activeOrganization, setActiveOrg] = useState<Organization | null>(null);
   const [members, setMembers] = useState<OrganizationMember[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,7 +43,7 @@ export const useOrganization = (): UseOrganizationReturn => {
   }, [activeUser?.id]);
 
   // Set active organization in database and state
-  const setActiveOrg = async (org: Organization | null): Promise<boolean> => {
+  const setActiveOrgWithStorage = async (org: Organization | null): Promise<boolean> => {
     if (!activeUser?.id) {
       toast.error("You must be logged in to set an active organization");
       return false;
@@ -51,10 +51,11 @@ export const useOrganization = (): UseOrganizationReturn => {
     
     try {
       setIsLoading(true);
+      // First argument is userId, second is orgId or null
       const success = await setActiveOrganization(activeUser.id, org?.id || null);
       
       if (success) {
-        setActiveOrganization(org);
+        setActiveOrg(org);
         if (org) {
           await fetchOrganization(org.id);
           toast.success(`Switched to ${org.name}`);
@@ -111,7 +112,7 @@ export const useOrganization = (): UseOrganizationReturn => {
       
       console.log("Organization members fetched:", membersData?.length);
 
-      setActiveOrganization(orgData as Organization);
+      setActiveOrg(orgData as Organization);
       
       // Properly handle the members data with type casting
       const typedMembers: OrganizationMember[] = (membersData || []).map((member: any) => {
@@ -169,6 +170,6 @@ export const useOrganization = (): UseOrganizationReturn => {
     isLoading,
     error,
     fetchOrganization,
-    setActiveOrg
+    setActiveOrg: setActiveOrgWithStorage
   };
 };
