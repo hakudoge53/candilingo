@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from "@/hooks/auth/useAuth";
@@ -16,7 +17,7 @@ import {
   LayoutDashboard, 
   UserCircle, 
   Settings,
-  PieChart 
+  Home 
 } from "lucide-react";
 import ThemeToggle from './ThemeToggle';
 
@@ -37,26 +38,26 @@ const Navbar = () => {
   };
 
   return (
-    <div className="bg-white py-4 shadow-sm sticky top-0 z-50">
+    <div className="bg-white py-4 shadow-sm sticky top-0 z-50 dark:bg-gray-900 dark:text-white">
       <div className="container mx-auto px-4 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center">
           <img 
             src="/lovable-uploads/3ba829c2-54b7-4152-b767-9eb28429dbd7.png" 
             alt="Candilingo" 
-            className="h-8 w-auto mr-2" 
+            className="h-10 w-auto mr-2" 
           />
-          <span className="sr-only">Candilingo</span>
+          <span className="text-lg font-semibold text-candilingo-purple dark:text-white">Candilingo</span>
         </Link>
 
         {/* Navigation Links */}
         <nav className="flex gap-8 items-center">
-          <Link to="/" className={`${getActiveLinkClass('/')} hidden md:flex items-center gap-1`}>
-            <PieChart className="h-4 w-4" />
+          <Link to="/" className={`${getActiveLinkClass('/')} hidden md:flex items-center gap-1 dark:text-gray-200`}>
+            <Home className="h-4 w-4" />
             <span>Home</span>
           </Link>
           
-          <Link to="/how-it-works" className={`${getActiveLinkClass('/how-it-works')} hidden md:flex items-center gap-1`}>
+          <Link to="/how-it-works" className={`${getActiveLinkClass('/how-it-works')} hidden md:flex items-center gap-1 dark:text-gray-200`}>
             <BookOpen className="h-4 w-4" />
             <span>How It Works</span>
           </Link>

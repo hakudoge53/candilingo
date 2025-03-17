@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Database, FileText, UploadCloud } from "lucide-react";
+import { Home, FileText, UploadCloud } from "lucide-react";
 
 const HowItWorksSection = () => {
   return (
@@ -38,7 +38,7 @@ const HowItWorksSection = () => {
           
           <div className="bg-gray-50 p-6 rounded-xl text-center border border-gray-100 animate-fade-in-slower">
             <div className="w-16 h-16 mx-auto bg-candilingo-pink bg-opacity-10 rounded-full flex items-center justify-center mb-4">
-              <Database className="w-8 h-8 text-candilingo-pink" />
+              <Home className="w-8 h-8 text-candilingo-pink" />
             </div>
             <h3 className="text-xl font-semibold mb-2">3. Customize & Learn</h3>
             <p className="text-gray-600">

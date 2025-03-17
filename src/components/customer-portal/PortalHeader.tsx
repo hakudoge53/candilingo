@@ -9,10 +9,10 @@ const PortalHeader = () => {
           <img 
             src="/lovable-uploads/3ba829c2-54b7-4152-b767-9eb28429dbd7.png" 
             alt="Candilingo" 
-            className="h-20 w-auto drop-shadow-md" 
+            className="h-24 w-auto drop-shadow-md" 
           />
         </div>
-        <h1 className="text-4xl font-bold text-white text-center">
+        <h1 className="text-5xl font-bold text-white text-center">
           Customer <span className="bg-gradient-to-r from-white to-candilingo-teal bg-clip-text text-transparent">Portal</span>
         </h1>
       </div>

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import GlossaryPanel from '../GlossaryPanel';
 import WebExtensionsPanel from '../WebExtensionsPanel';
@@ -8,6 +7,8 @@ import MembersPanel from '../MembersPanel';
 import TeamsPanel from '../TeamsPanel';
 import LicensesPanel from '../LicensesPanel';
 import OrganizationChartPanel from '../OrganizationChartPanel';
+import OrganizationOverviewPanel from '../OrganizationOverviewPanel';
+import ResourcesDocumentationPanel from '../ResourcesDocumentationPanel';
 import { Glossary, GlossaryTerm } from '@/types/organization';
 import { Organization, OrganizationMember } from '@/types/organization';
 
@@ -54,85 +55,71 @@ const DashboardPanelRenderer: React.FC<DashboardPanelRendererProps> = ({
   createOrganization,
   orgLoading
 }) => {
-  if (activeSection === 'products') {
-    if (activeTab === 'glossaries') {
-      return (
-        <GlossaryPanel 
-          glossaries={glossaries}
-          activeGlossary={activeGlossary}
-          setActiveGlossary={setActiveGlossary}
-          terms={terms}
-          isLoadingGlossaries={glossariesLoading}
-          isLoadingTerms={isLoadingTerms}
-          addTerm={addTerm}
-          updateTerm={updateTerm}
-          deleteTerm={deleteTerm}
-          addGlossary={createGlossary}
-          updateGlossary={updateGlossary}
-          deleteGlossary={deleteGlossary}
-        />
-      );
-    } 
+  const renderPanel = () => {
+    const tabParts = activeTab.split('.');
     
-    if (activeTab === 'extensions') {
-      return <WebExtensionsPanel />;
+    switch (activeTab) {
+      case 'products.glossaries':
+        return (
+          <GlossaryPanel 
+            glossaries={glossaries}
+            activeGlossary={activeGlossary}
+            setActiveGlossary={setActiveGlossary}
+            terms={terms}
+            isLoadingGlossaries={glossariesLoading}
+            isLoadingTerms={isLoadingTerms}
+            addTerm={addTerm}
+            updateTerm={updateTerm}
+            deleteTerm={deleteTerm}
+            addGlossary={createGlossary}
+            updateGlossary={updateGlossary}
+            deleteGlossary={deleteGlossary}
+          />
+        );
+        
+      case 'products.extensions':
+        return <WebExtensionsPanel />;
+        
+      case 'organization.overview':
+        return <OrganizationOverviewPanel activeOrganization={activeOrganization} />;
+        
+      case 'organization.members':
+        return <MembersPanel organizationId={activeOrganization?.id || ''} />;
+        
+      case 'organization.teams':
+        return <TeamsPanel organizationId={activeOrganization?.id || ''} />;
+        
+      case 'organization.chart':
+        return (
+          <OrganizationChartPanel 
+            organizationId={activeOrganization?.id || ''} 
+            orgName={activeOrganization?.name || 'Organization'}
+            admins={adminMembers}
+          />
+        );
+        
+      case 'organization.licenses':
+        return <LicensesPanel organizationId={activeOrganization?.id || ''} />;
+        
+      case 'resources.documentation':
+        return <ResourcesDocumentationPanel />;
+        
+      case 'resources.roadmap':
+        return <ResourcesPanel activeTab={activeTab} />;
+        
+      default:
+        return (
+          <div className="flex items-center justify-center h-64">
+            <p className="text-gray-500">Select a tab to view content</p>
+          </div>
+        );
     }
-  } 
+  };
   
-  if (activeSection === 'organization') {
-    if (activeTab === 'overview') {
-      return (
-        <OrganizationPanel 
-          organizations={organizations} 
-          createOrganization={createOrganization}
-          isLoading={orgLoading}
-        />
-      );
-    } 
-    
-    if (activeTab === 'members') {
-      return <MembersPanel organizationId={activeOrganization?.id || ''} />;
-    } 
-    
-    if (activeTab === 'teams') {
-      return <TeamsPanel organizationId={activeOrganization?.id || ''} />;
-    } 
-    
-    if (activeTab === 'chart') {
-      return (
-        <OrganizationChartPanel 
-          organizationId={activeOrganization?.id || ''} 
-          orgName={activeOrganization?.name || 'Organization'}
-          admins={adminMembers}
-        />
-      );
-    } 
-    
-    if (activeTab === 'licenses') {
-      return <LicensesPanel organizationId={activeOrganization?.id || ''} />;
-    }
-  } 
-  
-  if (activeSection === 'resources') {
-    return <ResourcesPanel activeTab={activeTab} />;
-  }
-  
-  // Default panel if no match is found
   return (
-    <GlossaryPanel 
-      glossaries={glossaries}
-      activeGlossary={activeGlossary}
-      setActiveGlossary={setActiveGlossary}
-      terms={terms}
-      isLoadingGlossaries={glossariesLoading}
-      isLoadingTerms={isLoadingTerms}
-      addTerm={addTerm}
-      updateTerm={updateTerm}
-      deleteTerm={deleteTerm}
-      addGlossary={createGlossary}
-      updateGlossary={updateGlossary}
-      deleteGlossary={deleteGlossary}
-    />
+    <div className="h-full">
+      {renderPanel()}
+    </div>
   );
 };
 

@@ -11,7 +11,11 @@ const ThemeToggle = () => {
   // useEffect only runs on the client, so we can safely show the UI
   useEffect(() => {
     setMounted(true);
-  }, []);
+    // Set default theme to light if not already set
+    if (!theme) {
+      setTheme("light");
+    }
+  }, [theme, setTheme]);
 
   // To avoid hydration mismatch, only render the toggle when mounted
   if (!mounted) {
@@ -29,6 +33,7 @@ const ThemeToggle = () => {
       onClick={toggleTheme}
       aria-label="Toggle theme"
       className="transition-colors"
+      title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
     >
       {theme === "dark" ? (
         <Sun className="h-5 w-5" />

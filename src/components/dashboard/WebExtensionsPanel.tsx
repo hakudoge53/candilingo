@@ -1,13 +1,52 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Chrome, Globe, Monitor, Settings, Download, Eye, EyeOff } from 'lucide-react';
+import { Chrome, Globe, Monitor, Settings, Download, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from 'sonner';
 
 const WebExtensionsPanel = () => {
+  const [downloadClicked, setDownloadClicked] = useState({
+    chrome: false,
+    firefox: false
+  });
+
+  const handleDownload = (browser: 'chrome' | 'firefox') => {
+    const messages = {
+      chrome: "Chrome extension download started. Once complete, open Chrome and go to chrome://extensions, enable Developer Mode, and drag the file into the browser to install.",
+      firefox: "Firefox extension download started. Once complete, open Firefox and go to about:addons, click the gear icon, select 'Install Add-on From File', and select the downloaded file."
+    };
+    
+    toast.success(messages[browser], {
+      duration: 6000
+    });
+    
+    setDownloadClicked(prev => ({
+      ...prev,
+      [browser]: true
+    }));
+    
+    if (browser === 'chrome') {
+      const link = document.createElement('a');
+      link.href = '/extensions/candilingo-chrome-extension.zip';
+      link.download = 'candilingo-chrome-extension.zip';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+    else if (browser === 'firefox') {
+      const link = document.createElement('a');
+      link.href = '/extensions/candilingo-firefox-extension.xpi';
+      link.download = 'candilingo-firefox-extension.xpi';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -25,21 +64,44 @@ const WebExtensionsPanel = () => {
         </TabsList>
         
         <TabsContent value="browser" className="space-y-4">
+          <Card className="bg-amber-50 border-amber-200 mb-6">
+            <CardContent className="flex items-center p-4">
+              <AlertCircle className="h-5 w-5 mr-2 text-amber-600" />
+              <p className="text-amber-800 text-sm">
+                These extensions are for local installation while we await approval from browser stores. Follow the installation instructions after downloading.
+              </p>
+            </CardContent>
+          </Card>
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <ExtensionCard 
               title="Chrome Extension"
               description="Highlight and define technical terms directly in your browser."
               icon={<Chrome className="h-6 w-6" />}
-              status="active"
-              installUrl="https://chrome.google.com/webstore"
+              status={downloadClicked.chrome ? "downloaded" : "available"}
+              onDownload={() => handleDownload('chrome')}
+              instructions={[
+                "Download the extension package",
+                "Open Chrome and go to chrome://extensions",
+                "Enable Developer Mode (toggle in top right)",
+                "Drag the .zip file into the browser window",
+                "Confirm installation when prompted"
+              ]}
             />
             
             <ExtensionCard 
               title="Firefox Extension"
               description="Highlight and define technical terms directly in your browser."
               icon={<Globe className="h-6 w-6" />}
-              status="available"
-              installUrl="https://addons.mozilla.org"
+              status={downloadClicked.firefox ? "downloaded" : "available"}
+              onDownload={() => handleDownload('firefox')}
+              instructions={[
+                "Download the extension package",
+                "Open Firefox and go to about:addons",
+                "Click the gear icon, select 'Install Add-on From File'",
+                "Navigate to and select the downloaded .xpi file",
+                "Follow the prompts to complete installation"
+              ]}
             />
           </div>
           
@@ -214,11 +276,14 @@ interface ExtensionCardProps {
   title: string;
   description: string;
   icon: React.ReactNode;
-  status: 'active' | 'available' | 'pending';
-  installUrl: string;
+  status: 'active' | 'available' | 'pending' | 'downloaded';
+  onDownload: () => void;
+  instructions: string[];
 }
 
-const ExtensionCard = ({ title, description, icon, status, installUrl }: ExtensionCardProps) => {
+const ExtensionCard = ({ title, description, icon, status, onDownload, instructions }: ExtensionCardProps) => {
+  const [showInstructions, setShowInstructions] = useState(false);
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
@@ -231,22 +296,47 @@ const ExtensionCard = ({ title, description, icon, status, installUrl }: Extensi
         </div>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 mb-3">
           <StatusBadge status={status} />
           {status === 'active' && (
             <span className="text-xs text-gray-500">Version 1.2.4</span>
           )}
         </div>
+        
+        {(status === 'downloaded' || showInstructions) && (
+          <div className="mt-2 p-3 bg-gray-50 rounded-md">
+            <p className="text-sm font-medium mb-2">Installation Instructions:</p>
+            <ol className="text-xs text-gray-600 list-decimal pl-4 space-y-1">
+              {instructions.map((instruction, index) => (
+                <li key={index}>{instruction}</li>
+              ))}
+            </ol>
+          </div>
+        )}
       </CardContent>
       <CardFooter className="flex justify-between">
         {status === 'active' ? (
           <Button variant="outline" className="w-full">
             <Settings className="mr-2 h-4 w-4" /> Configure
           </Button>
+        ) : status === 'downloaded' ? (
+          <div className="grid grid-cols-2 gap-2 w-full">
+            <Button variant="outline" className="w-full" onClick={onDownload}>
+              <Download className="mr-2 h-4 w-4" /> Download Again
+            </Button>
+            <Button variant="outline" className="w-full" onClick={() => setShowInstructions(!showInstructions)}>
+              {showInstructions ? "Hide Steps" : "Show Steps"}
+            </Button>
+          </div>
         ) : (
-          <Button className="w-full bg-candilingo-purple">
-            <Download className="mr-2 h-4 w-4" /> Install Now
-          </Button>
+          <div className="grid grid-cols-2 gap-2 w-full">
+            <Button className="w-full bg-candilingo-purple" onClick={onDownload}>
+              <Download className="mr-2 h-4 w-4" /> Download
+            </Button>
+            <Button variant="outline" className="w-full" onClick={() => setShowInstructions(!showInstructions)}>
+              {showInstructions ? "Hide Steps" : "View Steps"}
+            </Button>
+          </div>
         )}
       </CardFooter>
     </Card>
@@ -254,7 +344,7 @@ const ExtensionCard = ({ title, description, icon, status, installUrl }: Extensi
 };
 
 interface StatusBadgeProps {
-  status: 'active' | 'available' | 'pending';
+  status: 'active' | 'available' | 'pending' | 'downloaded';
 }
 
 const StatusBadge = ({ status }: StatusBadgeProps) => {
@@ -280,6 +370,13 @@ const StatusBadge = ({ status }: StatusBadgeProps) => {
           text: 'text-yellow-800',
           icon: <EyeOff className="w-3 h-3 mr-1" />,
           label: 'Pending'
+        };
+      case 'downloaded':
+        return {
+          bg: 'bg-purple-100',
+          text: 'text-purple-800',
+          icon: <Download className="w-3 h-3 mr-1" />,
+          label: 'Downloaded'
         };
       default:
         return {
@@ -333,3 +430,4 @@ const MetricCard = ({ title, value, change, changeType }: MetricCardProps) => {
 };
 
 export default WebExtensionsPanel;
+
