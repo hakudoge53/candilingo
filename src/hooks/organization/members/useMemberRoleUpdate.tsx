@@ -27,9 +27,12 @@ export const useMemberRoleUpdate = ({
     setIsLoading(true);
     
     try {
+      // Create the update object with the role
+      const updateData = { role };
+      
       const { error } = await supabase
         .from('organization_members')
-        .update({ role })
+        .update(updateData)
         .eq('id', memberId);
       
       if (error) throw error;

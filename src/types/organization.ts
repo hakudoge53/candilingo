@@ -49,7 +49,7 @@ export interface OrganizationInvitation {
   status: 'pending' | 'accepted' | 'rejected' | 'expired';
 }
 
-// User roles based on your requirements
+// User roles based on Supabase database enum
 export type UserRole = 'super_admin' | 'owner' | 'manager' | 'team_lead' | 'employee';
 export type MemberStatus = 'pending' | 'active' | 'inactive';
 

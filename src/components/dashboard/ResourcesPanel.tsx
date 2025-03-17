@@ -10,7 +10,9 @@ interface ResourcesPanelProps {
   activeTab?: string;
 }
 
-const ResourcesPanel: React.FC<ResourcesPanelProps> = ({ activeTab = 'documentation' }) => {
+const ResourcesPanel: React.FC<ResourcesPanelProps> = ({ 
+  activeTab = 'documentation'
+}) => {
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-semibold">Resources</h2>

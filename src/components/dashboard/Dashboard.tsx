@@ -28,12 +28,12 @@ const Dashboard = () => {
     activeGlossary,
     setActiveGlossary,
     isLoading: glossariesLoading,
-    terms,
     isLoadingTerms,
+    terms,
     addTerm,
     updateTerm,
     deleteTerm,
-    addGlossary,
+    createGlossary,
     updateGlossary,
     deleteGlossary
   } = useGlossaries(activeOrganization?.id);
@@ -113,7 +113,7 @@ const Dashboard = () => {
           addTerm={addTerm}
           updateTerm={updateTerm}
           deleteTerm={deleteTerm}
-          addGlossary={addGlossary}
+          addGlossary={createGlossary}
           updateGlossary={updateGlossary}
           deleteGlossary={deleteGlossary}
         />;
@@ -145,7 +145,7 @@ const Dashboard = () => {
       addTerm={addTerm}
       updateTerm={updateTerm}
       deleteTerm={deleteTerm}
-      addGlossary={addGlossary}
+      addGlossary={createGlossary}
       updateGlossary={updateGlossary}
       deleteGlossary={deleteGlossary}
     />;

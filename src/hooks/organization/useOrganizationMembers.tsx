@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { OrganizationMember, UserRole } from '@/types/organization';
+import { OrganizationMember, UserRole, MemberStatus } from '@/types/organization';
 import { toast } from 'sonner';
 
 export interface UseOrganizationMembersReturn {
@@ -46,7 +46,7 @@ export const useOrganizationMembers = (organizationId: string | undefined): UseO
         organization_id: item.organization_id,
         user_id: item.user_id,
         role: item.role as UserRole,
-        status: item.status,
+        status: item.status as MemberStatus,
         invited_email: item.invited_email,
         invited_name: item.invited_name,
         invitation_token: item.invitation_token,
@@ -93,6 +93,7 @@ export const useOrganizationMembers = (organizationId: string | undefined): UseO
       const newMember: OrganizationMember = {
         ...data,
         role: data.role as UserRole,
+        status: data.status as MemberStatus,
         user: {
           name: name,
           email: email,

@@ -1,107 +1,154 @@
 
 import React from 'react';
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { PlusCircle, MoreHorizontal, FileEdit, Trash2 } from "lucide-react";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
-import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { PlusCircle, Plus, Tag, FileText, Edit, Trash2, Pencil } from "lucide-react";
 import { Glossary, GlossaryTerm } from '@/types/organization';
 
 interface GlossaryContentProps {
   glossary: Glossary;
   terms: GlossaryTerm[];
+  isLoading?: boolean;
   onAddTermClick: () => void;
   onEditTerm: (term: GlossaryTerm) => void;
   onDeleteTerm: (termId: string) => void;
 }
 
-const GlossaryContent: React.FC<GlossaryContentProps> = ({
-  glossary,
-  terms,
-  onAddTermClick,
-  onEditTerm,
-  onDeleteTerm,
+const GlossaryContent: React.FC<GlossaryContentProps> = ({ 
+  glossary, 
+  terms, 
+  isLoading = false,
+  onAddTermClick, 
+  onEditTerm, 
+  onDeleteTerm 
 }) => {
-  // Group terms by category for better display
-  const groupedTerms = terms.reduce((groups, term) => {
-    const category = term.category || 'Uncategorized';
-    if (!groups[category]) {
-      groups[category] = [];
-    }
-    groups[category].push(term);
-    return groups;
-  }, {} as Record<string, GlossaryTerm[]>);
-
-  // Sort categories alphabetically
-  const sortedCategories = Object.keys(groupedTerms).sort();
-
+  const sortedTerms = [...terms].sort((a, b) => a.term.localeCompare(b.term));
+  
+  // Get unique categories
+  const categories = Array.from(new Set(terms.map(term => term.category || 'Uncategorized')))
+    .sort((a, b) => a.localeCompare(b));
+  
+  // Group terms by category
+  const termsByCategory: Record<string, GlossaryTerm[]> = {};
+  categories.forEach(category => {
+    termsByCategory[category] = sortedTerms.filter(term => 
+      (term.category || 'Uncategorized') === category
+    );
+  });
+  
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-64">Loading terms...</div>;
+  }
+  
   return (
-    <>
-      <div className="flex justify-between items-center mb-6">
+    <div className="space-y-4">
+      <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-xl font-semibold">{glossary.name}</h3>
+          <h3 className="text-lg font-medium">{glossary.name}</h3>
           {glossary.description && (
-            <p className="text-gray-500 mt-1">{glossary.description}</p>
+            <p className="text-sm text-gray-500">{glossary.description}</p>
           )}
         </div>
-        
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button className="bg-techlex-blue" onClick={onAddTermClick}>
-              <PlusCircle className="mr-2 h-4 w-4" /> Add Term
-            </Button>
-          </DialogTrigger>
-        </Dialog>
+        <Button onClick={onAddTermClick} size="sm">
+          <Plus className="h-4 w-4 mr-1" /> Add Term
+        </Button>
       </div>
       
       {terms.length === 0 ? (
-        <div className="text-center py-8">
-          <p className="text-gray-500">No terms in this glossary yet. Add some terms to get started.</p>
-        </div>
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center space-y-3 py-6">
+              <FileText className="h-12 w-12 text-gray-300 mx-auto" />
+              <h3 className="text-lg font-medium">No Terms Yet</h3>
+              <p className="text-gray-500 max-w-md mx-auto">
+                This glossary doesn't have any terms yet. Add your first term to get started.
+              </p>
+              <Button onClick={onAddTermClick} className="mt-2">
+                <PlusCircle className="h-4 w-4 mr-2" /> Add First Term
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       ) : (
-        <ScrollArea className="h-[500px] pr-4">
-          {sortedCategories.map((category) => (
-            <div key={category} className="mb-6">
-              <h4 className="text-lg font-medium mb-3 text-techlex-blue">{category}</h4>
-              <div className="space-y-4">
-                {groupedTerms[category].map((term) => (
-                  <div key={term.id} className="border border-gray-200 rounded-lg p-4">
-                    <div className="flex justify-between items-start">
-                      <h5 className="text-md font-semibold">{term.term}</h5>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => onEditTerm(term)}>
-                            <FileEdit className="mr-2 h-4 w-4" />
-                            Edit Term
-                          </DropdownMenuItem>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-500">
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Delete Term
-                              </DropdownMenuItem>
-                            </AlertDialogTrigger>
-                          </AlertDialog>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                    <p className="text-gray-600 mt-2">{term.definition}</p>
-                  </div>
+        <Tabs defaultValue="all">
+          <TabsList className="mb-4">
+            <TabsTrigger value="all">All Terms ({terms.length})</TabsTrigger>
+            {categories.map(category => (
+              <TabsTrigger key={category} value={category}>
+                {category} ({termsByCategory[category].length})
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          
+          <TabsContent value="all">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {sortedTerms.map(term => (
+                <TermCard 
+                  key={term.id} 
+                  term={term} 
+                  onEdit={() => onEditTerm(term)}
+                  onDelete={() => onDeleteTerm(term.id)}
+                />
+              ))}
+            </div>
+          </TabsContent>
+          
+          {categories.map(category => (
+            <TabsContent key={category} value={category}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {termsByCategory[category].map(term => (
+                  <TermCard 
+                    key={term.id} 
+                    term={term} 
+                    onEdit={() => onEditTerm(term)}
+                    onDelete={() => onDeleteTerm(term.id)}
+                  />
                 ))}
               </div>
-            </div>
+            </TabsContent>
           ))}
-        </ScrollArea>
+        </Tabs>
       )}
-    </>
+    </div>
+  );
+};
+
+interface TermCardProps {
+  term: GlossaryTerm;
+  onEdit: () => void;
+  onDelete: () => void;
+}
+
+const TermCard: React.FC<TermCardProps> = ({ term, onEdit, onDelete }) => {
+  return (
+    <Card className="overflow-hidden">
+      <CardContent className="p-0">
+        <div className="p-4">
+          <div className="flex justify-between items-start mb-2">
+            <h4 className="font-medium">{term.term}</h4>
+            <div className="flex space-x-1">
+              <Button variant="ghost" size="icon" onClick={onEdit} className="h-7 w-7">
+                <Pencil className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="icon" onClick={onDelete} className="h-7 w-7 text-red-500">
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+          <p className="text-sm text-gray-600">{term.definition}</p>
+          {term.category && (
+            <div className="mt-3">
+              <Badge variant="outline" className="flex items-center w-fit">
+                <Tag className="h-3 w-3 mr-1" /> {term.category}
+              </Badge>
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

@@ -32,18 +32,21 @@ export const useMemberInvite = ({
       // Generate a random token for the invitation
       const token = Math.random().toString(36).substring(2, 15);
       
-      // We need to handle the role conversion from our UserRole type to the database enum
+      // Create the member data object
+      const memberData = {
+        organization_id: organizationId,
+        user_id: '00000000-0000-0000-0000-000000000000', // Placeholder until user accepts invitation
+        invited_email: email,
+        invited_name: name,
+        role, // Supabase will handle the conversion
+        invitation_token: token,
+        status: 'pending'
+      };
+      
+      // Insert the new member
       const { data, error } = await supabase
         .from('organization_members')
-        .insert({
-          organization_id: organizationId,
-          user_id: '00000000-0000-0000-0000-000000000000', // Placeholder until user accepts invitation
-          invited_email: email,
-          invited_name: name,
-          role, // Supabase will handle the conversion
-          invitation_token: token,
-          status: 'pending'
-        })
+        .insert(memberData)
         .select()
         .single();
       

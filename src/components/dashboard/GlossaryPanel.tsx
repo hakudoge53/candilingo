@@ -10,19 +10,19 @@ import GlossaryContent from './glossary/GlossaryContent';
 import GlossaryActions from './glossary/GlossaryActions';
 import GlossaryTermActions from './glossary/GlossaryTermActions';
 
-interface GlossaryPanelProps {
+export interface GlossaryPanelProps {
   glossaries: Glossary[];
   activeGlossary: Glossary | null;
   setActiveGlossary: (glossary: Glossary) => void;
   terms: GlossaryTerm[];
-  createGlossary: (name: string, description?: string) => Promise<Glossary | null>;
-  updateGlossary: (glossaryId: string, updates: Partial<Glossary>) => Promise<Glossary | null>;
-  deleteGlossary: (glossaryId: string) => Promise<void>;
   addTerm: (glossaryId: string, term: string, definition: string, category?: string) => Promise<GlossaryTerm | null>;
   updateTerm: (termId: string, updates: Partial<GlossaryTerm>) => Promise<GlossaryTerm | null>;
   deleteTerm: (termId: string) => Promise<void>;
-  organizationId: string;
-  isLoading: boolean;
+  addGlossary?: (name: string, description?: string) => Promise<Glossary | null>;
+  updateGlossary: (glossaryId: string, updates: Partial<Glossary>) => Promise<Glossary | null>;
+  deleteGlossary: (glossaryId: string) => Promise<void>;
+  isLoadingGlossaries?: boolean;
+  isLoadingTerms?: boolean;
 }
 
 const GlossaryPanel = ({ 
@@ -30,13 +30,14 @@ const GlossaryPanel = ({
   activeGlossary,
   setActiveGlossary,
   terms,
-  createGlossary, 
-  updateGlossary,
-  deleteGlossary,
   addTerm,
   updateTerm,
   deleteTerm,
-  isLoading 
+  addGlossary,
+  updateGlossary,
+  deleteGlossary,
+  isLoadingGlossaries,
+  isLoadingTerms
 }: GlossaryPanelProps) => {
   const [newGlossaryOpen, setNewGlossaryOpen] = useState(false);
   const [editGlossaryOpen, setEditGlossaryOpen] = useState(false);
@@ -47,10 +48,10 @@ const GlossaryPanel = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleCreateGlossary = async (name: string, description: string) => {
-    if (!name.trim()) return;
+    if (!name.trim() || !addGlossary) return;
     
     setIsSubmitting(true);
-    await createGlossary(name, description);
+    await addGlossary(name, description);
     setIsSubmitting(false);
     setNewGlossaryOpen(false);
   };
@@ -120,6 +121,10 @@ const GlossaryPanel = ({
     setNewTermOpen(true);
   };
 
+  if (isLoadingGlossaries) {
+    return <div className="flex items-center justify-center h-64">Loading glossaries...</div>;
+  }
+
   return (
     <div className="space-y-6">
       <GlossaryHeader onNewGlossaryOpen={handleNewGlossaryClick} />
@@ -138,6 +143,7 @@ const GlossaryPanel = ({
             <GlossaryContent
               glossary={activeGlossary}
               terms={terms}
+              isLoading={isLoadingTerms}
               onAddTermClick={handleAddTermClick}
               onEditTerm={handleEditTerm}
               onDeleteTerm={handleDeleteTerm}
