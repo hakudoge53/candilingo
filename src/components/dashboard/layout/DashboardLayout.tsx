@@ -1,6 +1,6 @@
 
 import React, { ReactNode } from 'react';
-import { User } from '@/hooks/useAuth';
+import { User } from '@/hooks/auth/types';
 import { Organization } from '@/types/organization';
 import DashboardHeader from '../DashboardHeader';
 import DashboardSidebar from './DashboardSidebar';

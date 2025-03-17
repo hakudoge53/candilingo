@@ -1,10 +1,9 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { GlossaryTerm } from '@/types/organization';
-import { useAuth } from '../useAuth';
 import { UseGlossaryTermsReturn } from './types';
+import { GlossaryTerm } from '@/types/organization';
+import { useAuth } from '../auth/useAuth';
 
 export const useGlossaryTerms = (glossaryId?: string): UseGlossaryTermsReturn => {
   const { isLoggedIn } = useAuth();

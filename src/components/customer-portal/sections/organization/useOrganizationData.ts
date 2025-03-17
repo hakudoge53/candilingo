@@ -1,79 +1,61 @@
-
 import { useState, useEffect } from 'react';
-import { User } from '@/hooks/auth/types';
-import { Organization, OrganizationMember } from '@/types/organization';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import { OrganizationInvitation } from './types';
+import { Organization } from '@/types/organization';
 
-export const useOrganizationData = (user: User) => {
-  const [organization, setOrganization] = useState<Organization | null>(null);
-  const [members, setMembers] = useState<OrganizationMember[]>([]);
-  const [invites, setInvites] = useState<OrganizationInvitation[]>([]);
+interface Props {
+  organizationId?: string;
+}
+
+export const useOrganizationData = ({ organizationId }: Props) => {
+  const [currentOrganization, setCurrentOrganization] = useState<Organization | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    const fetchOrganizationData = async () => {
+    if (!organizationId) {
+      setCurrentOrganization(null);
+      return;
+    }
+
+    const fetchOrganization = async () => {
       setIsLoading(true);
+      setError(null);
+
       try {
-        const { data: memberships, error: membershipError } = await supabase
-          .from('organization_members')
-          .select('organization_id')
-          .eq('user_id', user.id)
-          .single();
-          
-        if (membershipError) throw membershipError;
-        
-        if (!memberships) {
-          toast.error("You are not part of any organization");
-          return;
-        }
-        
-        const organizationId = memberships.organization_id;
-        
-        const { data: orgData, error: orgError } = await supabase
+        const { data, error } = await supabase
           .from('organizations')
           .select('*')
           .eq('id', organizationId)
           .single();
-          
-        if (orgError) throw orgError;
-        setOrganization(orgData);
-        
-        const { data: membersData, error: membersError } = await supabase
-          .from('organization_members')
-          .select('*, user:profiles(name, email, membership_tier, status, avatar_url)')
-          .eq('organization_id', organizationId);
-          
-        if (membersError) throw membersError;
-        // Cast as OrganizationMember[] to handle the type compatibility
-        setMembers(membersData as unknown as OrganizationMember[]);
 
-        const { data: invitesData, error: invitesError } = await supabase
-          .from('organization_members')
-          .select('id, organization_id, invited_email, invited_name, role, status, created_at')
-          .eq('organization_id', organizationId)
-          .eq('status', 'pending');
-          
-        if (invitesError) throw invitesError;
-        setInvites(invitesData as unknown as OrganizationInvitation[]);
-      } catch (error) {
-        console.error("Error fetching organization data:", error);
-        toast.error("Failed to load organization data");
+        if (error) {
+          setError(error);
+        } else if (data) {
+          setOrganization(data);
+        }
+      } catch (err: any) {
+        setError(err);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchOrganizationData();
-  }, [user.id]);
+    fetchOrganization();
+  }, [organizationId]);
+
+  // Update the setOrganization function to include the required properties
+const setOrganization = (data) => {
+  // Make sure data includes the required Organization properties
+  setCurrentOrganization({
+    ...data,
+    role: data.role || 'owner', // Default to owner if not provided
+    member_count: data.member_count || 1 // Default to 1 if not provided
+  });
+};
 
   return {
-    organization,
-    members,
-    invites,
+    currentOrganization,
     isLoading,
-    setMembers,
-    setInvites
+    error,
   };
 };

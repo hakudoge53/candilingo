@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { User } from '@/hooks/useAuth';
+import { User } from '@/hooks/auth/types';
 import { Link, useNavigate } from 'react-router-dom';
 import { LayoutDashboard } from 'lucide-react';
 

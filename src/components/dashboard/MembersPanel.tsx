@@ -1,123 +1,121 @@
-
-import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { useOrganizations } from '@/hooks/useOrganizations';
-import { useAuth } from '@/hooks/useAuth';
-import { UserRole } from '@/types/organization';
-import { UserPlus, Users, Mail, AlertTriangle } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import React, { useState, useEffect } from 'react';
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { OrganizationMember } from '@/types/organization';
+import { useMembersFetch } from '@/hooks/organization/members/useMembersFetch';
+import { useAuth } from '@/hooks/auth/useAuth';
 import ActiveMembersTable from './members/ActiveMembersTable';
 import PendingInvitationsTable from './members/PendingInvitationsTable';
 import InviteMemberDialog from './members/InviteMemberDialog';
 
 const MembersPanel = () => {
   const { activeUser } = useAuth();
-  const { activeOrganization, members, inviteMember, updateMemberRole, removeMember, isLoading } = useOrganizations();
-  const [activeTab, setActiveTab] = useState('active');
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
-  
-  // Filter members by status
-  const activeMembers = members.filter(member => member.status === 'active');
-  const pendingInvites = members.filter(member => member.status === 'pending');
-  
-  // Check if current user is an admin (owner or super_admin)
-  const isAdmin = members.some(member => 
-    member.user_id === activeUser?.id && 
-    (member.role === 'owner' || member.role === 'super_admin' || member.role === 'manager')
-  );
-  
-  const handleInviteMember = async (name: string, email: string, role: UserRole) => {
-    await inviteMember(email, name, role);
+  const [members, setMembers] = useState<OrganizationMember[]>([]);
+  const { isLoading } = useMembersFetch({ setMembers });
+
+  const handleInviteDialogOpen = () => {
+    setIsInviteDialogOpen(true);
+  };
+
+  const handleInviteDialogClose = () => {
     setIsInviteDialogOpen(false);
   };
-  
-  if (isLoading) {
-    return <div className="flex items-center justify-center h-64">Loading members...</div>;
-  }
-  
-  if (!activeOrganization) {
-    return (
-      <Card>
-        <CardContent className="pt-6">
-          <div className="text-center py-8">
-            <AlertTriangle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
-            <h3 className="text-lg font-medium mb-2">No Organization Selected</h3>
-            <p className="text-gray-500">
-              Please select or create an organization to manage members.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-  
+
+  const [invitations, setInvitations] = useState([]);
+  const [loadingInvitations, setLoadingInvitations] = useState(true);
+
+  useEffect(() => {
+    const fetchInvitations = async () => {
+      if (!activeUser?.user_metadata?.organization_id) {
+        setLoadingInvitations(false);
+        return;
+      }
+
+      setLoadingInvitations(true);
+      try {
+        const { data, error } = await supabase
+          .from('organization_invites')
+          .select('*')
+          .eq('organization_id', activeUser.user_metadata.organization_id)
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error("Error fetching invitations:", error);
+          toast.error("Failed to load invitations");
+        } else {
+          setInvitations(data || []);
+        }
+      } catch (error) {
+        console.error("Error fetching invitations:", error);
+        toast.error("Failed to load invitations");
+      } finally {
+        setLoadingInvitations(false);
+      }
+    };
+
+    fetchInvitations();
+  }, [activeUser?.user_metadata?.organization_id]);
+
+  const handleRevokeInvite = async (inviteId: string) => {
+    try {
+      const { error } = await supabase
+        .from('organization_invites')
+        .delete()
+        .eq('id', inviteId);
+
+      if (error) {
+        console.error("Error revoking invite:", error);
+        toast.error("Failed to revoke invite");
+      } else {
+        setInvitations(prev => prev.filter(invite => invite.id !== inviteId));
+        toast.success("Invite revoked successfully");
+      }
+    } catch (error) {
+      console.error("Error revoking invite:", error);
+      toast.error("Failed to revoke invite");
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Team Members</h2>
-        {isAdmin && (
-          <Button onClick={() => setIsInviteDialogOpen(true)}>
-            <UserPlus className="mr-2 h-4 w-4" /> Invite Member
-          </Button>
+        <div>
+          <div className="flex items-center mb-2">
+            <img
+              src="/lovable-uploads/3ba829c2-54b7-4152-b767-9eb28429dbd7.png"
+              alt="Candilingo"
+              className="h-10 w-auto mr-2"
+            />
+            <h2 className="text-xl font-semibold">
+              Manage Team Members
+            </h2>
+          </div>
+          <p className="text-sm text-gray-500">Invite, manage, and remove members from your organization.</p>
+        </div>
+
+        {(activeUser?.role === 'owner' || activeUser?.role === 'admin') && (
+          <button
+            onClick={handleInviteDialogOpen}
+            className="bg-candilingo-purple text-white font-semibold py-2 px-4 rounded hover:bg-candilingo-lightpurple transition-colors"
+          >
+            Invite Member
+          </button>
         )}
       </div>
-      
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value="active" className="flex items-center">
-            <Users className="mr-2 h-4 w-4" /> 
-            Active Members ({activeMembers.length})
-          </TabsTrigger>
-          <TabsTrigger value="pending" className="flex items-center">
-            <Mail className="mr-2 h-4 w-4" /> 
-            Pending Invites ({pendingInvites.length})
-          </TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="active">
-          <Card>
-            <CardHeader>
-              <CardTitle>Active Team Members</CardTitle>
-              <CardDescription>
-                Manage your team members and their permissions
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ActiveMembersTable 
-                members={activeMembers}
-                currentUserId={activeUser?.id || ''}
-                isAdmin={isAdmin}
-                onRoleChange={updateMemberRole}
-                onRemove={removeMember}
-              />
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="pending">
-          <Card>
-            <CardHeader>
-              <CardTitle>Pending Invitations</CardTitle>
-              <CardDescription>
-                Manage invitations that have been sent but not yet accepted
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <PendingInvitationsTable 
-                invites={pendingInvites}
-                isAdmin={isAdmin}
-                onRemove={removeMember}
-              />
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-      
-      <InviteMemberDialog 
+
+      <ActiveMembersTable members={members} isLoading={isLoading} setMembers={setMembers} />
+
+      <PendingInvitationsTable
+        invitations={invitations}
+        loadingInvitations={loadingInvitations}
+        onRevokeInvite={handleRevokeInvite}
+      />
+
+      <InviteMemberDialog
         isOpen={isInviteDialogOpen}
-        onClose={() => setIsInviteDialogOpen(false)}
-        onInvite={handleInviteMember}
+        onClose={handleInviteDialogClose}
+        setInvitations={setInvitations}
       />
     </div>
   );
