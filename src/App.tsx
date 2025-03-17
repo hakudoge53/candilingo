@@ -8,6 +8,7 @@ import { AuthProvider } from './hooks/auth/useAuth';
 import { initializeApp } from './integrations/supabase/client';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
+import { Helmet } from 'react-helmet';
 
 // Pages
 import Index from './pages/Index';
@@ -64,6 +65,11 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="system" storageKey="candilingo-theme">
         <AuthProvider>
+          <Helmet>
+            <title>Candilingo - AI-Powered Keyword Highlighter for Recruiters</title>
+            <meta name="description" content="Instantly highlight key terms on LinkedIn, Teamtailor & PDFs to improve hiring speed and quality." />
+            <meta property="og:image" content="/lovable-uploads/66e41db1-fbcd-4b45-afd1-8fb8944915b4.png" />
+          </Helmet>
           <Router>
             <ErrorBoundary>
               <Routes>

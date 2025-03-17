@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -20,8 +21,6 @@ const Index = () => {
 
   useEffect(() => {
     setIsLoaded(true);
-    // Update page title to reflect the new product name
-    document.title = "Candilingo - AI-Powered Keyword Highlighter for Recruiters";
   }, []);
 
   const handleShowVideo = () => {
@@ -37,6 +36,16 @@ const Index = () => {
 
   return (
     <div className={`min-h-screen bg-gray-50 ${isLoaded ? 'animate-fade-in' : 'opacity-0'}`}>
+      <Helmet>
+        <title>Candilingo - AI-Powered Keyword Highlighter for Recruiters</title>
+        <meta name="description" content="Instantly highlight key terms on LinkedIn, Teamtailor & PDFs to improve hiring speed and quality." />
+        <meta property="og:title" content="Candilingo - AI-Powered Keyword Highlighter for Recruiters" />
+        <meta property="og:description" content="Instantly highlight key terms on LinkedIn, Teamtailor & PDFs to improve hiring speed and quality." />
+        <meta property="og:image" content="/lovable-uploads/66e41db1-fbcd-4b45-afd1-8fb8944915b4.png" />
+        <meta property="og:url" content="https://candilingo.com" />
+        <meta property="og:type" content="website" />
+        <link rel="icon" href="/lovable-uploads/66e41db1-fbcd-4b45-afd1-8fb8944915b4.png" type="image/png" />
+      </Helmet>
       <Navbar />
       <NewsletterSignupBar />
       <HeroSection onShowVideo={handleShowVideo} />
