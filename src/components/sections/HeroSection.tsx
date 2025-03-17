@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from 'sonner';
 import HeroImageSection from "@/components/HeroImageSection";
-import { MailIcon, Play } from "lucide-react";
+import { MailIcon, Play, ScanLine } from "lucide-react";
 import { Link } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -13,6 +13,7 @@ const HeroSection = ({ onShowVideo }: { onShowVideo?: () => void }) => {
   const [confirmedLicenses, setConfirmedLicenses] = useState(1); // Starting with 1 confirmed license
   const [seatsRemaining, setSeatsRemaining] = useState(200 - 1); // Calculate remaining seats
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
+  const [scanPosition, setScanPosition] = useState(0);
   const isMobile = useIsMobile();
 
   // Array of phrases to cycle through
@@ -44,6 +45,23 @@ const HeroSection = ({ onShowVideo }: { onShowVideo?: () => void }) => {
     return () => clearInterval(intervalId);
   }, []);
 
+  // Scanning animation effect
+  useEffect(() => {
+    // Start the scanning animation as soon as the component mounts
+    const scanningInterval = setInterval(() => {
+      setScanPosition((prev) => {
+        if (prev >= 100) {
+          // Reset to beginning after full scan
+          return 0;
+        }
+        return prev + 2; // Increment scan position
+      });
+    }, 30); // Update every 30ms for a fast scanning effect
+
+    // Clean up the interval on component unmount
+    return () => clearInterval(scanningInterval);
+  }, []);
+
   const handleNewsletterSignup = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
@@ -69,7 +87,27 @@ const HeroSection = ({ onShowVideo }: { onShowVideo?: () => void }) => {
               </span>
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 leading-tight text-candilingo-purple">
-              Keyword scanning and instant definitions for Recruiters
+              <div className="relative inline-block">
+                <span>Keyword scanning</span>
+                <div 
+                  className="absolute top-0 bottom-0 w-1 bg-candilingo-pink opacity-70"
+                  style={{ 
+                    left: `${scanPosition}%`, 
+                    boxShadow: '0 0 8px 2px rgba(233, 30, 99, 0.3)' 
+                  }}
+                >
+                  <div className="absolute top-0 bottom-0 left-0 w-40 bg-gradient-to-r from-candilingo-pink/10 to-transparent"></div>
+                </div>
+                <div className="absolute top-0 left-0 right-0 bottom-0 overflow-hidden">
+                  <div 
+                    className="absolute top-0 bottom-0 bg-gradient-to-r from-transparent via-candilingo-pink/30 to-transparent w-20"
+                    style={{ 
+                      left: `${scanPosition - 5}%`, 
+                    }}
+                  ></div>
+                </div>
+              </div>
+              <span> and instant definitions for Recruiters</span>
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-gray-600 mb-6 md:mb-8 leading-relaxed">
               Instantly highlight key terms on LinkedIn, ATS-systems & PDFs to <span className="inline-block underline decoration-candilingo-pink decoration-2 font-semibold text-candilingo-pink transition-colors duration-500">{highlightedPhrases[currentTextIndex]}</span>.
