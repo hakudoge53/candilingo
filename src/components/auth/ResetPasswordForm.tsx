@@ -16,12 +16,12 @@ const resetSchema = z.object({
 type ResetFormValues = z.infer<typeof resetSchema>;
 
 interface ResetPasswordFormProps {
-  resetPasswordSubmit: (values: ResetFormValues) => Promise<void>;
+  onSubmit: (values: ResetFormValues) => Promise<void>;
   onBack: () => void;
   resetEmailSent: boolean;
 }
 
-const ResetPasswordForm = ({ resetPasswordSubmit, onBack, resetEmailSent }: ResetPasswordFormProps) => {
+const ResetPasswordForm = ({ onSubmit, onBack, resetEmailSent }: ResetPasswordFormProps) => {
   const resetForm = useForm<ResetFormValues>({
     resolver: zodResolver(resetSchema),
     defaultValues: {
@@ -41,7 +41,7 @@ const ResetPasswordForm = ({ resetPasswordSubmit, onBack, resetEmailSent }: Rese
         </p>
         <Button 
           type="button" 
-          variant="outline-purple" 
+          variant="outline" 
           className="mt-4"
           onClick={onBack}
         >
@@ -54,7 +54,7 @@ const ResetPasswordForm = ({ resetPasswordSubmit, onBack, resetEmailSent }: Rese
   
   return (
     <Form {...resetForm}>
-      <form onSubmit={resetForm.handleSubmit(resetPasswordSubmit)} className="space-y-4">
+      <form onSubmit={resetForm.handleSubmit(onSubmit)} className="space-y-4">
         <div className="text-center mb-6">
           <h3 className="text-lg font-medium">Reset your password</h3>
           <p className="text-sm text-gray-500 mt-1">
@@ -76,7 +76,7 @@ const ResetPasswordForm = ({ resetPasswordSubmit, onBack, resetEmailSent }: Rese
           )}
         />
         
-        <Button type="submit" variant="purple" className="w-full">
+        <Button type="submit" className="w-full bg-candilingo-purple">
           Send Reset Instructions
         </Button>
         

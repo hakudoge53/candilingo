@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuthHandlers } from './useAuthHandlers';
 import AuthHeader from './AuthHeader';
+import { LoginFormValues } from '@/hooks/auth/types';
 
 // Define schema
 const loginSchema = z.object({
@@ -15,6 +16,7 @@ const loginSchema = z.object({
   password: z.string().min(6, { message: "Password must be at least 6 characters" }),
 });
 
+// Use the imported LoginFormValues type instead of redefining it
 export type LoginValues = z.infer<typeof loginSchema>;
 
 interface LoginFormProps {
@@ -30,7 +32,8 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
     defaultValues: {
       email: '',
       password: '',
-    }
+    },
+    mode: 'onSubmit' // This ensures values are validated on submit
   });
 
   const { 
@@ -47,6 +50,7 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
 
   // Handle form submission
   const onSubmit = async (values: LoginValues) => {
+    // Now values is guaranteed to have email and password as non-optional
     await onLoginSubmit(values);
   };
 
@@ -59,7 +63,7 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
   if (showResetForm) {
     return (
       <ResetPasswordForm
-        resetPasswordSubmit={onResetSubmit}
+        onSubmit={onResetSubmit}
         onBack={() => setShowResetForm(false)}
         resetEmailSent={resetEmailSent}
       />
@@ -77,9 +81,7 @@ const LoginForm = ({ setIsLoading }: LoginFormProps) => {
         onLinkedInLogin={handleLinkedInLogin}
       />
       <LoginFormFields
-        register={formMethods.register}
-        handleSubmit={formMethods.handleSubmit}
-        errors={formMethods.formState.errors}
+        formMethods={formMethods}
         onSubmit={onSubmit}
         onClickForgotPassword={() => setShowResetForm(true)}
         onTestLogin={handleTestLogin}

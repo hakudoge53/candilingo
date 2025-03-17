@@ -1,30 +1,26 @@
 
 import React from 'react';
-import { z } from "zod";
-import { useForm, UseFormRegister, FieldErrors } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { UseFormReturn } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { LoginValues } from './LoginForm';
 
 interface LoginFormFieldsProps {
-  register: UseFormRegister<LoginValues>;
-  handleSubmit: any;
-  errors: FieldErrors<LoginValues>;
+  formMethods: UseFormReturn<LoginValues>;
   onSubmit: (values: LoginValues) => Promise<void>;
   onClickForgotPassword: () => void;
   onTestLogin: () => Promise<void>;
 }
 
 const LoginFormFields = ({ 
-  register, 
-  handleSubmit, 
-  errors, 
+  formMethods, 
   onSubmit, 
   onClickForgotPassword, 
   onTestLogin 
 }: LoginFormFieldsProps) => {
+  const { register, handleSubmit, formState: { errors } } = formMethods;
+  
   return (
     <div className="space-y-6">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
