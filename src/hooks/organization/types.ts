@@ -15,7 +15,7 @@ export interface UserSettings {
 // Export common interfaces used by organization hooks
 export interface UseOrganizationsFetchReturn {
   organizations: Organization[];
-  activeOrganizationId: string | null; // Added this property to match the implementation
+  activeOrganizationId: string | null; // Ensuring this property is defined
   fetchOrganizations: () => Promise<void>;
   isLoading: boolean;
   error: string | null;

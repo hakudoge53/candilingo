@@ -735,6 +735,20 @@ export type Database = {
         }
         Returns: number
       }
+      is_organization_admin: {
+        Args: {
+          org_id: string
+          user_id: string
+        }
+        Returns: boolean
+      }
+      is_organization_member: {
+        Args: {
+          org_id: string
+          user_id: string
+        }
+        Returns: boolean
+      }
       set_limit: {
         Args: {
           "": number
