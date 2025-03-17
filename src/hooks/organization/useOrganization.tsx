@@ -48,7 +48,37 @@ export const useOrganization = (): UseOrganizationReturn => {
       if (membersError) throw membersError;
 
       setActiveOrganization(orgData as Organization);
-      setMembers(membersData as OrganizationMember[]);
+      
+      // Properly handle the members data with type casting
+      const typedMembers: OrganizationMember[] = (membersData || []).map((member: any) => {
+        // Handle case where user might be an error object or null
+        let userObject = null;
+        if (member.user && typeof member.user === 'object' && !('error' in member.user)) {
+          userObject = {
+            name: member.user.name,
+            email: member.user.email,
+            status: member.user.status,
+            membership_tier: member.user.membership_tier,
+            avatar_url: member.user.avatar_url
+          };
+        }
+        
+        return {
+          id: member.id,
+          organization_id: member.organization_id,
+          user_id: member.user_id,
+          invited_email: member.invited_email,
+          invited_name: member.invited_name,
+          role: member.role,
+          status: member.status,
+          created_at: member.created_at || '',
+          updated_at: member.updated_at || '',
+          invitation_token: member.invitation_token,
+          user: userObject
+        } as OrganizationMember;
+      });
+      
+      setMembers(typedMembers);
     } catch (err: any) {
       console.error('Error fetching organization:', err);
       setError(err.message);
@@ -58,7 +88,7 @@ export const useOrganization = (): UseOrganizationReturn => {
     }
   };
 
-  // Filter members by status
+  // Filter members by status - fixing the case sensitivity issue
   const activeMembers = members.filter(
     member => member.status === 'active' || member.status === 'Active'
   );

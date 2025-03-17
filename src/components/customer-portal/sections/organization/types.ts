@@ -1,5 +1,5 @@
 
-import { Organization, OrganizationMember, UserRole } from '@/types/organization';
+import { UserRole, MemberStatus } from '@/types/organization';
 
 export interface OrganizationInvitation {
   id: string;
@@ -7,6 +7,6 @@ export interface OrganizationInvitation {
   invited_email: string;
   invited_name: string | null;
   role: UserRole;
-  status: string;
+  status: MemberStatus;
   created_at: string;
 }

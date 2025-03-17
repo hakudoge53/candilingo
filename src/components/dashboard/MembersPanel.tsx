@@ -17,6 +17,7 @@ import EmptyMembersState from './members/EmptyMembersState';
 import ActiveMembersTable from './members/ActiveMembersTable';
 import PendingInvitationsTable from './members/PendingInvitationsTable';
 import InviteMemberDialog from './members/InviteMemberDialog';
+import { OrganizationInvitation } from '@/components/customer-portal/sections/organization/types';
 
 interface MembersPanelProps {
   organizationId: string;
@@ -43,6 +44,44 @@ const MembersPanel: React.FC<MembersPanelProps> = ({ organizationId }) => {
     setLocalInvites(pendingInvites);
   }, [activeMembers, pendingInvites]);
 
+  // Convert OrganizationMember[] to OrganizationInvitation[] for type compatibility
+  const handleSetInvites = (
+    value: React.SetStateAction<OrganizationInvitation[]>
+  ) => {
+    if (typeof value === 'function') {
+      setLocalInvites(prevInvites => {
+        // Convert previous invites to OrganizationInvitation[]
+        const convertedPrevInvites = prevInvites.map(invite => ({
+          id: invite.id,
+          organization_id: invite.organization_id,
+          invited_email: invite.invited_email || '',
+          invited_name: invite.invited_name || null,
+          role: invite.role,
+          status: invite.status,
+          created_at: invite.created_at || ''
+        }));
+        // Apply the function and convert back to OrganizationMember[]
+        const newInvites = value(convertedPrevInvites);
+        return newInvites.map(invite => ({
+          ...invite,
+          user_id: '00000000-0000-0000-0000-000000000000',
+          invitation_token: null,
+          updated_at: '',
+          user: null
+        } as OrganizationMember));
+      });
+    } else {
+      // Direct assignment (convert OrganizationInvitation[] to OrganizationMember[])
+      setLocalInvites(value.map(invite => ({
+        ...invite,
+        user_id: '00000000-0000-0000-0000-000000000000',
+        invitation_token: null,
+        updated_at: '',
+        user: null
+      } as OrganizationMember)));
+    }
+  };
+
   const {
     handleInviteMember,
     handleRevokeInvite,
@@ -55,7 +94,7 @@ const MembersPanel: React.FC<MembersPanelProps> = ({ organizationId }) => {
   } = useOrganizationActions({
     organization: activeOrganization,
     setMembers: setLocalMembers,
-    setInvites: setLocalInvites
+    setInvites: handleSetInvites
   });
 
   useEffect(() => {
