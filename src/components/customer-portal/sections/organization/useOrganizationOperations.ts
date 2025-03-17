@@ -84,9 +84,9 @@ export const useOrganizationOperations = (setLocalLoading: (loading: boolean) =>
       if (!activeOrganization) {
         throw new Error("No active organization selected");
       }
-      await inviteMember(activeOrganization.id, values.email, values.name, values.role);
+      await inviteMember(values.email, values.name, values.role);
       toast.success(`Invitation sent to ${values.email}!`);
-      if (refetchMembers) await refetchMembers();
+      if (refetchMembers) refetchMembers();
       setDialogOpen(null);
     } catch (error) {
       console.error("Error inviting member:", error);
@@ -101,7 +101,7 @@ export const useOrganizationOperations = (setLocalLoading: (loading: boolean) =>
     try {
       await updateMemberRole(memberId, role);
       toast.success("Member role updated successfully!");
-      if (refetchMembers) await refetchMembers();
+      if (refetchMembers) refetchMembers();
     } catch (error) {
       console.error("Error updating member role:", error);
       toast.error("Failed to update member role. Please try again.");
@@ -115,7 +115,7 @@ export const useOrganizationOperations = (setLocalLoading: (loading: boolean) =>
     try {
       await removeMember(memberId);
       toast.success("Member removed successfully!");
-      if (refetchMembers) await refetchMembers();
+      if (refetchMembers) refetchMembers();
     } catch (error) {
       console.error("Error removing member:", error);
       toast.error("Failed to remove member. Please try again.");
@@ -130,7 +130,7 @@ export const useOrganizationOperations = (setLocalLoading: (loading: boolean) =>
       // This is the same as removing a member for pending invites
       await removeMember(inviteId);
       toast.success("Invitation revoked successfully!");
-      if (refetchMembers) await refetchMembers();
+      if (refetchMembers) refetchMembers();
     } catch (error) {
       console.error("Error revoking invitation:", error);
       toast.error("Failed to revoke invitation. Please try again.");

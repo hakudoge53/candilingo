@@ -32,10 +32,7 @@ export const useOrganizationMembers = (organizationId: string | undefined): UseO
     try {
       const { data, error } = await supabase
         .from('organization_members')
-        .select(`
-          *,
-          user:profiles(name, email, status, membership_tier, avatar_url)
-        `)
+        .select('*, user:profiles(name, email, status, membership_tier, avatar_url)')
         .eq('organization_id', organizationId);
       
       if (error) throw error;
@@ -73,6 +70,7 @@ export const useOrganizationMembers = (organizationId: string | undefined): UseO
     if (!organizationId) return null;
     
     try {
+      // Need to cast to any to work around TypeScript limitations with Supabase
       const { data, error } = await supabase
         .from('organization_members')
         .insert({
@@ -83,7 +81,7 @@ export const useOrganizationMembers = (organizationId: string | undefined): UseO
           role,
           status: 'pending',
           invitation_token: `inv_${Math.random().toString(36).substring(2, 15)}` // Simple token generation
-        })
+        } as any)
         .select()
         .single();
       
@@ -114,9 +112,10 @@ export const useOrganizationMembers = (organizationId: string | undefined): UseO
   // Update a member's role
   const updateMemberRole = async (memberId: string, role: UserRole): Promise<void> => {
     try {
+      // Need to cast to any to work around TypeScript limitations with Supabase
       const { error } = await supabase
         .from('organization_members')
-        .update({ role })
+        .update({ role } as any)
         .eq('id', memberId);
       
       if (error) throw error;

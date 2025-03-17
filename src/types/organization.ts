@@ -50,7 +50,7 @@ export interface OrganizationInvitation {
 }
 
 // User roles based on Supabase database enum
-export type UserRole = 'super_admin' | 'owner' | 'manager' | 'team_lead' | 'employee';
+export type UserRole = 'owner' | 'manager' | 'team_lead' | 'employee' | 'super_admin';
 export type MemberStatus = 'pending' | 'active' | 'inactive';
 
 export const ROLE_LABELS: Record<string, string> = {

@@ -32,7 +32,7 @@ export const useMemberRoleUpdate = ({
       
       const { error } = await supabase
         .from('organization_members')
-        .update(updateData)
+        .update(updateData as any)
         .eq('id', memberId);
       
       if (error) throw error;
