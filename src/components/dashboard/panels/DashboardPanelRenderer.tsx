@@ -14,6 +14,8 @@ import OrganizationLanding from '../organization/OrganizationLanding';
 import ResourcesLanding from '../resources/ResourcesLanding';
 import { Glossary, GlossaryTerm } from '@/types/organization';
 import { Organization, OrganizationMember } from '@/types/organization';
+import { AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 interface DashboardPanelRendererProps {
   activeSection: string;
@@ -58,19 +60,33 @@ const DashboardPanelRenderer: React.FC<DashboardPanelRendererProps> = ({
   createOrganization,
   orgLoading
 }) => {
+  if (!activeOrganization) {
+    return (
+      <div className="p-4">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>No organization selected</AlertTitle>
+          <AlertDescription>
+            Please select or create an organization to view dashboard content.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
   const renderPanel = () => {
     // If we're on a section level with no specific tab selected, show the section landing page
     if (activeTab.includes('.')) {
-      const tabParts = activeTab.split('.');
+      const [section, tabName] = activeTab.split('.');
       
       switch (activeTab) {
         case 'products.glossaries':
           return (
             <GlossaryPanel 
-              glossaries={glossaries}
+              glossaries={glossaries || []}
               activeGlossary={activeGlossary}
               setActiveGlossary={setActiveGlossary}
-              terms={terms}
+              terms={terms || []}
               isLoadingGlossaries={glossariesLoading}
               isLoadingTerms={isLoadingTerms}
               addTerm={addTerm}
@@ -127,6 +143,25 @@ const DashboardPanelRenderer: React.FC<DashboardPanelRendererProps> = ({
         
         case 'resources':
           return <ResourcesLanding />;
+        
+        case 'products':
+          // If no specific product tab is selected, show the glossaries by default
+          return (
+            <GlossaryPanel 
+              glossaries={glossaries || []}
+              activeGlossary={activeGlossary}
+              setActiveGlossary={setActiveGlossary}
+              terms={terms || []}
+              isLoadingGlossaries={glossariesLoading}
+              isLoadingTerms={isLoadingTerms}
+              addTerm={addTerm}
+              updateTerm={updateTerm}
+              deleteTerm={deleteTerm}
+              addGlossary={createGlossary}
+              updateGlossary={updateGlossary}
+              deleteGlossary={deleteGlossary}
+            />
+          );
         
         default:
           return (

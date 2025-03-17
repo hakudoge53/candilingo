@@ -6,7 +6,6 @@ import { Helmet } from 'react-helmet';
 import FAQSection from "@/components/sections/FAQSection";
 import { Separator } from "@/components/ui/separator";
 import TermBadge from "@/components/TermBadge";
-import TooltipOverlay from "@/components/browser/TooltipOverlay";
 import HowItWorksSection from "@/components/sections/HowItWorksSection";
 import CTASection from "@/components/sections/CTASection";
 import IndustryGlossaries from "@/components/glossary/IndustryGlossaries";
@@ -70,12 +69,7 @@ const HowItWorks = () => {
                 <span className="bg-candilingo-pink text-white px-2 py-0.5 rounded mx-1">RESTful APIs</span>.
               </p>
               
-              <TooltipOverlay 
-                title="Spring Boot" 
-                description="An open source Java-based framework used to create microservices and web applications"
-                position="right"
-                className="top-2 right-12"
-              />
+              {/* Removed the TooltipOverlay component that was causing the floating text */}
             </div>
             
             <p className="text-gray-600 italic text-sm text-center">

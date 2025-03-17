@@ -11,6 +11,8 @@ export interface UseLicensesReturn {
   fetchLicenses: (organizationId: string) => Promise<void>;
   addLicenses: (organizationId: string, count: number, licenseType?: string) => Promise<boolean>;
   checkLicenseAvailability: (organizationId: string) => Promise<boolean>;
+  allocateLicense: (organizationId: string, userId: string) => Promise<boolean>;
+  releaseLicense: (organizationId: string, userId: string) => Promise<boolean>;
 }
 
 /**
@@ -162,6 +164,149 @@ export const useLicenses = (): UseLicensesReturn => {
       return false;
     }
   };
+  
+  /**
+   * Allocate a license to a specific user
+   */
+  const allocateLicense = async (organizationId: string, userId: string): Promise<boolean> => {
+    if (!organizationId || !userId) {
+      toast.error('Organization ID and User ID are required');
+      return false;
+    }
+    
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // First check if a license is available
+      const isAvailable = await checkLicenseAvailability(organizationId);
+      if (!isAvailable) {
+        toast.error('No licenses available. Please purchase more licenses.');
+        return false;
+      }
+      
+      // Get the first license record with available licenses
+      const { data: licenseData, error: licenseError } = await supabase
+        .from('organization_licenses')
+        .select('*')
+        .eq('organization_id', organizationId)
+        .order('license_type');
+        
+      if (licenseError) throw licenseError;
+      
+      if (!licenseData || licenseData.length === 0) {
+        toast.error('No license records found');
+        return false;
+      }
+      
+      // Find a license with available slots
+      const availableLicense = licenseData.find(license => 
+        license.used_licenses < license.total_licenses
+      );
+      
+      if (!availableLicense) {
+        toast.error('No licenses with available capacity');
+        return false;
+      }
+      
+      // Update the license record to increment used_licenses
+      const { error: updateError } = await supabase
+        .from('organization_licenses')
+        .update({ 
+          used_licenses: availableLicense.used_licenses + 1,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', availableLicense.id);
+        
+      if (updateError) throw updateError;
+      
+      // Update the allocation in the user record (could be in organization_members or a dedicated table)
+      // This part depends on your schema design
+      
+      setLicenses(prev => prev.map(license => 
+        license.id === availableLicense.id 
+          ? { ...license, used_licenses: license.used_licenses + 1 } 
+          : license
+      ));
+      
+      toast.success('License allocated successfully');
+      return true;
+    } catch (err: any) {
+      console.error('Error allocating license:', err);
+      setError(err.message);
+      toast.error('Failed to allocate license');
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  /**
+   * Release a license from a specific user
+   */
+  const releaseLicense = async (organizationId: string, userId: string): Promise<boolean> => {
+    if (!organizationId || !userId) {
+      toast.error('Organization ID and User ID are required');
+      return false;
+    }
+    
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // Get the license record for this organization
+      const { data: licenseData, error: licenseError } = await supabase
+        .from('organization_licenses')
+        .select('*')
+        .eq('organization_id', organizationId)
+        .order('license_type');
+        
+      if (licenseError) throw licenseError;
+      
+      if (!licenseData || licenseData.length === 0) {
+        toast.error('No license records found');
+        return false;
+      }
+      
+      // Select the first license with used_licenses > 0
+      const licenseToUpdate = licenseData.find(license => license.used_licenses > 0);
+      
+      if (!licenseToUpdate) {
+        toast.error('No licenses are currently in use');
+        return false;
+      }
+      
+      // Update the license record to decrement used_licenses
+      const { error: updateError } = await supabase
+        .from('organization_licenses')
+        .update({ 
+          used_licenses: licenseToUpdate.used_licenses - 1,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', licenseToUpdate.id);
+        
+      if (updateError) throw updateError;
+      
+      // Update the allocation in the user record (could be in organization_members or a dedicated table)
+      // This part depends on your schema design
+      
+      setLicenses(prev => prev.map(license => 
+        license.id === licenseToUpdate.id 
+          ? { ...license, used_licenses: license.used_licenses - 1 } 
+          : license
+      ));
+      
+      toast.success('License released successfully');
+      return true;
+    } catch (err: any) {
+      console.error('Error releasing license:', err);
+      setError(err.message);
+      toast.error('Failed to release license');
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return {
     licenses,
@@ -169,6 +314,8 @@ export const useLicenses = (): UseLicensesReturn => {
     error,
     fetchLicenses,
     addLicenses,
-    checkLicenseAvailability
+    checkLicenseAvailability,
+    allocateLicense,
+    releaseLicense
   };
 };

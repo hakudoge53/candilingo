@@ -1,8 +1,10 @@
+
 import { useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { OrganizationMember, UserRole, MemberStatus } from '@/types/organization';
 import { useAuth } from '../../auth/useAuth';
+import { useLicenses } from '../licenses/useLicenses';
 
 export interface UseMemberInviteProps {
   organizationId: string | undefined;
@@ -19,6 +21,7 @@ export const useMemberInvite = ({
   setMembers
 }: UseMemberInviteProps): UseMemberInviteReturn => {
   const { isLoggedIn } = useAuth();
+  const { checkLicenseAvailability, allocateLicense } = useLicenses();
   const [isLoading, setIsLoading] = useState(false);
 
   // Invite a new member to organization
@@ -28,6 +31,13 @@ export const useMemberInvite = ({
     setIsLoading(true);
     
     try {
+      // Check if license is available
+      const hasLicense = await checkLicenseAvailability(organizationId);
+      if (!hasLicense) {
+        toast.error("No available licenses. Please purchase more licenses to invite members.");
+        return null;
+      }
+      
       // Generate a random token for the invitation
       const token = Math.random().toString(36).substring(2, 15);
       
@@ -50,6 +60,9 @@ export const useMemberInvite = ({
         .single();
       
       if (error) throw error;
+      
+      // Allocate a license for this invitation
+      await allocateLicense(organizationId, data.id);
       
       // Create a properly typed OrganizationMember object
       const newMember: OrganizationMember = {

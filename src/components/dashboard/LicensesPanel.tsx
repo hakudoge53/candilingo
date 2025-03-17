@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PlusIcon, UserPlusIcon } from 'lucide-react';
+import { PlusIcon, UserPlusIcon, CreditCard } from 'lucide-react';
 import { useLicenses } from '@/hooks/organization/licenses/useLicenses';
 import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -10,6 +10,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { OrganizationLicense } from '@/hooks/organization/types';
+import { useStripeCheckout } from '@/hooks/useStripeCheckout';
+import { toast } from 'sonner';
 
 interface LicensesPanelProps {
   organizationId: string;
@@ -20,6 +22,7 @@ const LicensesPanel: React.FC<LicensesPanelProps> = ({ organizationId }) => {
   const [isAddLicenseDialogOpen, setIsAddLicenseDialogOpen] = useState(false);
   const [licenseQuantity, setLicenseQuantity] = useState(5);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { redirectToCheckout } = useStripeCheckout();
 
   // Load licenses when component mounts
   useEffect(() => {
@@ -42,7 +45,30 @@ const LicensesPanel: React.FC<LicensesPanelProps> = ({ organizationId }) => {
     return total > 0 ? (getTotalUsedLicenses() / total) * 100 : 0;
   };
 
-  const handleAddLicenses = async () => {
+  const handlePurchaseLicenses = async () => {
+    setIsSubmitting(true);
+    try {
+      // First redirect to Stripe checkout
+      await redirectToCheckout({
+        priceId: 'price_1R15yGLRETKD7zlDSrCkpFFt', // Pro plan price ID
+        productName: `${licenseQuantity} Candilingo Licenses`,
+        customPrice: licenseQuantity * 10, // $10 per license
+        cancelUrl: window.location.href
+      });
+      
+      // Note: actual license addition happens after Stripe webhook confirms payment
+      // This is handled by the Supabase Edge Function that processes the webhook
+      
+    } catch (error) {
+      console.error("Error starting checkout:", error);
+      toast.error("Failed to initiate license purchase. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  const handleAddLicensesDirectly = async () => {
+    // This is for development or admin use only
     setIsSubmitting(true);
     const result = await addLicenses(organizationId, licenseQuantity);
     setIsSubmitting(false);
@@ -80,11 +106,11 @@ const LicensesPanel: React.FC<LicensesPanelProps> = ({ organizationId }) => {
             <UserPlusIcon className="mx-auto h-12 w-12 text-gray-400" />
             <h3 className="mt-2 text-sm font-semibold text-gray-900">No licenses</h3>
             <p className="mt-1 text-sm text-gray-500">
-              Add licenses to invite members to your organization.
+              Purchase licenses to invite members to your organization.
             </p>
             <div className="mt-6">
               <Button onClick={() => setIsAddLicenseDialogOpen(true)}>
-                <PlusIcon className="mr-2 h-4 w-4" /> Add Licenses
+                <PlusIcon className="mr-2 h-4 w-4" /> Purchase Licenses
               </Button>
             </div>
           </div>
@@ -134,7 +160,7 @@ const LicensesPanel: React.FC<LicensesPanelProps> = ({ organizationId }) => {
               ))}
               
               <p className="text-sm text-gray-500 mt-4">
-                Need more licenses? Add them now to invite more members to your organization.
+                Need more licenses? Purchase them now to invite more members to your organization.
               </p>
             </div>
           </div>
@@ -144,7 +170,7 @@ const LicensesPanel: React.FC<LicensesPanelProps> = ({ organizationId }) => {
         <Dialog open={isAddLicenseDialogOpen} onOpenChange={setIsAddLicenseDialogOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Add More Licenses</DialogTitle>
+              <DialogTitle>Purchase More Licenses</DialogTitle>
               <DialogDescription>
                 Additional licenses allow you to invite more members to your organization.
               </DialogDescription>
@@ -161,9 +187,19 @@ const LicensesPanel: React.FC<LicensesPanelProps> = ({ organizationId }) => {
                 />
               </div>
               
-              <div className="bg-muted p-3 rounded-md text-sm">
-                <p>Adding {licenseQuantity} standard licenses to your organization.</p>
-                <p className="mt-2 font-medium">Total: ${licenseQuantity * 10}/month</p>
+              <div className="bg-gray-50 p-4 rounded-md space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Price per license:</span>
+                  <span className="font-medium">$10/month</span>
+                </div>
+                <div className="flex items-center justify-between border-t pt-2">
+                  <span className="font-medium">Total:</span>
+                  <span className="font-bold">${licenseQuantity * 10}/month</span>
+                </div>
+                <div className="flex items-center text-xs text-gray-500 mt-2">
+                  <CreditCard className="h-3 w-3 mr-1" />
+                  <span>Secure payment via Stripe</span>
+                </div>
               </div>
             </div>
             <DialogFooter>
@@ -177,10 +213,10 @@ const LicensesPanel: React.FC<LicensesPanelProps> = ({ organizationId }) => {
                 Cancel
               </Button>
               <Button 
-                onClick={handleAddLicenses} 
+                onClick={handlePurchaseLicenses} 
                 disabled={isSubmitting || licenseQuantity < 1}
               >
-                {isSubmitting ? "Processing..." : "Add Licenses"}
+                {isSubmitting ? "Processing..." : "Proceed to Payment"}
               </Button>
             </DialogFooter>
           </DialogContent>

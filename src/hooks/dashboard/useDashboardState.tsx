@@ -6,6 +6,7 @@ import { useOrganizations } from '@/hooks/useOrganizations';
 import { useGlossaries } from '@/hooks/useGlossaries';
 import { Organization, OrganizationMember, MemberStatus, UserRole } from '@/types/organization';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export function useDashboardState() {
   const navigate = useNavigate();
@@ -38,12 +39,21 @@ export function useDashboardState() {
   const [activeTab, setActiveTab] = useState('');
   const [adminMembers, setAdminMembers] = useState<OrganizationMember[]>([]);
   
+  // Redirect to auth page if user is not logged in
   useEffect(() => {
     if (!authLoading && !isLoggedIn) {
       navigate('/auth');
     }
   }, [isLoggedIn, authLoading, navigate]);
   
+  // Auto-select the first available glossary if none is selected
+  useEffect(() => {
+    if (!activeGlossary && glossaries && glossaries.length > 0 && !glossariesLoading) {
+      setActiveGlossary(glossaries[0]);
+    }
+  }, [glossaries, activeGlossary, glossariesLoading, setActiveGlossary]);
+  
+  // Fetch admin members when organization changes
   useEffect(() => {
     if (activeOrganization?.id) {
       fetchAdminMembers(activeOrganization.id);
@@ -82,11 +92,14 @@ export function useDashboardState() {
       }
     } catch (error) {
       console.error('Error fetching admin members:', error);
+      toast.error('Error loading organization administrators');
     }
   };
   
   const handleOrganizationChange = (org: Organization) => {
     setActiveOrganization(org);
+    // Reset active glossary when organization changes
+    setActiveGlossary(null);
   };
   
   const handleTabChange = (tab: string) => {

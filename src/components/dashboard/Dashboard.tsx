@@ -5,6 +5,7 @@ import { useDashboardState } from '@/hooks/dashboard/useDashboardState';
 import DashboardPanelRenderer from './panels/DashboardPanelRenderer';
 import { getDashboardSidebarConfig } from './config/sidebarConfig';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { toast } from 'sonner';
 
 const Dashboard = () => {
   const {
@@ -43,6 +44,14 @@ const Dashboard = () => {
       handleTabChange(firstTab.value);
     }
   }, [sidebarSections, activeTab, handleTabChange]);
+
+  // Handle errors gracefully
+  useEffect(() => {
+    if (!activeOrganization && organizations && organizations.length > 0) {
+      handleOrganizationChange(organizations[0]);
+      toast.info("Selected your default organization");
+    }
+  }, [activeOrganization, organizations, handleOrganizationChange]);
   
   if (isLoading) {
     return <div className="flex items-center justify-center min-h-screen">
@@ -69,12 +78,12 @@ const Dashboard = () => {
         activeSection={activeSection}
         activeTab={activeTab}
         activeOrganization={activeOrganization}
-        glossaries={glossaries}
+        glossaries={glossaries || []}
         activeGlossary={activeGlossary}
         setActiveGlossary={setActiveGlossary}
-        terms={terms}
-        organizations={organizations}
-        adminMembers={adminMembers}
+        terms={terms || []}
+        organizations={organizations || []}
+        adminMembers={adminMembers || []}
         glossariesLoading={glossariesLoading}
         isLoadingTerms={isLoadingTerms}
         addTerm={addTerm}
