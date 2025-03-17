@@ -6,12 +6,22 @@ import { useAuth } from '../auth/useAuth';
 import { toast } from "sonner";
 import { UseOrganizationsFetchReturn } from './types';
 
+/**
+ * Hook to fetch all organizations that the current user has created
+ * 
+ * @returns {UseOrganizationsFetchReturn} Object containing organizations and methods to fetch them
+ */
 export const useOrganizationsFetch = (): UseOrganizationsFetchReturn => {
   const { session, user } = useAuth();
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * Fetch organizations from the database
+   * 
+   * @returns {Promise<void>}
+   */
   const fetchOrganizations = async () => {
     if (!session) {
       setIsLoading(false);

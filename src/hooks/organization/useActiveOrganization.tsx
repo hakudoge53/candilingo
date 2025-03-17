@@ -6,6 +6,12 @@ import { useAuth } from '../auth/useAuth';
 import { toast } from "sonner";
 import { UseActiveOrganizationReturn, UserSettings } from './types';
 
+/**
+ * Hook to manage the active organization for the current user
+ * 
+ * @param {Organization[]} organizations - Array of organizations the user belongs to
+ * @returns {UseActiveOrganizationReturn} Object containing active organization and methods to manage it
+ */
 export const useActiveOrganization = (organizations: Organization[]): UseActiveOrganizationReturn => {
   const { user } = useAuth();
   const [activeOrganization, setActiveOrg] = useState<Organization | null>(null);
@@ -56,7 +62,12 @@ export const useActiveOrganization = (organizations: Organization[]): UseActiveO
     fetchActiveOrganization();
   }, [user, organizations]);
 
-  // Function to update active organization in user settings
+  /**
+   * Update the active organization in the user settings table
+   * 
+   * @param {Organization | null} org - The organization to set as active, or null to clear
+   * @returns {Promise<void>}
+   */
   const updateActiveOrganization = async (org: Organization | null) => {
     if (!user?.id) {
       return;
@@ -104,7 +115,12 @@ export const useActiveOrganization = (organizations: Organization[]): UseActiveO
     }
   };
 
-  // Function to set active organization (both local state and in DB)
+  /**
+   * Set active organization (both local state and in database)
+   * 
+   * @param {Organization | null} org - The organization to set as active, or null to clear
+   * @returns {Promise<void>}
+   */
   const setActiveOrganization = async (org: Organization | null): Promise<void> => {
     setActiveOrg(org);
     await updateActiveOrganization(org);

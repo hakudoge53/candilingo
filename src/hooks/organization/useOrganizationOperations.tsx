@@ -5,11 +5,23 @@ import { useAuth } from '../auth/useAuth';
 import { toast } from "sonner";
 import { UseOrganizationOperationsReturn } from './types';
 
+/**
+ * Hook to handle organization operations such as updating, deleting, and leaving
+ * 
+ * @returns {UseOrganizationOperationsReturn} Object containing methods for organization operations
+ */
 export const useOrganizationOperations = (): UseOrganizationOperationsReturn => {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * Update an organization's name
+   * 
+   * @param {string} id - The ID of the organization to update
+   * @param {string} name - The new name for the organization
+   * @returns {Promise<boolean>} Whether the update was successful
+   */
   const updateOrganization = async (id: string, name: string): Promise<boolean> => {
     if (!user?.id) {
       toast.error("User ID not available");
@@ -46,6 +58,12 @@ export const useOrganizationOperations = (): UseOrganizationOperationsReturn => 
     }
   };
 
+  /**
+   * Delete an organization and all its members
+   * 
+   * @param {string} id - The ID of the organization to delete
+   * @returns {Promise<boolean>} Whether the deletion was successful
+   */
   const deleteOrganization = async (id: string): Promise<boolean> => {
     if (!user?.id) {
       toast.error("User ID not available");
@@ -96,6 +114,12 @@ export const useOrganizationOperations = (): UseOrganizationOperationsReturn => 
     }
   };
 
+  /**
+   * Leave an organization (remove current user's membership)
+   * 
+   * @param {string} id - The ID of the organization to leave
+   * @returns {Promise<boolean>} Whether leaving the organization was successful
+   */
   const leaveOrganization = async (id: string): Promise<boolean> => {
     if (!user?.id) {
       toast.error("User ID not available");

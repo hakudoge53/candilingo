@@ -6,11 +6,22 @@ import { useAuth } from '../auth/useAuth';
 import { toast } from "sonner";
 import { UseOrganizationCreateReturn } from './types';
 
+/**
+ * Hook to handle creating new organizations
+ * 
+ * @returns {UseOrganizationCreateReturn} Object containing methods to create organizations
+ */
 export const useOrganizationCreate = (): UseOrganizationCreateReturn => {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * Create a new organization
+   * 
+   * @param {string} name - The name of the new organization
+   * @returns {Promise<Organization | null>} The newly created organization or null if creation failed
+   */
   const createOrganization = async (name: string): Promise<Organization | null> => {
     if (!user?.id) {
       toast.error("User ID not available");

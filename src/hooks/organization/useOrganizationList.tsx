@@ -9,6 +9,12 @@ import { useState, useEffect } from 'react';
 export { UserSettings } from './types';
 export type { UseOrganizationListReturn } from './types';
 
+/**
+ * A combined hook that manages organization listing, active organization selection,
+ * and organization creation.
+ * 
+ * @returns {UseOrganizationListReturn} An object with organizations data and methods
+ */
 export const useOrganizationList = (): UseOrganizationListReturn => {
   const { organizations, isLoading: organizationsLoading } = useOrganizationsFetch();
   const { activeOrganization, setActiveOrganization } = useActiveOrganization(organizations);
@@ -19,6 +25,12 @@ export const useOrganizationList = (): UseOrganizationListReturn => {
     setAllOrganizations(organizations);
   }, [organizations]);
 
+  /**
+   * Creates a new organization and adds it to the local state
+   * 
+   * @param {string} name - The name of the new organization
+   * @returns {Promise<Organization | null>} The newly created organization or null if creation failed
+   */
   const createNewOrganization = async (name: string): Promise<Organization | null> => {
     const newOrg = await createOrganization(name);
     
