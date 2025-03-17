@@ -3,16 +3,16 @@ import React from 'react';
 import { CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface AuthHeaderProps {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   showSocialLogin?: boolean;
   onGoogleLogin?: () => void;
   onLinkedInLogin?: () => void;
 }
 
 const AuthHeader = ({
-  title,
-  description,
+  title = "Welcome!",
+  description = "Sign in using your email and password or social account.",
   showSocialLogin = false,
   onGoogleLogin,
   onLinkedInLogin
