@@ -26,7 +26,7 @@ const Navbar = () => {
       <div className="container mx-auto px-4 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center">
-          <img src="/lovable-uploads/3ba829c2-54b7-4152-b767-9eb28429dbd7.png" alt="Candilingo" className="h-24  w-auto mr-2" />
+          <img src="/lovable-uploads/3ba829c2-54b7-4152-b767-9eb28429dbd7.png" alt="Candilingo" className="h-24 w-auto drop-shadow-md" />
         </Link>
 
         {/* Navigation Links */}
